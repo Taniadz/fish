@@ -1,0 +1,20 @@
+
+{% block comments %}
+    {% if comments is defined %}
+        <h2>Comments:</h2>
+            {% for comment in comments %}
+                <div>
+                    <p id="comment_inf">
+                        Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                    </p>
+                    <p id="comment_text">
+                        {{ comment.text }}
+                    </p>
+
+                </div>
+            {% endfor %}
+    {% else %}
+        <p>There are no comments yet.</p>
+
+    {% endif %}
+{% endblock %}
