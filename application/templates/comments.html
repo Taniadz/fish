@@ -1,20 +1,72 @@
 
 {% block comments %}
-    {% if comments is defined %}
+
         <h2>Comments:</h2>
             {% for comment in comments %}
-                <div>
-                    <p id="comment_inf">
+
+                <div id="comment{{ comment.id }} ">
+                    <p class="comment_inf">
                         Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
                     </p>
-                    <p id="comment_text">
+                    <p class="comment_text">
                         {{ comment.text }}
                     </p>
+                    <input type="button" class  = "discussion" value="Discussion"></button>
+                        <div class = answer style="display: none">
+                            <form action="{{ url_for('singlepost', postid=1) }}" method="post" class="form-horizontal answer_form"  data-parent = {{ comment.id }} />
+                            <div class="control-group">
+                                <div class="controls">
+                                    {% for field in form %}
+                                        <p>
+                                        {{field(size=80)}}<br>
+                                        {% if field.errors %}
+                                            <ul class=errors>
+                                             {% for error in field.errors %}
+                                              <li>{{ error }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                      </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                  <button type="submit" class="btn btn-success">Answer</button>
+                                </div>
+                            </div>
+                          </form>
+                        </div>
 
                 </div>
             {% endfor %}
-    {% else %}
-        <p>There are no comments yet.</p>
 
-    {% endif %}
+<script type="text/javascript">
+
+
+$(".discussion").click(function (){
+      $(this).next().show();
+});
+
+$(".answer_form").submit(function (form) {
+    $('input[name="parent"]').val($(this).attr('data-parent'));
+    $.ajax({
+        type: "POST",
+        url: $(".answer_form").attr('action'),
+        data: $(".answer_form").serialize(),
+        success: function (data) {
+            alert(data.text);
+            $('#answer_form textarea').val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    form.preventDefault();
+});
+</script>f
 {% endblock %}
+
+

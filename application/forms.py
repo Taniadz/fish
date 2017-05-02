@@ -1,5 +1,5 @@
-from flask.ext.wtf import Form
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from flask_wtf import Form
+from wtforms import Form, BooleanField, StringField, PasswordField, HiddenField, validators
 from wtforms.widgets import TextArea
 
 
@@ -25,5 +25,7 @@ class PostForm(Form):
 
 
 class CommentForm(Form):
-    text = StringField('Body', [validators.Length(max=200)], widget=TextArea())
+    text = StringField('Text', [validators.Length(max=200)], widget=TextArea())
+    parent = HiddenField()
+    post_id = HiddenField()
 

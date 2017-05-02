@@ -4,24 +4,25 @@
 <p>
 {{ post.body }}
 </p>
-{% include 'comments.html' %}
+<div id="comments-container">
+    {% include "comments.html" %}
+</div>
 <h1>Add comment</h1>
-<form action="" method="post" class="form-horizontal">
+<form action="{{ url_for('singlepost', postid=1 ) }}" method="post" class="form-horizontal comment_form"/>
     <div class="control-group">
         <div class="controls">
-            {% for field in form %}
                 <p>
-                {{ field.label }}:<br>
-                {{field(size=80)}}<br>
-                {% if field.errors %}
+                {{ form.text.label }}:<br>
+                {{form.text(size=80)}}<br>
+                {% if form.errors %}
                     <ul class=errors>
-                     {% for error in field.errors %}
+                     {% for error in form.errors %}
                       <li>{{ error }}</li>
                     {% endfor %}
                     </ul>
                 {% endif %}
               </p>
-            {% endfor %}
+
         </div>
     </div>
 
@@ -31,4 +32,6 @@
         </div>
     </div>
   </form>
+<script type="text/javascript">
+
 {% endblock %}

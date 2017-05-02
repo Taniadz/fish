@@ -1,6 +1,6 @@
 from application import db
 from datetime import datetime
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from application import lm
 #
 @lm.user_loader
@@ -64,7 +64,7 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 
-    def __init__(self, text, post_id, user_id, parent=None):
+    def __init__(self, text, post_id, user_id, parent=0):
         self.text = text
         self.post_id = post_id
         self.user_id = user_id
@@ -72,4 +72,4 @@ class Comment(db.Model):
         self.parent = parent
 
     def __repr__(self):
-        return '<Comment %r>' % (self.content)
+        return '<Comment %r>' % (self.text)
