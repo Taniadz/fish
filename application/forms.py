@@ -1,6 +1,17 @@
 from flask_wtf import Form
-from wtforms import Form, BooleanField, StringField, PasswordField, HiddenField, validators
+from wtforms import BooleanField, StringField, PasswordField, HiddenField,  TextAreaField, validators
 from wtforms.widgets import TextArea
+from wtforms.validators import Required, Length
+from flask_uploads import UploadSet, IMAGES
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+
+images = UploadSet('images', IMAGES)
+
+
+class UserEditForm(Form):
+    username = StringField('username')
+    about_me = StringField('about_me', widget=TextArea(), validators = [Length(min = 0, max = 140)])
+    file = FileField('image')
 
 
 class RegistrationForm(Form):
@@ -29,3 +40,13 @@ class CommentForm(Form):
     parent = HiddenField()
     post_id = HiddenField()
 
+
+class ProductCommentForm(Form):
+    text = StringField('Text', [validators.Length(max=200)], widget=TextArea())
+    parent = HiddenField()
+    product_id = HiddenField()
+
+
+class ProductForm(Form):
+    title = StringField('Title', [validators.Length(max=140)])
+    description = StringField('Description', [validators.Length(max=200)], widget=TextArea())

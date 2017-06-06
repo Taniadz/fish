@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Edit Your Profile</h1>
+<form action="{{url_for('user_edit', id = user.id )}}" method="post" name="edit" enctype=multipart/form-data>
+
+    <table>
+        <tr>
+            <td>Your username:</td>
+            <td>{{form.username(size = 24)}}</td>
+        </tr>
+        <tr>
+            <td>About yourself:</td>
+            <td>{{form.about_me(cols = 32, rows = 4)}}</td>
+        </tr>
+        <tr>
+            <td>Change avatar:</td>
+            <td>{{form.file}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            {% if form.errors %}
+                    <ul class=errors>
+                     {% for error in form.errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+            {% endif %}
+            <td><input type="submit" value="Save Changes"></td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

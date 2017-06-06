@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<table>
+    <tr valign="top">
+        <td> <img src="{{ url_for('static',filename="media/" + user.avatar) }}" /> </td>
+        <td><h1>User: {{user.username}}</h1></td>
+        {% if user.about_me %}<p>{{user.about_me}}</p>{% endif %}
+        {% if user.last_seen %}<p><i>Last seen on: {{user.last_seen}}</i></p>{% endif %}
+        {% if user.id == g.user.id %}<p><a href="{{url_for('user_edit', id = user.id )}}">Edit</a></p>{% endif %}
+    </tr>
+</table>
+<hr>
+{% for post in posts %}
+<table>
+    <tr valign="top">
+        <td><img src="{{post.author.picture}}"></td><td><i>{{post.author.username}} says:</i><br>{{post.body}}</td>
+    </tr>
+</table>
+{% endfor %}
+{% endblock %}

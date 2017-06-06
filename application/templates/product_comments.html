@@ -1,13 +1,13 @@
 
 {% block comments %}
-{% from 'helpers.html' import post_comment_macro with context %}
+{% from 'helpers.html' import product_comment_macro with context %}
     {%- for key, value in dictionary.iteritems() recursive -%}
 
         {% if key %}
             <li>
             {% for comment in comments %}
                 {% if comment.id == key %}
-                    {{ post_comment_macro(comment) }}
+                    {{ product_comment_macro(comment) }}
                 {% endif %}
             {% endfor %}
                 <ul>{{ loop(value.iteritems()) }}</ul>
@@ -19,36 +19,19 @@
 
 <script type="text/javascript">
 
-function Vote_comment(id)
-{
-   $.ajax({
 
-       type: "POST",
-       url: '/like_comment',
-       data: {"id": id},
-       success: function(data) {
-           $('#vote' + id).html(data);
-       },
-       error: function (xhr, str) {
-           alert('Mistake ' + xhr.responseCode);
-       }
-
-
-   });
-
-}
 
 
 $(".discussion").click(function (){
       $(this).next().slideToggle();
 });
 
-function Add_comment(id, form) {
-
+$(".answer_form").submit(function (form) {
+    $('input[name="parent"]').val($(this).attr('data-parent'));
     $.ajax({
         type: "POST",
-        url: $(".answer_form#" + id).attr('action'),
-        data: $(".answer_form#" + id).serialize() + "&parent=" + id,
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
         success: function (data) {
             $("#comment").html(data.comments);
 
@@ -60,8 +43,9 @@ function Add_comment(id, form) {
             alert('Mistake ' + xhr.responseCode);
         }
     });
+
     form.preventDefault();
-};
+});
 </script>
 {% endblock %}
 

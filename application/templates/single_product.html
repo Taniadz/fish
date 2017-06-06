@@ -1,20 +1,16 @@
 {% extends "base.html" %}
 {% block body %}
-<h1> {{ post.title }}</h1>
-<div id="vote_count">{{ post.vote_count }}</div>
+<h1> {{ product.title }}</h1>
+<div id="vote_count">{{ product.vote_count }}</div>
 <p>
-
-<a href="#" OnClick="DoAction('{{post.vote_count}}');" >Vote</a>
-</p>
-
-<p>
-{{ post.body }}
+{{ product.description }}
+<a href="#" OnClick="DoAction('{{product.vote_count}}');" >Vote</a>
 </p>
 <div id="comment" deep="0">
-    {% include "comments.html" %}
+    {% include "product_comments.html" %}
 </div>
 <h1>Add comment</h1>
-<form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" class="form-horizontal comment_form"/>
+<form action="{{ url_for($SCRIPT_ROOT +'singleproduct', product_id=product.id  ) }}" method="post" class="form-horizontal comment_form"/>
     <div class="control-group">
         <div class="controls">
              {{form.hidden_tag()}}
@@ -39,7 +35,9 @@
         </div>
     </div>
   </form>
+
 <script type="text/javascript">
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
 
 function DoAction(   )
@@ -47,23 +45,20 @@ function DoAction(   )
     alert(123);
     $.ajax({
          type: 'POST',
-         url: "{{ url_for('like_post', postid=post.id) }}",
+         url: "{{ url_for('singleproduct', product_id=product.id) }}",
          success: function(data){
              $('#vote_count').html(data);
          }
     });
 }
-
-
 $(".comment_form").submit(function (form) {
-
     $.ajax({
         type: "POST",
         url: $(".comment_form").attr('action'),
         data: $(".comment_form").serialize(),
         success: function (data) {
             $("#comment").html(data.comments);
-            $('textarea#text').val("");
+            $('"textarea#text"').val("");
 
         },
         error: function (xhr, str) {
