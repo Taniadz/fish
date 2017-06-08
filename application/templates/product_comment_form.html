@@ -1,0 +1,23 @@
+                            <form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post" class="form-horizontal answer_form" id ="{{ parent_id }}">
+
+
+
+                                        <p>
+
+                                        {{form.text(size=150)}}<br>
+                                        {% if form.errors %}
+                                            <ul class=errors>
+                                             {% for error in form.errors %}
+                                              <li>{{ error }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                      </p>
+
+
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <a href="#" OnClick="Add_comment('{{parent_id}}', event);" >Add comment</a>
+                                    </div>
+                                </div>
+                          </form>

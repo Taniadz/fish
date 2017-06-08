@@ -1,0 +1,219 @@
+
+{% block comments %}
+            {% macro comment_macro(comment) -%}
+                <div id="comment{{ comment.id }}" parent="{{ comment.parent }}">
+                    <p class="comment_inf">
+                        Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                    </p>
+                    <p class="comment_text">
+                        {{ comment.text }}
+                    </p>
+                    <button type="button" class="btn btn-primary discussion">Discussion</button>
+
+                        <div class = answer style="display: none">
+                            <form action="{{ url_for('singlepost', postid=comment.post_id) }}" method="post" class="form-horizontal answer_form"  data-parent = {{ comment.id }} />
+                            <div class="control-group">
+                                <div class="controls">
+                                    {% for field in form %}
+                                        <p>
+                                        {{field(size=150)}}<br>
+                                        {% if field.errors %}
+                                            <ul class=errors>
+                                             {% for error in field.errors %}
+                                              <li>{{ error }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                      </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                  <button type="submit" class="btn btn-success">Answer</button>
+                                </div>
+                            </div>
+                          </form>
+                        </div>
+                </div>
+            {%- endmacro %}
+
+    {%- for key, value in dictionary.iteritems() recursive -%}
+        {% if dictionary[key] %}
+
+            {% for comment in comments %}
+                {% if comment.id == key %}
+                    {{ comment_macro(comment) }}
+                {% endif %}
+            {% endfor %}
+            {{ loop(value.iteritems()) }}
+        {% endif %}
+    {%- endfor -%}
+
+
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+    var nodes = document.getElementById("comment").children;
+    var arr = [];
+    for(i=0; i<nodes.length - 1; i++) {
+        var id = nodes[i].id;
+        arr.push(id)
+    };
+    for(i=0; i<arr.length ; i++) {
+        var id = arr[i];
+        var parent = $("#" + arr[i]).attr("parent");
+        <!--document.getElementById("comment"+parent).appendChild(document.getElementById(id));-->
+        var deep = Number($("#comment"+parent).attr("deep"));
+
+        $("#"+id).attr("deep",deep+1);
+
+
+    };
+
+
+});
+
+$(".discussion").click(function (){
+      $(this).next().slideToggle();
+});
+
+$(".answer_form").submit(function (form) {
+    $('input[name="parent"]').val($(this).attr('data-parent'));
+    $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        success: function (data) {
+            $("#comment").html(data.comments);
+
+            $("textarea#text").val("");
+            <!--document.getElementById("comment"+data.parent).appendChild(document.getElementById("comment"+data.id));-->
+
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+
+    form.preventDefault();
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block comments %}
+            {% macro comment_macro(comment) -%}
+                <div id="comment{{ comment.id }}" parent="{{ comment.parent }}">
+                    <p class="comment_inf">
+                        Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                    </p>
+                    <p class="comment_text">
+                        {{ comment.text }}
+                    </p>
+                    <button type="button" class="btn btn-primary discussion">Discussion</button>
+
+                        <div class = answer style="display: none">
+                            <form action="{{ url_for('singlepost', postid=comment.post_id) }}" method="post" class="form-horizontal answer_form"  data-parent = {{ comment.id }} />
+                            <div class="control-group">
+                                <div class="controls">
+                                    {% for field in form %}
+                                        <p>
+                                        {{field(size=150)}}<br>
+                                        {% if field.errors %}
+                                            <ul class=errors>
+                                             {% for error in field.errors %}
+                                              <li>{{ error }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                      </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                  <button type="submit" class="btn btn-success">Answer</button>
+                                </div>
+                            </div>
+                          </form>
+                        </div>
+                </div>
+            {%- endmacro %}
+
+
+
+            {% for comment in comments %}
+                {{ comment_macro(comment) }}
+
+            {% endfor %}
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+    var nodes = document.getElementById("comment").children;
+    var arr = [];
+    for(i=0; i<nodes.length - 1; i++) {
+        var id = nodes[i].id;
+        arr.push(id)
+    };
+    for(i=0; i<arr.length ; i++) {
+        var id = arr[i];
+        var parent = $("#" + arr[i]).attr("parent");
+        document.getElementById("comment"+parent).appendChild(document.getElementById(id));
+        var deep = Number($("#comment"+parent).attr("deep"));
+        $("#"+id).attr("deep",deep+1);
+
+
+    };
+
+
+});
+
+$(".discussion").click(function (){
+      $(this).next().slideToggle();
+});
+
+$(".answer_form").submit(function (form) {
+    $('input[name="parent"]').val($(this).attr('data-parent'));
+    $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        success: function (data) {
+            $("#comment").html(data.comments);
+
+            $("textarea#text").val("");
+            document.getElementById("comment"+data.parent).appendChild(document.getElementById("comment"+data.id));
+
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+
+    form.preventDefault();
+});
+</script>
+{% endblock %}
+
+

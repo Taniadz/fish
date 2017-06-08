@@ -36,7 +36,7 @@ class PostForm(Form):
 
 
 class CommentForm(Form):
-    text = StringField('Text', [validators.Length(max=200)], widget=TextArea())
+    text = StringField('text', [validators.Length(max=200)], widget=TextArea())
     parent = HiddenField()
     post_id = HiddenField()
 
@@ -47,6 +47,8 @@ class ProductCommentForm(Form):
     product_id = HiddenField()
 
 
+
 class ProductForm(Form):
     title = StringField('Title', [validators.Length(max=140)])
+    file = FileField('image')
     description = StringField('Description', [validators.Length(max=200)], widget=TextArea())

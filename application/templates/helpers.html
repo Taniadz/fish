@@ -8,34 +8,10 @@
                     <p class="comment_text">
                         {{ comment.text }}
                     </p>
-                    <button type="button" class="btn btn-primary discussion">Discussion</button>
+                    <button type="button" class="btn btn-primary discussion" id ="{{ comment.id }}" >Discussion</button>
 
-                        <div class = answer style="display: none">
-                            <form action="{{ url_for('singlepost', postid=comment.post_id) }}" method="post" class="form-horizontal answer_form" id ="{{ comment.id }}" />
+                        <div class = answer id = "answer{{ comment.id }}" style="display: none">
 
-                            <div class="control-group">
-                                <div class="controls">
-
-                                        <p>
-
-                                        {{form.text(size=150)}}<br>
-                                        {% if form.errors %}
-                                            <ul class=errors>
-                                             {% for error in form.errors %}
-                                              <li>{{ error }}</li>
-                                            {% endfor %}
-                                            </ul>
-                                        {% endif %}
-                                      </p>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <div class="controls">
-                                    <a href="#" OnClick="Add_comment('{{comment.id}}');" >Add comment</a>
-                                </div>
-                            </div>
-                          </form>
                         </div>
                 </div>
 {%- endmacro %}
@@ -44,39 +20,16 @@
 {% macro product_comment_macro(comment) -%}
                 <div id="product_comment{{ comment.id }}">
                     <p class="comment_inf">
-                        Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                        Comment by {{ comment.com_prod_author.username }} [{{ comment.timestamp }}]
                     </p>
 
                     <p class="comment_text">
                         {{ comment.text }}
                     </p>
-                    <button type="button" class="btn btn-primary discussion">Discussion</button>
+                   <button type="button" class="btn btn-primary discussion" id ="{{ comment.id }}" >Discussion</button>
 
-                        <div class = answer style="display: none">
-                            <form action="{{ url_for('singleproduct', product_id=comment.product_id) }}" method="post" class="form-horizontal answer_form"  data-parent = {{ comment.id }} />
-                            {{form.hidden_tag()}}
-                            <div class="control-group">
-                                <div class="controls">
+                        <div class = answer id = "answer{{ comment.id }}" style="display: none">
 
-                                        <p>
-                                        {{form.text(size=150)}}<br>
-                                        {% if form.errors %}
-                                            <ul class=errors>
-                                             {% for error in form.errors %}
-                                              <li>{{ error }}</li>
-                                            {% endfor %}
-                                            </ul>
-                                        {% endif %}
-                                      </p>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <div class="controls">
-                                  <button type="submit" class="btn btn-success">Answer</button>
-                                </div>
-                            </div>
-                          </form>
                         </div>
                 </div>
 {%- endmacro %}

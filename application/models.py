@@ -106,12 +106,13 @@ class Product(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     likes = db.relationship('ProductLike', backref='current_product', lazy='dynamic')
 
-    def __init__(self, title, description, user_id, vote_count=0):
+    def __init__(self, title, description, user_id, image, vote_count=0):
         self.title = title
         self.description = description
         self.user_id = user_id
         self.published_at = datetime.utcnow()
         self.vote_count = vote_count
+        self.image=image
 
 
     def __repr__(self):

@@ -22,16 +22,39 @@
 
 
 
-$(".discussion").click(function (){
-      $(this).next().slideToggle();
-});
+$(".discussion").click(function (event){
 
-$(".answer_form").submit(function (form) {
-    $('input[name="parent"]').val($(this).attr('data-parent'));
+
+
+    $(this).next().slideToggle();
+    var id = $(this).attr('id');
+    var product = "{{product_id}}";
     $.ajax({
         type: "POST",
-        url: $(this).attr('action'),
-        data: $(this).serialize(),
+        url: '/product_comment_form',
+        data: "parent_id=" + id + "&product_id=" + product,
+        success: function (data) {
+             $(".answer#answer" + id).html(data.prod_form);
+
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+
+});
+
+function Add_comment(id, event) {
+    event.preventDefault();
+    var text = ($('textarea[name="text"]').val());
+    alert (text);
+    $.ajax({
+        type: "POST",
+        url: $(".answer_form#" + id).attr('action'),
+        data: "text="+ text + "&parent=" + id,
         success: function (data) {
             $("#comment").html(data.comments);
 
@@ -44,8 +67,8 @@ $(".answer_form").submit(function (form) {
         }
     });
 
-    form.preventDefault();
-});
+
+};
 </script>
 {% endblock %}
 

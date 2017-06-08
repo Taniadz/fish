@@ -1,4 +1,4 @@
-from models import User, Post, Comment, CommentProduct
+from models import User, Post, Comment, CommentProduct, Product
 import collections
 
 def create_dict(d, parent, child):
@@ -50,6 +50,9 @@ def get_post_by_id(id):
     post = Post.query.filter_by(id=id).first()
     return post
 
+def get_product_by_id(id):
+    product = Product.query.filter_by(id=id).first()
+    return product
 
 def get_or_create(session, model, defaults=None, **kwargs):
     instance = model.query.filter_by(**kwargs).first()

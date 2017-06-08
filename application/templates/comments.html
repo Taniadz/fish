@@ -39,16 +39,39 @@ function Vote_comment(id)
 }
 
 
-$(".discussion").click(function (){
-      $(this).next().slideToggle();
+$(".discussion").click(function (event){
+
+
+
+    $(this).next().slideToggle();
+    var id = $(this).attr('id');
+    var post = "{{postid}}";
+    $.ajax({
+        type: "POST",
+        url: '/comment_form',
+        data: "parent_id=" + id + "&post_id=" + post,
+        success: function (data) {
+             $(".answer#answer" + id).html(data.com_form);
+
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+
 });
 
-function Add_comment(id, form) {
-
+function Add_comment(id, event) {
+    event.preventDefault();
+    var text = ($('textarea[name="text"]').val());
+    alert (text);
     $.ajax({
         type: "POST",
         url: $(".answer_form#" + id).attr('action'),
-        data: $(".answer_form#" + id).serialize() + "&parent=" + id,
+        data: "text="+ text + "&parent=" + id,
         success: function (data) {
             $("#comment").html(data.comments);
 
@@ -60,7 +83,8 @@ function Add_comment(id, form) {
             alert('Mistake ' + xhr.responseCode);
         }
     });
-    form.preventDefault();
+
+
 };
 </script>
 {% endblock %}

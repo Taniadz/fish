@@ -66,6 +66,7 @@ def logout():
 def singlepost(postid=None):
     form = CommentForm(request.form)
     form.post_id.data = postid
+
     if request.method == 'GET':
         post = get_post_by_id(postid)
         comments = get_comments_by_post_id(post.id)
@@ -74,7 +75,10 @@ def singlepost(postid=None):
 
         print form.data
         print request.form.get('parent')
-        comment = Comment(text=form.text.data.strip(),
+        text = request.form.get('text')
+        text = text.strip()
+
+        comment = Comment(text=text,
                           user_id=current_user.id,
                           post_id=form.post_id.data)
         if form.parent.data == "":
@@ -85,17 +89,19 @@ def singlepost(postid=None):
         db.session.commit()
 
         flash("Comment published!", 'alert-success')
-        childform = CommentForm(request.form)
+
         data = {'comments' : render_template('comments.html',
+                                             postid=postid,
                                              comments=get_comments_by_post_id(form['post_id'].data),
                                              dictionary=get_comment_dict(form['post_id'].data),
-                                             form=childform)}
+                                             form=form)}
 
         return jsonify(data)
 
     else:
         return render_template("single_post.html",
                                post=post,
+                               postid=postid,
                                form=form,
                                comments=comments,
                                dictionary=get_comment_dict(form['post_id'].data))
@@ -161,52 +167,49 @@ def user_edit(id):
 
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def singleproduct(product_id=None):
-    product = Product.query.filter_by(id=product_id).first()
-    comments = get_comments_by_product_id(product_id)
     form = ProductCommentForm(request.form)
     form.product_id.data = product_id
+    if request.method == 'GET':
+        product = Product.query.filter_by(id=product_id).first()
+        comments = get_comments_by_product_id(product_id)
+        return render_template("single_product.html",
+                               product=product,
+                               comments=comments,
+                               product_id=product_id,
+                               dictionary=get_prod_comment_dict(form['product_id'].data),
+                               form=form)
+    if request.method == 'POST':
+        print form.data
+        print request.form.get('parent')
 
-    if form.validate_on_submit() and request.method == 'POST':
-        comment = CommentProduct(text=form.text.data.strip(),
+        text = request.form.get('text')
+        text = text.strip()
+        comment = CommentProduct(text=text,
                           user_id=current_user.id,
                           product_id=form.product_id.data)
         if form.parent.data == "":
             comment.parent = 0
         else:
-            comment.parent = form.parent.data
+            comment.parent = request.form.get('parent')
         db.session.add(comment)
         db.session.commit()
         flash("Comment published!", 'alert-success')
         data = {'comments' : render_template('product_comments.html',
+                                             product_id=product_id,
                                              comments=get_comments_by_product_id(form['product_id'].data),
                                              dictionary=get_prod_comment_dict(form['product_id'].data),
-
                                              form=form)}
         return jsonify(data)
-    elif request.method == 'POST':
-        product_like = get_or_create(db.session, ProductLike, product=product_id, user=current_user.id )
-        if not product_like:
-            flash("You have already voted!", 'alert-success')
-            return jsonify(product.vote_count)
-        else:
-            product.vote_count = product.vote_count + 1
-            db.session.add(product)
-            db.session.commit()
-            return jsonify(product.vote_count)
-
-    else:
-        return render_template("single_product.html",
-                           product=product,
-                           comments=comments,
-                           dictionary=get_prod_comment_dict(form['product_id'].data),
-                           form=form)
 
 
 @app.route('/add_product', methods = ['GET', 'POST'])
 def add_product():
-    form = ProductForm(request.form)
+    form = ProductForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'POST' and form.validate():
-        product = Product(title=form.title.data.strip(), description=form.description.data.strip(), user_id=current_user.id)
+        f = form.file.data
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(UPLOAD_FOLDER, filename))
+        product = Product(title=form.title.data.strip(), description=form.description.data.strip(), user_id=current_user.id, image=filename)
         db.session.add(product)
 
         db.session.commit()
@@ -215,8 +218,7 @@ def add_product():
     return render_template("add_product.html", form=form)
 
 
-
-@app.route('/like_comment', methods=['POST', 'GET'])
+@app.route('/like_comment', methods=['POST'])
 def like_comment():
     id = request.form.get('id')
     comment = get_comment_by_id(id)
@@ -232,7 +234,7 @@ def like_comment():
         return jsonify(comment.vote_count)
 
 
-@app.route('/like_post/<int:postid>', methods=['POST', 'GET'])
+@app.route('/like_post/<int:postid>', methods=['POST'])
 def like_post(postid):
     post = get_post_by_id(postid)
     if request.method == 'POST':
@@ -247,3 +249,40 @@ def like_post(postid):
             return jsonify(post.vote_count)
 
 
+@app.route('/like_product/<int:product_id>', methods=['POST'])
+def like_product(product_id):
+    product = get_product_by_id(product_id)
+    product_like = get_or_create(db.session, ProductLike, product=product_id, user=current_user.id)
+    if not product_like:
+        flash("You have already voted!", 'alert-success')
+        return jsonify(product.vote_count)
+    else:
+        product.vote_count = product.vote_count + 1
+        db.session.add(product)
+        db.session.commit()
+        return jsonify(product.vote_count)
+
+
+@app.route('/comment_form', methods=['POST'])
+def comment_form():
+    parent_id =request.form.get('parent_id')
+    post_id = request.form.get('post_id')
+    form = CommentForm(request.form)
+    data = {'com_form': render_template('comment_form.html',
+                                    post_id=post_id,
+                                    parent_id=parent_id,
+                                    form=form)}
+    return jsonify(data)
+
+
+
+@app.route('/product_comment_form', methods=['POST'])
+def product_comment_form():
+    parent_id =request.form.get('parent_id')
+    product_id = request.form.get('product_id')
+    form = ProductCommentForm(request.form)
+    data = {'prod_form': render_template('product_comment_form.html',
+                                    product_id=product_id,
+                                    parent_id=parent_id,
+                                    form=form)}
+    return jsonify(data)

@@ -14,7 +14,7 @@
     {% include "comments.html" %}
 </div>
 <h1>Add comment</h1>
-<form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" class="form-horizontal comment_form"/>
+<form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" class="form-horizontal comment_form">
     <div class="control-group">
         <div class="controls">
              {{form.hidden_tag()}}
@@ -54,23 +54,25 @@ function DoAction(   )
     });
 }
 
+$(document).ready(function () {
+    $(".comment_form").submit(function (form) {
 
-$(".comment_form").submit(function (form) {
+        alert($('textarea[name="text"]').val());
+        $.ajax({
+            type: "POST",
+            url: $(".comment_form").attr('action'),
+            data: $(".comment_form").serialize(),
+            success: function (data) {
+                $("#comment").html(data.comments);
+                $('textarea#text').val("");
 
-    $.ajax({
-        type: "POST",
-        url: $(".comment_form").attr('action'),
-        data: $(".comment_form").serialize(),
-        success: function (data) {
-            $("#comment").html(data.comments);
-            $('textarea#text').val("");
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        form.preventDefault();
     });
-    form.preventDefault();
 });
 </script>
 {% endblock %}
