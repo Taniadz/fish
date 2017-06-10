@@ -1,5 +1,13 @@
 from models import User, Post, Comment, CommentProduct, Product
-import collections
+from flask import flash
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
 
 def create_dict(d, parent, child):
     if parent == 0:
@@ -40,6 +48,17 @@ def get_comments_by_product_id(product_id):
     comments = CommentProduct.query.filter_by(product_id = product_id )
     return comments
 
+def get_comments_by_user_id(user_id):
+    comments = Comment.query.filter_by(user_id=user_id).all()
+    return comments
+
+def get_products_by_user_id(user_id):
+    products =Product.query.filter_by(user_id=user_id).all()
+    return products
+
+def get_posts_by_user_id(user_id):
+    posts = Post.query.filter_by(user_id=user_id).all()
+    return posts
 
 def get_comment_by_id(id):
     comment = Comment.query.filter_by(id=id).first()

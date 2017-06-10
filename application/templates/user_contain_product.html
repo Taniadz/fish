@@ -1,0 +1,13 @@
+{% if products|length >= 1 %}
+    {% for product in products %}
+        <table>
+            <tr valign="top">
+                <td><img src="{{ url_for('static',filename="media/" + product.product_author.avatar)}}" width="50"></td><td><i>{{product.product_author.username}} says:</i><br>{{product.title}}</td>
+            </tr>
+         </table>
+    {% endfor %}
+{% else %}
+    <p>You have not product yet</p>
+    <p>Could you add one?</p>
+    <a href="{{url_for('add_product')}}">Add_product</a>
+            {% endif %}

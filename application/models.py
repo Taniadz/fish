@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     registered_on = db.Column('registered_on', db.DateTime)
     last_seen = db.Column(db.DateTime)
     avatar = db.Column(db.LargeBinary, nullable = True)
-    about_me = db.Column(db.String(140), nullable=True)
+    about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='com_author', lazy='dynamic')
@@ -28,7 +28,10 @@ class User(db.Model, UserMixin):
     products = db.relationship('Product', backref='product_author', lazy='dynamic')
     com_products = db.relationship('CommentProduct', backref='com_prod_author', lazy='dynamic')
 
-    def __init__(self, username, password, email, avatar, about_me=None):
+    added_product = db.relationship('Product', secondary=added_product,
+                           backref=db.backref('product', lazy='dynamic'))
+
+    def __init__(self, username, password, email, avatar=None, about_me=None):
         self.username = username
         self.password = password
         self.email = email
@@ -48,12 +51,31 @@ class User(db.Model, UserMixin):
         def get_id(self):
             return self.id
 
+    def add(self, product):
+        if not self.is_following(product):
+            self.added_product.append(product)
+            return self
+
+    def forget(self, product):
+        if self.is_following(product):
+            self.added_product.remove(product)
+            return self
+
+    def is_following(self, product):
+        return self.added_product.filter(added_product.c.product_id == product.id).count() > 0
+
+
+
+
+
+
+
 
 class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(140))
-    body = db.Column(db.String(200))
+    title = db.Column(db.String(200))
+    body = db.Column(db.String(1000))
     published_at = db.Column('published_at', db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
@@ -180,3 +202,11 @@ class CommentProduct(db.Model):
 
     def __repr__(self):
         return '<CommentProduct %r>' % (self.text)
+
+
+
+
+added_product = db.Table('added_product',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'))
+)

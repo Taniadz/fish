@@ -2,7 +2,7 @@
 {% block body %}
 <h1>Edit Your Profile</h1>
 <form action="{{url_for('user_edit', id = user.id )}}" method="post" name="edit" enctype=multipart/form-data>
-
+    {{ form.csrf_token }}
     <table>
         <tr>
             <td>Your username:</td>
@@ -20,8 +20,10 @@
             <td></td>
             {% if form.errors %}
                     <ul class=errors>
-                     {% for error in form.errors %}
-                      <li>{{ error }}</li>
+                     {% for field, errors in form.errors.items(): %}
+                        {% for error in errors %}
+                      <li>Error in the field {{field}}:{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                     </ul>
             {% endif %}

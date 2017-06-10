@@ -1,0 +1,18 @@
+{% if posts|length >= 1 %}
+
+
+                {% for post in posts %}
+                    <table>
+                        <tr valign="top">
+                            <td><img src="{{ url_for('static',filename="media/" + post.author.avatar)}}" width="50"></td><td><i>{{post.author.username}} says:</i>
+                            <br><a href="{{url_for('singlepost', postid=post.id)}}">{{post.title}}</a>
+                            </td>
+                        </tr>
+                    </table>
+                {% endfor %}
+            {% else %}
+                <p>You have not post yet</p>
+                <p>Could you write something?</p>
+                <a href="{{url_for('add_post')}}">Add_post</a>
+            {% endif %}
+

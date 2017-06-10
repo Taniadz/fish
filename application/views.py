@@ -9,7 +9,6 @@ from flask_json import FlaskJSON, JsonError, json_response, as_json, jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug import secure_filename
 from datetime import datetime
-from sqlalchemy_imageattach.context import store_context
 POSTS_PER_PAGE = 2
 from helpers import *
 
@@ -34,6 +33,7 @@ def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         user = User(form.username.data, form.password.data, form.email.data, form.about_me.data)
+        user.avatar = "icon-user-default.png"
         db.session.add(user)
         db.session.commit()
         flash('Thanks for registering')
@@ -134,7 +134,8 @@ def user(username):
     if user == None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
-    posts = Post.query.filter_by(user_id=user.id)
+    posts = Post.query.filter_by(user_id=user.id).all()
+    print(posts)
     return render_template('user.html',
                            user=user,
                            posts=posts)
@@ -146,19 +147,28 @@ def user_edit(id):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
     user = User.query.filter_by(id = id).first()
     if request.method == 'POST' and form.validate():
-        f = form.file.data
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(UPLOAD_FOLDER, filename))
+        print(form.file.data)
+        if form.file.data != None:
+            f = form.file.data
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(UPLOAD_FOLDER, filename))
+        else:
+            f="icon-user-default.png"
+            filename = f
+
+
+        user.avatar = filename
+
         user.username = form.username.data
         user.about_me = form.about_me.data
-        user.avatar = filename
+
         db.session.add(user)
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('user', username=form.username.data))
-    else:
-         form.username.data = user.username
-         form.about_me.data = user.about_me
+
+    form.username.data = user.username
+    form.about_me.data = user.about_me
     return render_template('user_edit.html',
                            user=user,
                            form=form)
@@ -285,4 +295,24 @@ def product_comment_form():
                                     product_id=product_id,
                                     parent_id=parent_id,
                                     form=form)}
+    return jsonify(data)
+
+@app.route('/user_contain', methods=['POST'])
+def user_contain():
+    if request.form.get('comment'):
+        comments = get_comments_by_user_id(request.form.get('user_id'))
+        data = {'com_container': render_template('user_contain_comment.html',
+                                                 comments=comments,
+        )}
+    elif request.form.get('product'):
+        products = get_products_by_user_id(request.form.get('user_id'))
+        data = {'prod_container': render_template('user_contain_product.html',
+                                                 products=products,
+        )}
+    elif request.form.get('post'):
+        posts = get_posts_by_user_id(request.form.get('user_id'))
+        print(len(posts))
+        data = {'post_container': render_template('user_contain_post.html',
+                                                  posts=posts,
+        )}
     return jsonify(data)
