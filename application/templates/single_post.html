@@ -1,67 +1,231 @@
 {% extends "base.html" %}
 {% block body %}
-<h1> {{ post.title }}</h1>
-<div id="vote_count">{{ post.vote_count }}</div>
-<p>
+<div class="row">
 
-<a href="#" OnClick="DoAction('{{post.vote_count}}');" >Vote</a>
-</p>
+<div class="col-md-7" id="single_post">
+    <div id="post_box">
+fon
+        {% if current_user == post.author  %}
+            <div class="btn-group btn-block">
+                  <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ url_for('user_edit_post', id= post.id  ) }}">edit</a></li>
+                    <li><a href="#" onclick="user_del_post(event);">delete</a></li>
 
-<p>
-{{ post.body }}
-</p>
-<div id="comment" deep="0">
+                  </ul>
+                </div>
+        {% endif %}
+
+        <h1> {{ post.title }}</h1>
+
+        {% if post.image %}
+            <img src="{{ url_for('static',filename="media/" + post.image) }}" />
+        {% endif %}
+
+        <p>
+        {{ post.body }}
+        </p>
+
+        <p>
+        Write <a href="{{ url_for('user', username= post.author.username )}}">{{ post.author.username }}</a>  at {{post.published_at}}
+        </p>
+        {% if current_user.is_authenticated %}
+            {% if ifliked%}
+
+                          <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+                    post_id={{post.id}} width="20" /></a>
+
+                  {% else %}
+
+                      <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="white"
+                                    src="{{ url_for('static',filename="image/white.png" )}}"
+                    width="20" post_id={{post.id}} /></a>
+
+                  {% endif%}
+
+                        {% if ifsaved %}
+                              <span class="star post" id="star_gold{{post.id}}">Delete_saved</span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
+                                  width="20" post_id={{post.id}} /></a>
+                        {% else%}
+                            <span class="star post" id="star_white{{post.id}}">Add_to_saved</span>&nbsp;<img class = "post" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                                  width="20" post_id={{post.id}} /></a>
+                    {% endif %}
+        {% else %}
+            <span>{{ post.vote_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
+                         width="20" /></a>
+             <span class="star product">aDD TO_saved</span>&nbsp;<img  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                                      width="20" /></a>
+        {% endif %}
+    </div>
+    <div class="row">
+        {% if current_user.is_authenticated %}
+            <div class="col-md-3">
+                <button type="button"id="button_comment1" class="btn btn-primary btn-block">Comment</button>
+            </div>
+        {% else %}
+             <div class="col-md-3">
+                <button type="button"id="anon_comment" class="btn btn-primary btn-block">Comment</button>
+            </div>
+        {%endif%}
+        <div class="col-md-3" id ="all_comment">
+             <div class="btn-group">
+                  <button type="button" class="btn btn-default btn-lg dropdown-toggle" id = "comment_but" data-toggle="dropdown">Sort <span class="caret"></span></button>
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a href="#" onclick="post_comment('data', event);">data</a></li>
+                    <li><a href="#" onclick="post_comment('rating', event);">rating</a></li>
+
+                  </ul>
+             </div>
+
+        </div>
+
+
+
+    </div>
+                <div id = "hiden_form1">
+                    <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form1"
+                          enctype=multipart/form-data class="form-horizontal comment_form">
+                        <div class="control-group">
+                            <div class="controls">
+                                 {{form.hidden_tag()}}
+                                    <p>
+                                    {{ form.text.label }}:<br>
+                                    {{form.text(class_="form-control my_textarea", rows="4")}}
+                                        {{form.file}}<br>
+
+                                        <br>
+                                    {% if form.errors %}
+                                        <ul class=errors>
+                                         {% for error in form.errors %}
+                                          <li>{{ error }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                  </p>
+
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="controls">
+                              <button type="submit" class="btn btn-success">Add comment</button>
+                            </div>
+                        </div>
+                      </form>
+                </div>
+<div class="messages-container" >
+    <p>You have to <a href="{{ url_for('login')}}">login</a></p>
+</div>
+
+<div id="comment">
     {% include "comments.html" %}
 </div>
-<h1>Add comment</h1>
-<form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" class="form-horizontal comment_form">
-    <div class="control-group">
-        <div class="controls">
-             {{form.hidden_tag()}}
-                <p>
-                {{ form.text.label }}:<br>
-                {{form.text(size=80)}}<br>
-                {% if form.errors %}
-                    <ul class=errors>
-                     {% for error in form.errors %}
-                      <li>{{ error }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-              </p>
+    {% if current_user.is_authenticated %}
 
-        </div>
+        <h1 id="button_comment2">Add comment</h1>
+        <div id = "hiden_form2">
+            <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form2"
+                   enctype=multipart/form-data class="form-horizontal comment_form">
+                <div class="control-group">
+                    <div class="controls">
+                         {{form.hidden_tag()}}
+                            <p>
+                            {{ form.text.label }}:<br>
+                            {{form.text(class_="form-control my_textarea", rows="4" )}}
+                                {{form.file}}<br>
+
+                            {% if form.errors %}
+                                <ul class=errors>
+                                 {% for error in form.errors %}
+                                  <li>{{ error }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% endif %}
+                          </p>
+
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="controls">
+                      <button type="submit" class="btn btn-success">Add comment</button>
+                    </div>
+                </div>
+              </form>
+       {% else %}
+     <p>You have to <a href="{{ url_for('login')}}">login</a> to add comment</p>
+    {% endif %}
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-          <button type="submit" class="btn btn-success">Add comment</button>
-        </div>
+
+
+
+ </div>
+<div class="col-md-3" id="many_post">
+    <h2>Popular posts</h2>
+    {% for post in posts %}
+    <a href="{{url_for('singlepost', postid=post.id)}}">
+    <div class="single one_post">
+
+        <h4>{{post.title}}</h4>
+         <span>{{ post.vote_count }}</span>&nbsp;<img src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+                width="20" />
+
     </div>
-  </form>
+    </a>
+     {% endfor%}
+</div>
+ </div>
+
 <script type="text/javascript">
 
+$(document).ready(function() {
+    $('.anon_like').click(function() {
+        $(".messages-container").fadeIn().delay(3000).fadeOut();
+   });
 
-function DoAction(   )
-{
-    alert(123);
+    $('#anon_comment').click(function() {
+            $(".messages-container").fadeIn().delay(3000).fadeOut();
+       });
+});
+
+function post_comment(sort, event) {
     $.ajax({
-         type: 'POST',
-         url: "{{ url_for('like_post', postid=post.id) }}",
-         success: function(data){
-             $('#vote_count').html(data);
-         }
+        type: "POST",
+        url: "{{url_for('post_contain_comment' )}}",
+        data: "post_id="+ "{{postid}}" + "&sort=" + sort,
+        success: function (data) {
+            $("#comment").html(data.comments);
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
     });
-}
+    event.preventDefault();
 
-$(document).ready(function () {
-    $(".comment_form").submit(function (form) {
+};
 
-        alert($('textarea[name="text"]').val());
-        $.ajax({
+
+$(document).ready(function() {
+    $('#button_comment1').click(function() {
+        $("#hiden_form1").slideToggle(500);
+    });
+    $("textarea.my_textarea").val("Type your comment");
+
+    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
+
+
+});
+
+$("#form1.comment_form").submit(function (event) {
+    $("#hiden_form1").slideToggle();
+    var formData = new FormData($(this)[0]);
+       $.ajax({
             type: "POST",
-            url: $(".comment_form").attr('action'),
-            data: $(".comment_form").serialize(),
+            url: $(this).attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (data) {
                 $("#comment").html(data.comments);
                 $('textarea#text').val("");
@@ -71,8 +235,168 @@ $(document).ready(function () {
                 alert('Mistake ' + xhr.responseCode);
             }
         });
-        form.preventDefault();
+event.preventDefault();
+});
+
+$("#form2.comment_form").submit(function (event) {
+    var formData = new FormData($(this)[0]);
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $("#comment").html(data.comments);
+                $('textarea#text').val("");
+
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+event.preventDefault();
+});
+
+
+
+
+jQuery.fn.clickToggle = function(a,b) {
+  function cb(){ [b,a][this._tog^=1].call(this); }
+  return this.on("click", cb);
+};
+
+$( "img#white.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+    $(this).attr("src", '/static/image/blue_heart.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/like_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+}, function() {
+    $(this).attr("src", '/static/image/white.png');
+
+    var post_id = $(this).attr("post_id");
+      $.ajax({
+         type: 'POST',
+         url: "/unlike_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
     });
 });
+
+
+$( "img#blue.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+    $(this).attr("src", '/static/image/white.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/unlike_post",
+         data: "id=" +post_id,
+         success: function(data){
+
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/blue_heart.png');
+
+      $.ajax({
+         type: 'POST',
+         url: "/like_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+});
+
+
+
+$( "img#gold_star.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+
+    $(this).attr("src", '/static/image/white_star.png');
+
+    $.ajax({
+         type: 'GET',
+         url: "{{ url_for('delete_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+
+             $('.post#star_gold' + post_id).text("Add to saved");
+         }
+    });
+
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/gold_star.png');
+
+      $.ajax({
+         type: 'GET',
+         url: "{{ url_for('save_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+             $('.post#star_gold' + post_id).text("Delete_from_saved");
+         }
+    });
+});
+
+$( "img#white_star.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+
+    $(this).attr("src", '/static/image/gold_star.png');
+
+    $.ajax({
+         type: 'GET',
+         url: "{{ url_for('save_post') }}",
+         data: "post_id=" +post_id,
+
+         success: function(data){
+             $('.post#star_white' + post_id).text("Delete from saved");
+         }
+    });
+
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/white_star.png');
+
+      $.ajax({
+         type: 'GET',
+         url: "{{ url_for('delete_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+             $('.post#star_white' + post_id).text("Add to saved");
+         }
+    });
+});
+
+function user_del_post(e) {
+    var id = "{{postid}}"
+
+    e.preventDefault()
+    if (confirm('Are you sure you want to save this thing into the database?')) {
+
+        $.post( "{{ url_for('user_del_post')}}", {id:id},function( data ) {
+           window.location.href = "{{ url_for('last_posts') }}";
+        });
+} else {
+    // Do nothing!
+}
+
+}
+
+
+
 </script>
 {% endblock %}
+

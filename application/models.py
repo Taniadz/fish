@@ -1,13 +1,49 @@
 from application import db
 from datetime import datetime
 from flask_login import UserMixin
-from application import lm
-from hashlib import md5
-from sqlalchemy.dialects.sqlite import BLOB
+from application import login_manager
 
-@lm.user_loader
+
+
+@login_manager.user_loader
 def get_user(ident):
     return User.query.get(int(ident))
+
+
+added_product = db.Table('added_product',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id')),
+    db.UniqueConstraint('user_id', 'product_id', name='UC_user_id_product_id'),
+)
+
+added_post = db.Table('added_post',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.UniqueConstraint('user_id', 'post_id', name='UC_user_id_post_id'),
+)
+
+like_prod_com = db.Table('like_prod_com',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('com_product_id', db.Integer, db.ForeignKey('commentproduct.id')),
+    db.UniqueConstraint('user_id', 'com_product_id', name='UC_user_id_com_product_id'),
+)
+like_com = db.Table('like_com',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('comment_id', db.Integer, db.ForeignKey('comment.id')),
+    db.UniqueConstraint('user_id', 'comment_id', name='UC_user_id_com_id'),
+)
+
+like_post = db.Table('like_post',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.UniqueConstraint('user_id', 'post_id', name='UC_like_user_id_post_id'),
+)
+
+like_product = db.Table('like_product',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id')),
+    db.UniqueConstraint('user_id', 'product_id', name='UC_like_user_id_product_id'),
+)
 
 
 class User(db.Model, UserMixin):
@@ -23,20 +59,31 @@ class User(db.Model, UserMixin):
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='com_author', lazy='dynamic')
-    product_likes = db.relationship('ProductLike', backref='likes_author', lazy='dynamic')
-    post_likes = db.relationship('PostLike', backref='post_likes_author', lazy='dynamic')
     products = db.relationship('Product', backref='product_author', lazy='dynamic')
-    com_products = db.relationship('CommentProduct', backref='com_prod_author', lazy='dynamic')
+    com_products = db.relationship('CommentProduct', backref='com_author', lazy='dynamic')
 
-    added_product = db.relationship('Product', secondary=added_product,
-                           backref=db.backref('product', lazy='dynamic'))
+    added_product = db.relationship('Product', secondary=added_product, passive_deletes=True,
+                           backref=db.backref('user_save', lazy='dynamic'))
+
+    added_post = db.relationship('Post', secondary=added_post, passive_deletes=True,
+                           backref=db.backref('user_save', lazy='dynamic'))
+    like_post = db.relationship('Post', secondary=like_post, passive_deletes=True,
+                                 backref=db.backref('user_like', lazy='dynamic'))
+    like_product = db.relationship('Product', secondary=like_product, passive_deletes=True,
+                                backref=db.backref('user_like', lazy='dynamic'))
+
+    like_prod_com = db.relationship('CommentProduct', secondary=like_prod_com, passive_deletes=True,
+                                   backref=db.backref('user_like', lazy='dynamic'))
+
+    like_com = db.relationship('Comment', secondary=like_com, passive_deletes=True,
+                                    backref=db.backref('user_like', lazy='dynamic'))
 
     def __init__(self, username, password, email, avatar=None, about_me=None):
         self.username = username
         self.password = password
         self.email = email
         self.about_me = about_me
-        self.registered_on = datetime.utcnow()
+        self.registered_on = datetime.now()
         self.avatar = avatar
 
         def is_authenticated(self):
@@ -51,23 +98,6 @@ class User(db.Model, UserMixin):
         def get_id(self):
             return self.id
 
-    def add(self, product):
-        if not self.is_following(product):
-            self.added_product.append(product)
-            return self
-
-    def forget(self, product):
-        if self.is_following(product):
-            self.added_product.remove(product)
-            return self
-
-    def is_following(self, product):
-        return self.added_product.filter(added_product.c.product_id == product.id).count() > 0
-
-
-
-
-
 
 
 
@@ -79,16 +109,17 @@ class Post(db.Model):
     published_at = db.Column('published_at', db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    image = db.Column(db.LargeBinary, nullable=True)
+    deleted= db.Column(db.Boolean, default=False)
 
     vote_count = db.Column(db.Integer, default=0)
 
-    likes = db.relationship('PostLike', backref='current_post', lazy='dynamic')
 
     def __init__(self, title, body, user_id):
         self.title = title
         self.body = body
         self.user_id = user_id
-        self.published_at = datetime.utcnow()
+        self.published_at = datetime.now()
 
     def __repr__(self):
         return '<Post %r>' % (self.title)
@@ -98,20 +129,22 @@ class Comment(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
-    text = db.Column(db.String(140))
+    text = db.Column(db.String(800))
+    image = db.Column(db.LargeBinary, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     vote_count = db.Column(db.Integer, default=0)
-    likes = db.relationship('CommentLike', backref='current_comment', lazy='dynamic')
+    deleted= db.Column(db.Boolean, default=False)
 
-    def __init__(self, text, post_id, user_id, vote_count=0, parent=0):
+    def __init__(self, text, post_id, user_id, image, vote_count=0, parent=0):
         self.text = text
         self.post_id = post_id
         self.user_id = user_id
-        self.timestamp = datetime.utcnow()
+        self.timestamp = datetime.now()
         self.parent = parent
         self.vote_count = vote_count
+        self.image=image
 
     def __repr__(self):
         return '<Comment %r>' % (self.text)
@@ -119,85 +152,56 @@ class Comment(db.Model):
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64), unique=True)
-    description = db.Column(db.String(140), nullable=True)
+    title = db.Column(db.String(200), unique=True)
+    description = db.Column(db.String(1500), nullable=True)
+    price = db.Column(db.String(200), nullable=True)
     published_at = db.Column(db.DateTime)
-    comments = db.relationship('CommentProduct', backref='product', lazy='dynamic')
+    products = db.relationship('CommentProduct', backref='product', lazy='dynamic')
     image = db.Column(db.LargeBinary, nullable=True)
     vote_count = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    likes = db.relationship('ProductLike', backref='current_product', lazy='dynamic')
+    deleted= db.Column(db.Boolean, default=False)
 
-    def __init__(self, title, description, user_id, image, vote_count=0):
+
+    def __init__(self, title, description, user_id, image,price, vote_count=0):
         self.title = title
         self.description = description
         self.user_id = user_id
-        self.published_at = datetime.utcnow()
+        self.published_at = datetime.now()
         self.vote_count = vote_count
         self.image=image
+        self.price = price
 
 
     def __repr__(self):
         return '<Product %r>' % (self.title)
 
 
-class ProductLike(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    product = db.Column('product_id', db.Integer, db.ForeignKey('product.id'))
-    user = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-    db.PrimaryKeyConstraint('product_id', 'user_id')
-
-    def __init__(self, product, user):
-        self.product = product
-        self.user = user
-
-    def __repr__(self):
-        return '<ProductLike %r>' % (self.id)
 
 
-class PostLike(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post = db.Column('post_id', db.Integer, db.ForeignKey('post.id'))
-    user = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-    db.PrimaryKeyConstraint('post_id', 'user_id')
 
-    def __init__(self, post, user):
-        self.post = post
-        self.user = user
-
-    def __repr__(self):
-        return '<PostLike %r>' % (self.id)
-
-
-class CommentLike(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column('comment_id', db.Integer, db.ForeignKey('comment.id'))
-    user = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-    db.PrimaryKeyConstraint('comment_id', 'user_id')
-
-    def __init__(self, comment, user):
-        self.comment = comment
-        self.user = user
-
-    def __repr__(self):
-        return '<CommentLike %r>' % (self.id)
 
 
 class CommentProduct(db.Model):
-
+    __tablename__ = "commentproduct"
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
-    text = db.Column(db.String(140))
+    text = db.Column(db.String(800))
+    image = db.Column(db.LargeBinary, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
+    deleted= db.Column(db.Boolean,  default=False)
+    vote_count = db.Column(db.Integer, default=0)
 
-    def __init__(self, text, product_id, user_id, parent=0):
+    def __init__(self, text, product_id, user_id, image, parent=0, vote_count=0):
         self.text = text
         self.product_id = product_id
         self.user_id = user_id
-        self.timestamp = datetime.utcnow()
+        self.timestamp = datetime.now()
         self.parent = parent
+        self.vote_count = vote_count
+        self.image=image
 
 
     def __repr__(self):
@@ -205,8 +209,3 @@ class CommentProduct(db.Model):
 
 
 
-
-added_product = db.Table('added_product',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id'))
-)

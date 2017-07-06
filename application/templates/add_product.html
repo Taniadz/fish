@@ -1,23 +1,33 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>Add post</h1>
+<h1>Add product</h1>
 <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+        {{ form.csrf_token }}
+
     <div class="control-group">
         <div class="controls">
-            {% for field in form %}
+
                 <p>
-                {{ field.label }}:<br>
-                {{field(size=80)}}<br>
-                {% if field.errors %}
-                    <ul class=errors>
-                     {% for error in field.errors %}
-                      <li>{{ error }}</li>
+                {{ form.title.label }}:<br>
+                {{form.title(size=80)}}<br>
+                    {{ form.price.label }}:<br>
+                {{form.price(size=80)}}<br>
+                {{ form.description.label }}:<br>
+                {{form.description(size=80)}}<br>
+                {{ form.file.label }}<br>
+                {{form.file}}<br>
+                {% if form.errors %}
+                       <ul class=errors>
+                     {% for field, errors in form.errors.items(): %}
+                        {% for error in errors %}
+                      <li>Error in the field {{field}}:{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                     </ul>
                 {% endif %}
               </p>
-            {% endfor %}
+
         </div>
     </div>
 

@@ -1,10 +1,8 @@
-                            <form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post" class="form-horizontal answer_form" id ="{{ parent_id }}">
+                            <form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post"  enctype="multipart/form-data" class="form-horizontal answer_form" id ="{{ parent_id }}">
+                                    <p>
+                               {{form.text(class_="form-control my_textarea", rows="2")}}<br>
+                                     {{form.file}}<br>
 
-
-
-                                        <p>
-
-                                        {{form.text(size=150)}}<br>
                                         {% if form.errors %}
                                             <ul class=errors>
                                              {% for error in form.errors %}
@@ -17,7 +15,35 @@
 
                                 <div class="control-group">
                                     <div class="controls">
-                                        <a href="#" OnClick="Add_comment('{{parent_id}}', event);" >Add comment</a>
+                                        <button type="submit" class="btn btn-success">Add comment</button>
                                     </div>
                                 </div>
                           </form>
+
+
+
+
+<script>
+$(".form-horizontal.answer_form").submit(function(event) {
+    var formData = new FormData($(this)[0]);
+
+    $.ajax({
+        type: "POST",
+        url: "{{ url_for('singleproduct', product_id=product_id, parent=parent_id) }}",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            alert(123);
+            $("#comment").html(data.comments);
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+});
+
+</script>

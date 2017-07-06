@@ -1,20 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
 {% from 'helpers.html' import products_macro with context %}
 
+<div class="row">
 
-{% if products|length >= 1 %}
-                <a href="#" onclick="Product_container('vote', event);">Rating</a>
-                <a href="#" onclick="Product_container('data', event);">Data</a><br>
-    {% for product in products %}
-            {{ products_macro(product, dict_like, saved_list, 5) }}
+<div id="product_container">
 
-    {% endfor %}
-{% else %}
-    <p>You have not product yet</p>
-    <p>Could you add one?</p>
-    <a href="{{url_for('add_product')}}">Add_product</a>
-            {% endif %}
-        </div>
+  {% for product in products.items %}
+
+    {{ products_macro(product, dict_like, saved_list, 3) }}
+
+
+{% endfor%}
+
+
+
+
 </div>
+</div>
+
+
+
+
+
+
+
 <script type="text/javascript">
 
 
@@ -25,7 +35,7 @@ jQuery.fn.clickToggle = function(a,b) {
 
 $( "img#white.product" ).clickToggle(function() {
     var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/blue_heart.png');
+    $(this).attr("src", 'static/image/blue_heart.png');
 
     $.ajax({
          type: 'POST',
@@ -36,7 +46,7 @@ $( "img#white.product" ).clickToggle(function() {
          }
     });
 }, function() {
-    $(this).attr("src", '/static/image/white.png');
+    $(this).attr("src", 'static/image/white.png');
 
     var product_id = $(this).attr("product_id");
       $.ajax({
@@ -52,7 +62,7 @@ $( "img#white.product" ).clickToggle(function() {
 
 $( "img#blue.product" ).clickToggle(function() {
     var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/white.png');
+    $(this).attr("src", 'static/image/white.png');
 
     $.ajax({
          type: 'POST',
@@ -65,7 +75,7 @@ $( "img#blue.product" ).clickToggle(function() {
     });
 }, function() {
     var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/blue_heart.png');
+        $(this).attr("src", 'static/image/blue_heart.png');
 
       $.ajax({
          type: 'POST',
@@ -82,7 +92,7 @@ $( "img#blue.product" ).clickToggle(function() {
 $( "img#gold_star.product" ).clickToggle(function() {
     var product_id = $(this).attr("product_id");
 
-    $(this).attr("src", '/static/image/white_star.png');
+    $(this).attr("src", 'static/image/white_star.png');
 
     $.ajax({
          type: 'GET',
@@ -96,7 +106,7 @@ $( "img#gold_star.product" ).clickToggle(function() {
 
 }, function() {
     var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/gold_star.png');
+        $(this).attr("src", 'static/image/gold_star.png');
 
       $.ajax({
          type: 'GET',
@@ -111,7 +121,7 @@ $( "img#gold_star.product" ).clickToggle(function() {
 $( "img#white_star.product" ).clickToggle(function() {
     var product_id = $(this).attr("product_id");
 
-    $(this).attr("src", '/static/image/gold_star.png');
+    $(this).attr("src", 'static/image/gold_star.png');
 
     $.ajax({
          type: 'GET',
@@ -125,7 +135,7 @@ $( "img#white_star.product" ).clickToggle(function() {
 
 }, function() {
     var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/white_star.png');
+        $(this).attr("src", 'static/image/white_star.png');
 
       $.ajax({
          type: 'GET',
@@ -136,3 +146,8 @@ $( "img#white_star.product" ).clickToggle(function() {
          }
     });
 });
+
+
+
+</script>
+{% endblock %}

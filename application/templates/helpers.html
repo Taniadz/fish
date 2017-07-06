@@ -1,35 +1,253 @@
-{% macro post_comment_macro(comment) -%}
-                <div id="comment{{ comment.id }}">
-                    <p class="comment_inf">
-                        Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
-                    </p>
-                    <div id="vote{{ comment.id }}">{{ comment.vote_count }}</div>
-                    <a href="#" OnClick="Vote_comment('{{comment.id}}');" >Vote</a>
-                    <p class="comment_text">
-                        {{ comment.text }}
-                    </p>
-                    <button type="button" class="btn btn-primary discussion" id ="{{ comment.id }}" >Discussion</button>
+{% macro post_comment_macro(comment, dict_like) -%}
+                <div class="one_comment" id="comment{{ comment.id }}">
+                    <a href="{{ url_for("user", username=comment.com_author.username)}}"> <img src="{{ url_for('static',filename="media/" + comment.com_author.avatar) }}" class="leftimg" /></a>
+                    <div class="description">
 
-                        <div class = answer id = "answer{{ comment.id }}" style="display: none">
 
-                        </div>
+                     {% if comment.image %}
+                                             <img src="{{ url_for('static',filename="media/" + comment.image) }}" class="leftimg" />
+                    {% endif %}
+
+
+                            <span class="comment_text">
+                                {{ comment.text }}
+                            </span><br>
+                            <p class="under_comment">
+                                {% if current_user.is_authenticated %}
+                                    {% if dict_like[comment.id] == 1 %}
+
+                                              <span id="vote_countcomment{{comment.id}}">{{ comment.vote_count }}</span>&nbsp;<img class="comment" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+                                        comment_id={{comment.id}} width="20" /></a>
+
+                                      {% else %}
+
+                                          <span id="vote_countcomment{{comment.id}}">{{ comment.vote_count }}</span>&nbsp;<img class="comment" id="white"
+                                                        src="{{ url_for('static',filename="image/white.png" )}}"
+                                        width="20" comment_id={{comment.id}} /></a>
+
+                                    {% endif%}
+                                {% else %}
+                                    <span>{{ comment.vote_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
+                                         width="20" /></a>
+                                {% endif%}
+
+
+
+
+                             <span class="comment_inf">
+                                Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                            </span>
+                            {% if current_user != comment.com_author%}
+                            <span class="discussion" id ="{{ comment.id }}" user="{{comment.com_author.username}}">Discussion</span>
+                                <div class = answer id = "answer{{ comment.id }}" style="display: none">
+
+                                </div>
+                        {% endif %}
+                            </p>
+                </div>
+                            {% if current_user == comment.com_author %}
+                        <div class="btn-group btn-xs post_com_edit" id = "edit{{comment.id}}">
+                              <button type="button" class="btn btn-default btn-xs dropdown-toggle " data-toggle="dropdown">Edit <span class="caret"></span></button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" onclick="edit_comment(event, {{comment.id}});">edit</a></li>
+                                <li><a href="#" onclick="del_post_comment(event, {{comment.id}});">delete</a></li>
+
+                              </ul>
+                         </div>
+
+                        {% endif %}
                 </div>
 {%- endmacro %}
 
 
-{% macro product_comment_macro(comment) -%}
-                <div id="product_comment{{ comment.id }}">
-                    <p class="comment_inf">
-                        Comment by {{ comment.com_prod_author.username }} [{{ comment.timestamp }}]
-                    </p>
+{% macro product_comment_macro(comment, dict_like) -%}
+                <div class="one_comment" id="comment{{ comment.id }}">
+                    <a href="{{ url_for("user", username=comment.com_author.username)}}"> <img src="{{ url_for('static',filename="media/" + comment.com_author.avatar) }}" class="leftimg" /></a>
+                    {% if current_user == comment.com_author %}
 
-                    <p class="comment_text">
-                        {{ comment.text }}
-                    </p>
-                   <button type="button" class="btn btn-primary discussion" id ="{{ comment.id }}" >Discussion</button>
+                        <span class = "com_edit" id = "{{ comment.id }}">Edit</span>
+                    {% endif %}
 
-                        <div class = answer id = "answer{{ comment.id }}" style="display: none">
+                    <div class="description">
+                            <div class="comment_image">
+                        {% if comment.image %}
+                            <img src="{{ url_for('static',filename="media/" + comment.image) }}" width=100px/>
+                        {% endif %}
+                    </div>
+                            <span class="comment_text">
+                                {{ comment.text }}
+                            </span><br>
+                            <p class="under_comment">
+                                {% if current_user.is_authenticated %}
+                                    {% if dict_like[comment.id] == 1 %}
 
-                        </div>
+                                              <span id="vote_countprodcomment{{comment.id}}">{{ comment.vote_count }}</span>&nbsp;<img class="comment" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+                                        comment_id={{comment.id}} width="20" /></a>
+
+                                      {% else %}
+
+                                          <span id="vote_countprodcomment{{comment.id}}">{{ comment.vote_count }}</span>&nbsp;<img class="comment" id="white"
+                                                        src="{{ url_for('static',filename="image/white.png" )}}"
+                                        width="20" comment_id={{comment.id}} /></a>
+
+                                  {% endif%}
+                                {% else %}
+                                    <span>{{ comment.vote_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
+                                         width="20" /></a>
+                                {% endif %}
+
+
+
+
+                             <span class="comment_inf">
+                                Comment by {{ comment.com_author.username }} [{{ comment.timestamp }}]
+                            </span>
+{% if current_user != comment.com_author%}
+                            <span class="discussion" id ="{{ comment.id }}" user="{{comment.com_author.username}}">Discussion</span>
+                                <div class = answer id = "answer{{ comment.id }}" style="display: none">
+
+                                </div>
+                        {% endif %}
+                            </p>
                 </div>
+                           {% if current_user == comment.com_author %}
+                        <div class="btn-group btn-xs prod_com_edit" id = "edit{{comment.id}}">
+                              <button type="button" class="btn btn-default btn-xs dropdown-toggle " data-toggle="dropdown">Edit <span class="caret"></span></button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" onclick="edit_prod_comment(event, {{comment.id}});">edit</a></li>
+                                <li><a href="#" onclick="del_prod_comment(event, {{comment.id}});">delete</a></li>
+
+                              </ul>
+                         </div>
+
+                        {% endif %}
+
+                </div>
+{%- endmacro %}
+
+
+{% macro comment_edit(url, comment) -%}
+<form action="{{ url_for( url, comment_id=comment.id )}}" method="post"
+      enctype="multipart/form-data" class="form-horizontal edit_comment">
+                                    <p>
+                               {{form.text(class_="form-control my_textarea", rows="2")}}
+                                 {{form.file}}<br>
+
+
+                                        {% if form.errors %}
+                                            <ul class=errors>
+                                             {% for error in form.errors %}
+                                              <li>{{ error }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                      </p>
+
+
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button type="submit" class="btn btn-success">Add comment</button>
+                                    </div>
+                                </div>
+                          </form>
+{%- endmacro %}
+
+
+{% macro posts_macro(post, dict, saved_list) -%}
+
+<div class="post_container">
+      <h4><a href="{{url_for('singlepost', postid=post.id)}}">{{post.title}}</a></h4>
+
+
+      {% if post.image %}
+        <div class="is_image">
+          <img class="img-responsive" src="{{ url_for('static',filename="media/" + post.image) }}" /><br>
+          {{post.body|truncate(95, True)}}
+        </div>
+      {% else %}
+        {{post.body|truncate(400, True)}}<br>
+      {% endif %}
+        <span>   Write {{post.author.username}} at: <b>{{post.published_at}}</b> </span><br>
+         <hr class="myhrline"/>
+
+
+      {% if dict[post.id] == 1 %}
+
+              <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+        post_id={{post.id}} width="20" /></a>
+
+      {% else %}
+
+          <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="white"
+                        src="{{ url_for('static',filename="image/white.png" )}}"
+        width="20" post_id={{post.id}} /></a>
+
+      {% endif%}
+
+            {% if post.id in saved_list %}
+                  <span class="star post" id="star_gold{{post.id}}">Delete_saved</span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
+                      width="20" post_id={{post.id}} /></a>
+            {% else%}
+                <span class="star post" id="star_white{{post.id}}">Add_to_saved</span>&nbsp;<img class = "post" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                      width="20" post_id={{post.id}} /></a>
+        {% endif %}
+
+
+
+    </div>
+
+{%- endmacro %}
+
+
+{% macro products_macro(product, dict, saved_list, md ) -%}
+<div class="product_box col-xs-12 col-sm-5 col-md-{{md}}">
+        <div class="product_title">
+        <h4><a href="{{url_for('singleproduct', product_id=product.id)}}">{{product.title|truncate(40, True)}}</a></h4> <br>
+        </div>
+
+
+        <div class="is_image product">
+          <img src="{{ url_for('static',filename="media/" + product.image) }}" /><br>
+        </div>
+        <div class="product_description">
+          {{product.description|truncate(50, True)}}
+        </div>
+        <div class="price">
+
+            {{product.price}}
+
+
+        </div>
+
+
+
+        <span>   Write {{product.product_author.username}} </span><br>
+         <hr class="myhrline product"/>
+
+
+      {% if dict[product.id] == 1 %}
+
+              <span id="vote_countproduct{{product.id}}">{{ product.vote_count }}</span>&nbsp;<img class="product" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
+        product_id={{product.id}} width="20" /></a>
+
+      {% else %}
+
+          <span id="vote_countproduct{{product.id}}">{{ product.vote_count }}</span>&nbsp;<img class="product" id="white"
+                        src="{{ url_for('static',filename="image/white.png" )}}"
+        width="20" product_id={{product.id}} /></a>
+
+      {% endif%}
+
+            {% if product.id in saved_list %}
+                  <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
+                      width="20" product_id={{product.id}} /></a>
+            {% else%}
+                <span class="star product" id="star_white{{product.id}}">Add_to_saved</span>&nbsp;<img class = "product" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                      width="20" product_id={{product.id}} /></a>
+        {% endif %}
+
+
+
+    </div>
+
 {%- endmacro %}

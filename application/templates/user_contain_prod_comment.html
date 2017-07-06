@@ -1,11 +1,12 @@
-{% from 'helpers.html' import post_comment_macro with context %}
-        {% if comments|length >= 1 %}
-                 <a href="#" onclick="Comment_container('data', 'comment', event);">sort by data|</a>
-             <a href="#" onclick="Comment_container('vote', 'comment', event);">sort by rating</a><br>
-            {% for comment in comments %}
+{% from 'helpers.html' import product_comment_macro with context %}
 
-                Comment for post <a href="{{url_for('singlepost', postid = comment.post_id )}}">{{comment.post.title}}</a>
-                {{ post_comment_macro(comment, dict_like) }}
+        {% if comments|length >= 1 %}
+         <a href="#" onclick="Comment_container('data', 'prod_comment', event);">sort by data</a>
+         <a href="#" onclick="Comment_container('vote', 'prod_comment', event);">sort by rating</a><br>
+            {% for comment in comments %}
+Comment for product <a href="{{url_for('singleproduct', product_id = comment.product_id )}}">{{comment.product.title}}</a>
+
+                {{ product_comment_macro(comment, dict_like) }}
             {% endfor %}
         {% else %}
             <p>You have not comments yet</p>
@@ -13,26 +14,6 @@
             <a href="{{url_for('last_posts')}}">Read latest</a>
                     {% endif %}
 <script>
-$(".post_com_edit").click(function (event){
-    var id = $(this).attr('com_id');
-    $.ajax({
-        type: "GET",
-        url: '/edit_post_comment/'+ id,
-
-        success: function (data) {
-             $(".one_comment#comment" + id).html(data.form);
-
-
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-
-});
-
 
 jQuery.fn.clickToggle = function(a,b) {
   function cb(){ [b,a][this._tog^=1].call(this); }
@@ -45,10 +26,10 @@ $( "img#white.comment" ).clickToggle(function() {
 
     $.ajax({
          type: 'POST',
-         url: "/like_comment",
+         url: "/like_prodcomment",
          data: "id=" +comment_id,
          success: function(data){
-             $('#vote_countcomment' + comment_id).html(data);
+             $('#vote_countprodcomment' + comment_id).html(data);
          }
     });
 }, function() {
@@ -57,10 +38,10 @@ $( "img#white.comment" ).clickToggle(function() {
     var comment_id = $(this).attr("comment_id");
       $.ajax({
          type: 'POST',
-         url: "/unlike_comment",
+         url: "/unlike_prodcomment",
          data: "id=" +comment_id,
          success: function(data){
-             $('#vote_countcomment' + comment_id).html(data);
+             $('#vote_countprodcomment' + comment_id).html(data);
          }
     });
 });
@@ -72,11 +53,11 @@ $( "img#blue.comment" ).clickToggle(function() {
 
     $.ajax({
          type: 'POST',
-         url: "/unlike_comment",
+         url: "/unlike_prodcomment",
          data: "id=" +comment_id,
          success: function(data){
 
-             $('#vote_countcomment' + comment_id).html(data);
+             $('#vote_countprodcomment' + comment_id).html(data);
          }
     });
 }, function() {
@@ -85,13 +66,14 @@ $( "img#blue.comment" ).clickToggle(function() {
 
       $.ajax({
          type: 'POST',
-         url: "/like_comment",
+         url: "/like_prodcomment",
          data: "id=" +comment_id,
          success: function(data){
-             $('#vote_countcomment' + comment_id).html(data);
+             $('#vote_countprodcomment' + comment_id).html(data);
          }
     });
 });
+
 
 $(".com_edit").click(function (event){
     var id = $(this).attr('com_id');

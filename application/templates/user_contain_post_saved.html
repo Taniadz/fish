@@ -1,25 +1,19 @@
-{% extends "base.html" %}
-{% block body %}
 {% from 'helpers.html' import posts_macro with context %}
-<div class="row">
-      <div class="col-xs-12 col-sm-10 col-md-8">
+{% if posts|length >= 1 %}
+          <a href="#" onclick="Saved_container('data', 'post', event);">sort by data|</a>
+             <a href="#" onclick="Saved_container('vote', 'post', event);">sort by rating</a>
 
-    {% for post in posts.items %}
-        {{ posts_macro(post, dict, saved_list) }}
-    {% endfor %}
+                {% for post in posts %}
 
- </div>
- </div>
-
+                    {{ posts_macro(post, dict_like, saved_list) }}
+                {% endfor %}
 
 
-    {% if posts.has_prev %}<a href="{{ url_for('last_posts', page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} |
-    {% if posts.has_next %}<a href="{{ url_for('last_posts', page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}
+{% else %}
+    <p>You have not saved yet</p>
 
-
-
-<script type="text/javascript">
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+{% endif %}
+<script>
 
 jQuery.fn.clickToggle = function(a,b) {
   function cb(){ [b,a][this._tog^=1].call(this); }
@@ -28,7 +22,7 @@ jQuery.fn.clickToggle = function(a,b) {
 
 $( "img#white.post" ).clickToggle(function() {
     var post_id = $(this).attr("post_id");
-    $(this).attr("src", 'static/image/blue_heart.png');
+    $(this).attr("src", '/static/image/blue_heart.png');
 
     $.ajax({
          type: 'POST',
@@ -39,7 +33,7 @@ $( "img#white.post" ).clickToggle(function() {
          }
     });
 }, function() {
-    $(this).attr("src", 'static/image/white.png');
+    $(this).attr("src", '/static/image/white.png');
 
     var post_id = $(this).attr("post_id");
       $.ajax({
@@ -55,7 +49,7 @@ $( "img#white.post" ).clickToggle(function() {
 
 $( "img#blue.post" ).clickToggle(function() {
     var post_id = $(this).attr("post_id");
-    $(this).attr("src", 'static/image/white.png');
+    $(this).attr("src", '/static/image/white.png');
 
     $.ajax({
          type: 'POST',
@@ -68,7 +62,7 @@ $( "img#blue.post" ).clickToggle(function() {
     });
 }, function() {
     var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/blue_heart.png');
+        $(this).attr("src", '/static/image/blue_heart.png');
 
       $.ajax({
          type: 'POST',
@@ -85,7 +79,7 @@ $( "img#blue.post" ).clickToggle(function() {
 $( "img#gold_star.post" ).clickToggle(function() {
     var post_id = $(this).attr("post_id");
 
-    $(this).attr("src", 'static/image/white_star.png');
+    $(this).attr("src", '/static/image/white_star.png');
 
     $.ajax({
          type: 'GET',
@@ -99,7 +93,7 @@ $( "img#gold_star.post" ).clickToggle(function() {
 
 }, function() {
     var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/gold_star.png');
+        $(this).attr("src", '/static/image/gold_star.png');
 
       $.ajax({
          type: 'GET',
@@ -114,7 +108,7 @@ $( "img#gold_star.post" ).clickToggle(function() {
 $( "img#white_star.post" ).clickToggle(function() {
     var post_id = $(this).attr("post_id");
 
-    $(this).attr("src", 'static/image/gold_star.png');
+    $(this).attr("src", '/static/image/gold_star.png');
 
     $.ajax({
          type: 'GET',
@@ -128,7 +122,7 @@ $( "img#white_star.post" ).clickToggle(function() {
 
 }, function() {
     var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/white_star.png');
+        $(this).attr("src", '/static/image/white_star.png');
 
       $.ajax({
          type: 'GET',
@@ -143,6 +137,3 @@ $( "img#white_star.post" ).clickToggle(function() {
 
 
 </script>
-{% endblock %}
-
-

@@ -2,56 +2,83 @@
 
 {% block body %}
     <div class="row">
-      <div class="col-md-4" id="user_inf">
+      <div class="col-xs-12 col-sm-6 col-md-4" id="user_inf">
           <h2>{{user.username}}</h2>
           <div id="max_avatar">
             <img src="{{ url_for('static',filename="media/" + user.avatar) }}" />
           </div>
-          {% if user.id == g.user.id %}<p><a href="{{url_for('user_edit', id = user.id )}}">Edit</a></p>{% endif %}
+          {% if user.id == g.user.id %}<p><a href="{{url_for('user_edit', username = user.username )}}">Edit</a></p>{% endif %}
 
 
 
 
       </div>
-      <div class="col-md-5" id = user_about>
+      <div class="col-xs-12 col-sm-6 col-md-4" id = user_about>
           {% if user.last_seen %}<p><i>Last seen on: {{user.last_seen}}</i></p>{% endif %}
           Registered on: {{user.registered_on}}</i></p>
           {% if user.about_me %}
             <p>{{user.about_me}}</p>
           {% else %}
-            <p>Could you tell something about you?</p>
-            <a href="{{url_for('user_edit', id = user.id )}}">Edit</a>
-
+            {% if current_user == user %}
+                <p>Could you tell something about you?</p>
+                <a href="{{url_for('user_edit', username = user.username )}}">Edit</a>
+            {% endif %}
           {% endif %}
       </div>
     </div>
 
-
+{% if current_user == user %}
     <div class="row" id = "user_activ">
-        <div class="row">
-            <div class="col-md-3">
-                <button type="button" class="btn btn-default btn-block" id = "post_block">Post</button>
-            </div>
-            <div class="col-md-3">
-                <button type="button" class="btn btn-default btn-block" id = "comment_block">Comment</button>
-            </div>
-             <div class="col-md-3">
-                 <button type="button" class="btn btn-default btn-block" id = "product_block">Product</button>
-             </div>
 
-        </div>
-        <div id="active_contain">
-             {% include 'user_contain_post.html' %}
+            <div class="col-xs-8 col-sm-5 col-md-2">
+                <button type="button" class="btn btn-default btn-block active user_but" id = "post_block" onclick="Post_container('data', event);">Post</button>
 
+            </div>
+            <div class="col-xs-8 col-sm-5 col-md-2">
+                <div class="btn-group btn-block">
+                  <button type="button" id = "comment_block" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Comment <span class="caret"></span></button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#" onclick="Comment_container('data', 'comment', event);">for post</a></li>
+                    <li><a href="#" onclick="Comment_container('data', 'prod_comment', event);">for product</a></li>
+
+                  </ul>
+                </div>
+            </div>
+            <div class="col-xs-8 col-sm-5 col-md-2">
+                 <button type="button" class="btn btn-default btn-block user_but" id = "product_block" onclick="Product_container('data', event);">Product</button>
+
+            </div>
+            <div class="col-xs-8 col-sm-5 col-md-2">
+                  <div class="btn-group btn-block">
+                  <button type="button" id = "saved_block" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Saved <span class="caret"></span></button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#" onclick="Saved_container('data', 'post', event);">for post</a></li>
+                    <li><a href="#" onclick="Saved_container('data', 'product', event);">for product</a></li>
+
+                  </ul>
+                </div>
+            </div>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8">
+            <div id="active_contain">
+                 {% include 'user_contain_post.html' %}
+            </div>
         </div>
     </div>
-
+{% endif %}
 <script>
-$( "#comment_block" ).click(function() {
-      $.ajax({
+function Comment_container(sort, contain, event) {
+    event.preventDefault();
+    $('.user_but').removeClass("active");
+    $("#comment_block").addClass("active");
+
+
+    $.ajax({
         type: "POST",
-        url: "{{url_for('user_contain' )}}",
-        data: "user_id="+ "{{user.id}}" + "&comment=1",
+        url: "{{url_for('user_contain_comment' )}}",
+        data: "user_id="+ "{{user.id}}" + "&sort=" + sort +  "&contain=" + contain,
         success: function (data) {
             $("#active_contain").html(data.com_container);
         },
@@ -59,14 +86,18 @@ $( "#comment_block" ).click(function() {
             alert('Mistake ' + xhr.responseCode);
         }
     });
-});
+};
 
 
-$( "#product_block" ).click(function() {
+function Product_container(sort, event) {
+      event.preventDefault();
+      $('.user_but').removeClass("active");
+      $("#product_block").addClass("active");
+
       $.ajax({
         type: "POST",
-        url: "{{url_for('user_contain' )}}",
-        data: "user_id="+ "{{user.id}}" + "&product=1",
+        url: "{{url_for('user_contain_product' )}}",
+        data: "user_id="+ "{{user.id}}" + "&sort=" + sort,
         success: function (data) {
             $("#active_contain").html(data.prod_container);
         },
@@ -74,13 +105,16 @@ $( "#product_block" ).click(function() {
             alert('Mistake ' + xhr.responseCode);
         }
     });
-});
+};
 
-$( "#post_block" ).click(function() {
-      $.ajax({
+function Post_container(sort, event) {
+    event.preventDefault();
+    $('.user_but').removeClass("active");
+    $("#cpost_block").addClass("active");
+    $.ajax({
         type: "POST",
-        url: "{{url_for('user_contain' )}}",
-        data: "user_id="+ "{{user.id}}" + "&post=1",
+        url: "{{url_for('user_contain_post' )}}",
+        data: "user_id="+ "{{user.id}}" + "&sort=" + sort,
         success: function (data) {
             $("#active_contain").html(data.post_container);
         },
@@ -88,6 +122,207 @@ $( "#post_block" ).click(function() {
             alert('Mistake ' + xhr.responseCode);
         }
     });
+};
+
+
+function Saved_container(sort,contain, event) {
+      event.preventDefault();
+    $('.user_but').removeClass("active");
+    $("#saved_block").addClass("active");
+    $.ajax({
+        type: "POST",
+        url: "{{url_for('user_contain_saved' )}}",
+        data: "user_id="+ "{{user.id}}" + "&sort=" + sort + "&contain=" + contain,
+        success: function (data) {
+            $("#active_contain").html(data.saved_container);
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+};
+
+jQuery.fn.clickToggle = function(a,b) {
+  function cb(){ [b,a][this._tog^=1].call(this); }
+  return this.on("click", cb);
+};
+
+$( "img#white.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+    $(this).attr("src", '/static/image/blue_heart.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/like_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+}, function() {
+    $(this).attr("src", '/static/image/white.png');
+
+    var post_id = $(this).attr("post_id");
+      $.ajax({
+         type: 'POST',
+         url: "/unlike_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
 });
+
+
+$( "img#blue.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+    $(this).attr("src", '/static/image/white.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/unlike_post",
+         data: "id=" +post_id,
+         success: function(data){
+
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/blue_heart.png');
+
+      $.ajax({
+         type: 'POST',
+         url: "/like_post",
+         data: "id=" +post_id,
+         success: function(data){
+             $('#vote_countpost' + post_id).html(data);
+         }
+    });
+});
+
+
+
+$( "img#gold_star.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+
+    $(this).attr("src", '/static/image/white_star.png');
+
+    $.ajax({
+         type: 'GET',
+         url: "{{ url_for('delete_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+
+             $('.post#star_gold' + post_id).text("Add to saved");
+         }
+    });
+
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/gold_star.png');
+
+      $.ajax({
+         type: 'GET',
+         url: "{{ url_for('save_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+             $('.post#star_gold' + post_id).text("Delete_from_saved");
+         }
+    });
+});
+
+$( "img#white_star.post" ).clickToggle(function() {
+    var post_id = $(this).attr("post_id");
+
+    $(this).attr("src", '/static/image/gold_star.png');
+
+    $.ajax({
+         type: 'GET',
+         url: "{{ url_for('save_post') }}",
+         data: "post_id=" +post_id,
+
+         success: function(data){
+             $('.post#star_white' + post_id).text("Delete from saved");
+         }
+    });
+
+}, function() {
+    var post_id = $(this).attr("post_id");
+        $(this).attr("src", '/static/image/white_star.png');
+
+      $.ajax({
+         type: 'GET',
+         url: "{{ url_for('delete_post') }}",
+         data: "post_id=" +post_id,
+         success: function(data){
+             $('.post#star_white' + post_id).text("Add to saved");
+         }
+    });
+});
+
+
+
+
+
+jQuery.fn.clickToggle = function(a,b) {
+  function cb(){ [b,a][this._tog^=1].call(this); }
+  return this.on("click", cb);
+};
+
+$( "img#white.comment" ).clickToggle(function() {
+    var comment_id = $(this).attr("comment_id");
+    $(this).attr("src", '/static/image/blue_heart.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/like_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+}, function() {
+    $(this).attr("src", '/static/image/white.png');
+
+    var comment_id = $(this).attr("comment_id");
+      $.ajax({
+         type: 'POST',
+         url: "/unlike_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+});
+
+
+$( "img#blue.comment" ).clickToggle(function() {
+    var comment_id = $(this).attr("comment_id");
+    $(this).attr("src", '/static/image/white.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/unlike_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+}, function() {
+    var comment_id = $(this).attr("comment_id");
+        $(this).attr("src", '/static/image/blue_heart.png');
+
+      $.ajax({
+         type: 'POST',
+         url: "/like_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+});
+
 </script>
 {% endblock %}

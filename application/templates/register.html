@@ -2,27 +2,35 @@
 {% block body %}
 
  <form action="" method=post class="form-horizontal">
+             {{ form.csrf_token }}
+
     <h1>Sign Up</h1>
     <div class="control-group">
         <div class="controls">
-            {% for field in form%}
+
                 <p>
-                {% if field.name == 'about_me' %}
-                    {{ field.label }}:<br>
-                    {{ field(cols="80", rows="3") }}
-                {% else %}
-                    {{ field.label }}:<br>
-                    {{field(size=80)}}<br>
-                {% endif %}
-                  {% if field.errors %}
+                {{ form.username.label }}:<br>
+                {{form.username(size=80)}}<br>
+                {{ form.password.label }}:<br>
+                {{form.password(size=80)}}<br>
+
+                {{ form.confirm.label }}:<br>
+                {{form.confirm(size=80)}}<br>
+                {{ form.email.label }}:<br>
+                {{form.email(size=80)}}<br>
+                {{ form.about_me.label }}:<br>
+                {{form.about_me(cols = 32, rows = 4)}}<br>
+                  {% if form.errors %}
                     <ul class=errors>
-                     {% for error in field.errors %}
-                      <li>{{ error }}</li>
+                     {% for field, errors in form.errors.items(): %}
+                        {% for error in errors %}
+                      <li>Error in the field {{field}}:{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                     </ul>
                   {% endif %}
               </p>
-            {% endfor %}
+
         </div>
     </div>
 

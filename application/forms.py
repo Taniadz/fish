@@ -31,24 +31,29 @@ class LoginForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    title = StringField('Title', [validators.Length(max=200)])
-    body = StringField('Body', [validators.Length(max=1000)], widget=TextArea())
+    title = StringField('Title', [validators.Length(min = 1,max=200)])
+    body = StringField('Body', [validators.Length(min = 5, max=1000)], widget=TextArea())
+    file = FileField('image')
+
 
 
 class CommentForm(FlaskForm):
-    text = StringField('text', [validators.Length(max=200)], widget=TextArea())
-    parent = HiddenField()
-    post_id = HiddenField()
+    text = StringField('text', [validators.Length(min=1, max=800)], widget=TextArea())
+    file = FileField('image')
+
+
 
 
 class ProductCommentForm(FlaskForm):
-    text = StringField('Text', [validators.Length(max=200)], widget=TextArea())
+    text = StringField('Text', [validators.Length(min = 1, max=800)], widget=TextArea())
     parent = HiddenField()
     product_id = HiddenField()
 
 
 
 class ProductForm(FlaskForm):
-    title = StringField('Title', [validators.Length(max=140)])
+    title = StringField('Title', [validators.Length(min =1, max=200)])
+    price = StringField('Price', [validators.Length(min=1, max=200)])
     file = FileField('image')
-    description = StringField('Description', [validators.Length(max=200)], widget=TextArea())
+    description = StringField('Description', [validators.Length(min = 5, max=1500)], widget=TextArea())
+

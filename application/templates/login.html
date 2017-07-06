@@ -3,21 +3,29 @@
 {% block body %}
 <h1>Sign In</h1>
 <form action="" method="post" class="form-horizontal">
+        {{ form.csrf_token }}
+
     <div class="control-group">
         <div class="controls">
-            {% for field in form %}
+
+
                 <p>
-                {{ field.label }}:<br>
-                {{field(size=80)}}<br>
-                {% if field.errors %}
+                {{ form.username.label }}:<br>
+                {{form.username(size=80)}}<br>
+                {{ form.password.label }}:<br>
+                {{form.password(size=80)}}<br>
+                {% if form.errors %}
                     <ul class=errors>
-                     {% for error in field.errors %}
-                      <li>{{ error }}</li>
+                     {% for field, errors in form.errors.items(): %}
+                        {% for error in errors %}
+                      <li>Error in the field {{field}}:{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
                     </ul>
                 {% endif %}
               </p>
-            {% endfor %}
+
+
         </div>
     </div>
 

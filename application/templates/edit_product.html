@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>Add post</h1>
-<form action="" method="post" class="form-horizontal" enctype=multipart/form-data>
+<h1>Add product</h1>
+<form action="{{ url_for('user_edit_product', id=id )}}" method="post" enctype="multipart/form-data" class="form-horizontal">
+        {{ form.csrf_token }}
+
     <div class="control-group">
         <div class="controls">
-                    {{ form.csrf_token }}
 
                 <p>
                 {{ form.title.label }}:<br>
                 {{form.title(size=80)}}<br>
-                {{ form.body.label }}:<br>
-
-                {{form.body(size=80)}}<br>
+                    {{ form.price.label }}:<br>
+                {{form.price(size=80)}}<br>
+                {{ form.description.label }}:<br>
+                {{form.description(size=80)}}<br>
                 {{ form.file.label }}<br>
                 {{form.file}}<br>
                 {% if form.errors %}
-                        <ul class=errors>
+                       <ul class=errors>
                      {% for field, errors in form.errors.items(): %}
                         {% for error in errors %}
                       <li>Error in the field {{field}}:{{ error }}</li>

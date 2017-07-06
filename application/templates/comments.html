@@ -1,5 +1,4 @@
 
-{% block comments %}
 {% from 'helpers.html' import post_comment_macro with context %}
     {%- for key, value in dictionary.iteritems() recursive -%}
 
@@ -7,10 +6,14 @@
             <li>
             {% for comment in comments %}
                 {% if comment.id == key %}
-                    {{ post_comment_macro(comment) }}
+                        {% if comment.deleted %}
+                            comment has been deleted
+                        {%else%}
+                            {{ post_comment_macro(comment, dict_like) }}
+                        {% endif %}
                 {% endif %}
             {% endfor %}
-                <ul>{{ loop(value.iteritems()) }}</ul>
+                <ul class="comment_ul">{{ loop(value.iteritems()) }}</ul>
              </li>
         {% endif %}
     {%- endfor -%}
@@ -18,33 +21,49 @@
 
 
 <script type="text/javascript">
+ function del_post_comment(e, id) {
 
-function Vote_comment(id)
-{
-   $.ajax({
+    e.preventDefault()
+    if (confirm('Are you sure you want to save this thing into the database?')) {
 
-       type: "POST",
-       url: '/like_comment',
-       data: {"id": id},
-       success: function(data) {
-           $('#vote' + id).html(data);
-       },
-       error: function (xhr, str) {
-           alert('Mistake ' + xhr.responseCode);
-       }
+        $.post( "{{ url_for('del_post_comment')}}", {id:id},function( data ) {
+            $(".one_comment#comment" + id).html(data.deleted);
+             $("#edit" + id).text(data.nodelet);
 
 
-   });
+        });
+} else {
+    // Do nothing!
+}
 
 }
 
+function edit_comment(event, id){
+    event.preventDefault();
+
+    $.ajax({
+        type: "GET",
+        url: '/edit_post_comment/'+ id,
+
+        success: function (data) {
+             $(".one_comment#comment" + id).html(data.form);
+             $("#edit" + id).text(data.noedit);
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+
+
+};
 
 $(".discussion").click(function (event){
-
-
-
-    $(this).next().slideToggle();
     var id = $(this).attr('id');
+    $(".answer#answer" + id).slideToggle();
+
+
+    var user = $(this).attr('user');
     var post = "{{postid}}";
     $.ajax({
         type: "POST",
@@ -53,7 +72,7 @@ $(".discussion").click(function (event){
         success: function (data) {
              $(".answer#answer" + id).html(data.com_form);
 
-            $("textarea#text").val("");
+            $("textarea#text").val(user + ", ");
 
         },
         error: function (xhr, str) {
@@ -64,30 +83,70 @@ $(".discussion").click(function (event){
 
 });
 
-function Add_comment(id, event) {
-    event.preventDefault();
-    var text = ($('textarea[name="text"]').val());
-    alert (text);
-    $.ajax({
-        type: "POST",
-        url: $(".answer_form#" + id).attr('action'),
-        data: "text="+ text + "&parent=" + id,
-        success: function (data) {
-            $("#comment").html(data.comments);
-
-            $("textarea#text").val("");
 
 
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
 
-
+jQuery.fn.clickToggle = function(a,b) {
+  function cb(){ [b,a][this._tog^=1].call(this); }
+  return this.on("click", cb);
 };
+
+$( "img#white.comment" ).clickToggle(function() {
+    var comment_id = $(this).attr("comment_id");
+    $(this).attr("src", '/static/image/blue_heart.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/like_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+}, function() {
+    $(this).attr("src", '/static/image/white.png');
+
+    var comment_id = $(this).attr("comment_id");
+      $.ajax({
+         type: 'POST',
+         url: "/unlike_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+});
+
+
+$( "img#blue.comment" ).clickToggle(function() {
+    var comment_id = $(this).attr("comment_id");
+    $(this).attr("src", '/static/image/white.png');
+
+    $.ajax({
+         type: 'POST',
+         url: "/unlike_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+}, function() {
+    var comment_id = $(this).attr("comment_id");
+        $(this).attr("src", '/static/image/blue_heart.png');
+
+      $.ajax({
+         type: 'POST',
+         url: "/like_comment",
+         data: "id=" +comment_id,
+         success: function(data){
+             $('#vote_countcomment' + comment_id).html(data);
+         }
+    });
+});
+
 </script>
-{% endblock %}
+
 
 
 

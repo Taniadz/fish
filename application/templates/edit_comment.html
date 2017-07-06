@@ -1,0 +1,33 @@
+
+  {% from 'helpers.html' import comment_edit with context %}
+
+  {{ comment_edit(url, comment) }}
+
+
+
+
+
+<script>
+$(".form-horizontal.edit_comment").submit(function(event) {
+    var id = "{{comment.id}}"
+    var formData = new FormData($(this)[0]);
+    $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function (data) {
+            $(".one_comment#comment" + id).html(data.comment);
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+});
+
+</script>

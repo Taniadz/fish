@@ -3,9 +3,14 @@
 div#header.row{
     background-image: url("/static/image/header-background.png");
     width:100%;
-    height:80px;
+    height:10%;
     margin: 0px;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 65px;
 }
+
+
 
 div#sidebar{
 
@@ -33,5 +38,214 @@ div#user_about{
 }
 #max_avatar img  {
     border-radius: 8px;
-    width: 220px;
+    width: 200px;
 }
+
+.is_image img  {
+    border-radius: 8px;
+    width: 100px;
+}
+
+.is_image.product img  {
+    border-radius: 8px;
+    width: 120px;
+
+}
+
+div.is_image.product  {
+    display: block;
+    height: 120px;
+
+}
+
+
+div .post_container {
+    border: solid 1px gainsboro;
+    display: block;
+    clear: both;
+    margin-bottom: 5px;
+}
+
+.star {
+    float: right;
+}
+
+img#gold_star{
+    float: right;
+}
+img#white_star{
+    float: right;
+}
+
+.myhrline{
+    margin: 0px;
+    align : center;
+    width : 600px;
+    size: 2px;
+    color: #ff0000;
+
+}
+.myhrline.product{
+    margin: 0px;
+    align : center;
+    width : 290px;
+    size: 2px;
+    color: #ff0000;
+
+}
+
+
+.product_box {
+    display: inline-block;
+    border: solid 1px #46b8da;
+    vertical-align: bottom;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    margin-left: 15px;
+    padding: 10px;
+    width: 30%;
+    height: 25%;
+}
+div.product_description{
+    display: block;
+    height: 35px;
+
+}
+div.product_title{
+    display: block;
+    height: 40px;
+
+}
+
+
+#single_post{
+    border: solid 1px lightskyblue;
+    background-color: aliceblue;
+}
+div #post_box{
+    border-bottom: solid 1px lightskyblue;
+}
+div #hiden_form1 {
+    display: none;
+
+}
+
+
+div .form-control.my_textarea{
+    width: 100%;
+}
+span.discussion{
+    color: #2b669a;
+
+
+}
+
+span.discussion:hover{
+    color: blue;
+
+
+}
+div .one_comment{
+    margin-bottom: 20px;
+    border-bottom:cornflowerblue;
+}
+
+span.comment_inf{
+    color: grey;
+}
+
+li {
+    list-style-type: none;
+
+
+}
+
+ul {
+    list-style-type: none;
+    margin-left:20px;
+    padding:0;
+    margin-bottom:10px;
+}
+
+
+ul ul{
+  margin-left:25px;
+}
+
+/* Third Level */
+ul ul ul{
+  margin-left:25px;
+}
+ul ul ul ul{
+  margin-left:25px;
+}
+ul ul ul ul ul {
+  margin-left:0px;
+}
+
+ul li{
+    border-left: solid 1px lavender;
+}
+ul li .leftimg {
+    width: 35px;
+
+}
+
+li{
+    margin-bottom: 15px;
+}
+
+.leftimg {
+    float:left; /* Выравнивание по левому краю */
+    margin: 7px 7px 7px 0; /* Отступы вокруг картинки */
+    width: 50px;
+    display:inline; /* для IE6, чтоб отступ слева не удвоился */
+
+   }
+.description{
+    overflow:hidden;
+}
+* html .description{
+    float:left;
+}
+
+p.under_comment{
+    margin-bottom: 5px;
+}
+
+#many_post{
+        text-align: center;
+
+    padding: 0;
+    position: fixed;
+    float: none;
+    background-color: aliceblue;
+    margin-left: 50%;
+    border: solid 1px lightskyblue;
+
+}
+.single.one_post{
+    text-align: center;
+    border-bottom: solid 1px lightskyblue;
+
+}
+
+.messages-container {
+    position: fixed;
+    margin-bottom: 30%;
+    bottom: 0;
+    display: none;
+    width: 50%;
+    height: 60px;
+    background-color: #e7f6fd;
+	color: #27aae1;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #27aae1;
+}
+
+div.messages-container p{
+    color: red;
+}
+
+
