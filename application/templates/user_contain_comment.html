@@ -13,25 +13,43 @@
             <a href="{{url_for('last_posts')}}">Read latest</a>
                     {% endif %}
 <script>
-$(".post_com_edit").click(function (event){
-    var id = $(this).attr('com_id');
+function del_post_comment(e, id) {
+
+    e.preventDefault()
+    if (confirm('Are you sure you want to save this thing into the database?')) {
+
+        $.post( "{{ url_for('del_post_comment')}}", {id:id},function( data ) {
+            $(".one_comment#comment" + id).html(data.deleted);
+             $("#edit" + id).text(data.nodelet);
+
+
+        });
+} else {
+    // Do nothing!
+}
+
+}
+
+function edit_comment(event, id){
+    event.preventDefault();
+
     $.ajax({
         type: "GET",
         url: '/edit_post_comment/'+ id,
 
         success: function (data) {
              $(".one_comment#comment" + id).html(data.form);
-
-
+             $("#edit" + id).text(data.noedit);
 
         },
         error: function (xhr, str) {
             alert('Mistake ' + xhr.responseCode);
         }
     });
-    event.preventDefault();
 
-});
+
+};
+
 
 
 jQuery.fn.clickToggle = function(a,b) {

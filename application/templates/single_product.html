@@ -85,6 +85,7 @@
                 <div id = "hiden_form1">
                     <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id ="form1"
                           enctype=multipart/form-data  class="form-horizontal comment_form">
+                          {{ form.csrf_token }}
                         <div class="control-group">
                             <div class="controls">
                                  {{form.hidden_tag()}}
@@ -126,6 +127,7 @@
 
             <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id = "form2"
                   enctype=multipart/form-data class="form-horizontal comment_form">
+                  {{ form.csrf_token }}
                 <div class="control-group">
                     <div class="controls">
                          {{form.hidden_tag()}}

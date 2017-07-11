@@ -2,7 +2,9 @@
 {% block body %}
 {% from 'helpers.html' import products_macro with context %}
 
-<div class="row">
+  Sort by
+  <a href="{{url_for('popular_product', sort = 'data')}}">data</a>
+  <a href="{{url_for('popular_product', sort = 'rating')}}">rating</a>
 
 <div id="product_container">
 
@@ -16,7 +18,6 @@
 
 
 
-</div>
 </div>
 
 

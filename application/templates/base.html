@@ -9,6 +9,11 @@
     {% endif %}
       <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style/style.css') }}">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style/bootstrap.css') }}">
+    <link rel= "stylesheet"  href= "{{ url_for('static',filename='style/cropper.css') }}">
+    <script  src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
+
+
+
 
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-1.11.1.min.js") }}"></script>
      <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
@@ -55,6 +60,9 @@
                 {% block sidebar %}
                     <a href="{{ url_for('popular_product')}}"><button type="button" class="btn btn-primary btn-block">Catalog</button></a>
                     <a href="{{ url_for('last_posts')}}"><button type="button" class="btn btn-primary btn-block">Blog</button></a>
+          <a href="{{ url_for('add_post') }}"><img class="img-responsive" src="{{ url_for('static',filename="image/add.png") }}"  width="60"/>add post</a>
+          <a href="{{ url_for('add_product') }}"><img class="img-responsive" src="{{ url_for('static',filename="image/add.png") }}"  width="60"/>add ptoduct</a>
+
                 {% endblock %}
           </div>
           <div class="col-xs-12 col-sm-12 col-md-10" id ="main">

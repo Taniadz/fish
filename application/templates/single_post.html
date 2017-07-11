@@ -4,8 +4,8 @@
 
 <div class="col-md-7" id="single_post">
     <div id="post_box">
-fon
-        {% if current_user == post.author  %}
+
+        {% if current_user == post.author and editable %}
             <div class="btn-group btn-block">
                   <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>
                   <ul class="dropdown-menu" role="menu">
@@ -85,6 +85,7 @@ fon
                 <div id = "hiden_form1">
                     <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form1"
                           enctype=multipart/form-data class="form-horizontal comment_form">
+                          {{ form.csrf_token }}
                         <div class="control-group">
                             <div class="controls">
                                  {{form.hidden_tag()}}
@@ -126,6 +127,7 @@ fon
         <div id = "hiden_form2">
             <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form2"
                    enctype=multipart/form-data class="form-horizontal comment_form">
+                  {{ form.csrf_token }}
                 <div class="control-group">
                     <div class="controls">
                          {{form.hidden_tag()}}
@@ -178,6 +180,7 @@ fon
  </div>
 
 <script type="text/javascript">
+
 
 $(document).ready(function() {
     $('.anon_like').click(function() {

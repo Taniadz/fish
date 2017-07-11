@@ -124,26 +124,26 @@ def get_or_create(session, model, **kwargs):
         session.commit()
         return instance, True
 
-def check_for_like(session, object, user):
-    if user in object.user_like:
-        return object.vote_count
+def check_for_like(obj, user):
+    if user in obj.user_like:
+        return obj.vote_count
     else:
-        object.user_like.append(user)
-        object.vote_count = object.vote_count + 1
-    session.add(object)
-    session.commit()
-    return object.vote_count
+        obj.user_like.append(user)
+        obj.vote_count = obj.vote_count + 1
+    db.session.add(obj)
+    db.session.commit()
+    return obj.vote_count
 
 
-def check_for_unlike(session, object, user):
-    if user not in object.user_like:
-        return object.vote_count
+def check_for_unlike(obj, user):
+    if user not in obj.user_like:
+        return obj.vote_count
     else:
-        object.user_like.remove(user)
-        object.vote_count = object.vote_count - 1
-    session.add(object)
-    session.commit()
-    return object.vote_count
+        obj.user_like.remove(user)
+        obj.vote_count = obj.vote_count - 1
+    db.session.add(obj)
+    db.session.commit()
+    return obj.vote_count
 
 
 def create_filename(data, default=None):
@@ -166,20 +166,19 @@ def create_dict_like(dict_like, model, likes):
     return(dict_like)
 
 
-def many_to_many(object, contain):
-    for c in contain:
-        if c == object:
-            return True
-    else:
-        return False
 
-def get_posts_ordering(order, limit):
+def get_posts_ordering(order, limit=None):
     posts = Post.query.order_by(order).limit(limit)
     return posts
 
+def get_products_ordering(order, limit=None):
+    products = Product.query.order_by(order).limit(limit)
+    return products
+
 
 def get_user(**kwargs):
-    user = User.query.filter_by(**kwargs).first()
+    user = User.query.filter_by(**kwargs)
+
     return user
 
 
@@ -187,24 +186,14 @@ def get_user_save(id, model, sorting=None):
     some = model.query.filter(model.user_save.any(id=id)).order_by(sorting).all()
     return some
 
-def get_user_like(model):
-    some = model.query.filter(model.user_like.any(id=current_user.id)).all()
-    return some
+
+def create_obj(model, **kwargs):
+    obj = model(**kwargs)
+    db.session.add(obj)
+    db.session.commit()
+    return obj
 
 
-def create_element(session, model, **kwargs):
-    element = model(**kwargs)
-    session.add(element)
-    session.commit()
-    return element
-
-def update_user(session, user, filename, username, about_me):
-    user.avatar = filename
-    user.username = username
-    user.about_me = about_me
-    session.add(user)
-    session.commit()
-    return user
 
 
 def update_post_saved(session, Post, model2):
@@ -229,4 +218,42 @@ def update_rows(obj, **kwargs):
     for el in kwargs:
         print(type(el))
     obj.update(kwargs)
+    db.session.commit()
+
+
+def create_saved_list(saved_list, obj, added_obj):
+    for o in obj:
+        if o in added_obj:
+           saved_list.append(o)
+    return saved_list
+
+
+def create_dict_like(dict_like, model, likes):
+    for m in model:
+        if m in likes:
+            dict_like[m.id] = 1
+    return(dict_like)
+
+
+def add_post_to_saved(user, post):
+    user.added_post.append(post)
+    db.session.add(user)
+    db.session.commit()
+
+
+def add_product_to_saved(user, product):
+    user.added_product.append(product)
+    db.session.add(user)
+    db.session.commit()
+
+
+def delete_product_from_saved(user, product):
+    user.added_product.remove(product)
+    db.session.add(user)
+    db.session.commit()
+
+
+def delete_post_from_saved(user, post):
+    user.added_post.remove(post)
+    db.session.add(user)
     db.session.commit()

@@ -3,9 +3,12 @@
 {% from 'helpers.html' import posts_macro with context %}
 <div class="row">
       <div class="col-xs-12 col-sm-10 col-md-8">
+          Sort by
+  <a href="{{url_for('last_posts', sort = 'data')}}">data</a>
+  <a href="{{url_for('last_posts', sort = 'rating')}}">rating</a>
 
     {% for post in posts.items %}
-        {{ posts_macro(post, dict, saved_list) }}
+        {{ posts_macro(post, dict_like, saved_list) }}
     {% endfor %}
 
  </div>

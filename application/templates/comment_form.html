@@ -1,4 +1,5 @@
                             <form action="{{ url_for('singlepost', postid=post_id) }}" method="post"  enctype="multipart/form-data" class="form-horizontal answer_form" id ="{{ parent_id }}">
+                                     {{ form.csrf_token }}
                                     <p>
                                {{form.text(class_="form-control my_textarea", rows="2")}}
                                  {{form.file}}<br>

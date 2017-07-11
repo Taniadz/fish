@@ -46,6 +46,7 @@
                             </p>
                 </div>
                             {% if current_user == comment.com_author %}
+                    {{comment.id}}
                         <div class="btn-group btn-xs post_com_edit" id = "edit{{comment.id}}">
                               <button type="button" class="btn btn-default btn-xs dropdown-toggle " data-toggle="dropdown">Edit <span class="caret"></span></button>
                               <ul class="dropdown-menu" role="menu">
@@ -63,10 +64,7 @@
 {% macro product_comment_macro(comment, dict_like) -%}
                 <div class="one_comment" id="comment{{ comment.id }}">
                     <a href="{{ url_for("user", username=comment.com_author.username)}}"> <img src="{{ url_for('static',filename="media/" + comment.com_author.avatar) }}" class="leftimg" /></a>
-                    {% if current_user == comment.com_author %}
 
-                        <span class = "com_edit" id = "{{ comment.id }}">Edit</span>
-                    {% endif %}
 
                     <div class="description">
                             <div class="comment_image">
@@ -184,7 +182,7 @@
 
       {% endif%}
 
-            {% if post.id in saved_list %}
+            {% if post in saved_list %}
                   <span class="star post" id="star_gold{{post.id}}">Delete_saved</span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
                       width="20" post_id={{post.id}} /></a>
             {% else%}
@@ -202,7 +200,7 @@
 {% macro products_macro(product, dict, saved_list, md ) -%}
 <div class="product_box col-xs-12 col-sm-5 col-md-{{md}}">
         <div class="product_title">
-        <h4><a href="{{url_for('singleproduct', product_id=product.id)}}">{{product.title|truncate(40, True)}}</a></h4> <br>
+        <h4><a href="{{url_for('singleproduct', product_id=product.id)}}">{{product.title|truncate(10, True)}}</a></h4> <br>
         </div>
 
 
@@ -238,7 +236,7 @@
 
       {% endif%}
 
-            {% if product.id in saved_list %}
+            {% if product in saved_list %}
                   <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
                       width="20" product_id={{product.id}} /></a>
             {% else%}

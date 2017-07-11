@@ -1,4 +1,90 @@
 {% extends "base.html" %}
 {% block body %}
 Hi {{ user.username }}! <br>
+
+
+<style>
+    .container {
+      max-width: 640px;
+      margin: 20px auto;
+    }
+    img {
+      max-width: 100%;
+    }
+    /* Override Cropper's styles */
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+  </style>
+
+  <div class="container">
+    <h1>my crop for little avatar</h1>
+    <h3>Image</h3>
+    <div>
+      <img id="image" src="https://i.imgur.com/xD9rzSt.jpg"  alt="Picture">
+    </div>
+    <h3>Result</h3>
+    <button type="button" id="button">Crop</button>
+    <div id="result"></div>
+  </div>
+
+
+ <script>
+
+   (function () {
+      function getRoundedCanvas(sourceCanvas) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var width = sourceCanvas.width;
+        var height = sourceCanvas.height;
+        canvas.width = width;
+        canvas.height = height;
+        context.imageSmoothingEnabled = true;
+        context.drawImage(sourceCanvas, 0, 0, width, height);
+        context.globalCompositeOperation = 'destination-in';
+        context.beginPath();
+        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+        context.fill();
+        return canvas;
+      }
+      window.addEventListener('DOMContentLoaded', function () {
+        var image = document.getElementById('image');
+        var button = document.getElementById('button');
+        var result = document.getElementById('result');
+        var croppable = false;
+        var cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          ready: function () {
+            croppable = true;
+          }
+        });
+        button.onclick = function () {
+          var croppedCanvas;
+          var roundedCanvas;
+          var roundedImage;
+          if (!croppable) {
+            return;
+          }
+          // Crop
+          croppedCanvas = cropper.getCroppedCanvas();
+          // Round
+          roundedCanvas = getRoundedCanvas(croppedCanvas);
+          // Show
+          roundedImage = document.createElement('img');
+          roundedImage.src = roundedCanvas.toDataURL()
+          result.innerHTML = '';
+          result.appendChild(roundedImage);
+          var formData = new FormData();
+
+          formData.append('roundedImage', blob);
+          alert(formData);
+
+        };
+      });
+    })();
+  </script>
+</sctipt>
+
 {% endblock %}

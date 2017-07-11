@@ -100,8 +100,8 @@ img#white_star{
     border: solid 1px #46b8da;
     vertical-align: bottom;
     margin-bottom: 20px;
-    margin-right: 10px;
-    margin-left: 15px;
+    margin-right: 0px;
+    margin-left: 10px;
     padding: 10px;
     width: 30%;
     height: 25%;
@@ -249,3 +249,13 @@ div.messages-container p{
 }
 
 
+#page {
+  background: #FFF;
+  padding: 20px;
+  margin: 20px;
+}
+
+#demo-basic {
+  width: 200px;
+  height: 300px;
+}

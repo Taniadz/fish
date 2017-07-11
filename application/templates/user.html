@@ -4,6 +4,19 @@
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-4" id="user_inf">
           <h2>{{user.username}}</h2>
+
+
+<div class="demo"></div>
+<script>
+$('.demo').croppie({
+    url: '/static/media/avatar.jpg',
+});
+</script>
+<!-- or even simpler -->
+<img class="my-image" src="/static/media/avatar.jpg" />
+<script>
+$('.my-image').croppie();
+</script>
           <div id="max_avatar">
             <img src="{{ url_for('static',filename="media/" + user.avatar) }}" />
           </div>
@@ -69,6 +82,8 @@
     </div>
 {% endif %}
 <script>
+
+
 function Comment_container(sort, contain, event) {
     event.preventDefault();
     $('.user_but').removeClass("active");
@@ -263,12 +278,6 @@ $( "img#white_star.post" ).clickToggle(function() {
 
 
 
-
-
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
 
 $( "img#white.comment" ).clickToggle(function() {
     var comment_id = $(this).attr("comment_id");

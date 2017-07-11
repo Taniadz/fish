@@ -115,11 +115,12 @@ class Post(db.Model):
     vote_count = db.Column(db.Integer, default=0)
 
 
-    def __init__(self, title, body, user_id):
+    def __init__(self, title, body, image, user_id):
         self.title = title
         self.body = body
         self.user_id = user_id
         self.published_at = datetime.now()
+        self.image=image
 
     def __repr__(self):
         return '<Post %r>' % (self.title)

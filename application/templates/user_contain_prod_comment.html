@@ -75,23 +75,5 @@ $( "img#blue.comment" ).clickToggle(function() {
 });
 
 
-$(".com_edit").click(function (event){
-    var id = $(this).attr('com_id');
-    $.ajax({
-        type: "GET",
-        url: '/edit_prod_comment/'+ id,
 
-        success: function (data) {
-             $(".one_comment#comment" + id).html(data.form);
-
-
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-
-});
 </script>

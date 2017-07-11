@@ -32,24 +32,25 @@ def before_request():
 @app.route('/')
 @app.route('/index')
 def index():
+    if request.method == "POST":
+        print(123)
     return render_template('home.html', user=current_user)
 
 
 @app.route('/popular_product', methods=['GET', 'POST'])
 @app.route('/popular_product/<int:page>', methods=['GET', 'POST'])
 def popular_product(page = 1):
-    products = Product.query.order_by(Product.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
-    for p in products.items:
-        print(p.deleted)
+    if request.args.get("sort") == "rating":
+        products = get_products_ordering(Product.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
+    else:
+        products = get_products_ordering(Product.published_at.desc()).paginate(page, POSTS_PER_PAGE, False)
+
     dict_like = {}
     saved_list=[]
     if current_user.is_authenticated:
-        likes = get_user_like(Product)
-
-        for p in current_user.added_product:
-            saved_list.append(p.id)
+        likes = current_user.like_product
+        saved_list = create_saved_list(saved_list, products.items, current_user.added_product)
         dict_like=create_dict_like(dict_like, products.items, likes)
-    print(dict_like)
     return render_template('popular_product.html',
         dict_like = dict_like,
         products = products,
@@ -60,11 +61,12 @@ def popular_product(page = 1):
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user=create_element(db.session, User, username=form.username.data,
-                            password=form.password.data,
-                            email=form.email.data,
-                            about_me=form.about_me.data,
-                            avatar = "icon-user-default.png"    )
+        create_obj(User,
+                   username=form.username.data,
+                   password=form.password.data,
+                   email=form.email.data,
+                   about_me=form.about_me.data,
+                   avatar = "icon-user-default.png")
 
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
@@ -75,6 +77,7 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         registered_user = get_user(username=form.username.data,password=form.password.data)
+        registered_user=registered_user[0]
         if registered_user is None:
             flash('Username or Password is invalid', 'error')
             return redirect(url_for('login'))
@@ -96,11 +99,11 @@ def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'POST' and form.validate():
         filename = create_filename(form.file.data )
-        post = Post(title=form.title.data.strip(), body=form.body.data.strip(), user_id=current_user.id)
-        post.image = filename
-        db.session.add(post)
-        db.session.commit()
-        flash("Post published!", 'alert-success')
+        post = create_obj(Post,
+                          title=form.title.data.strip(),
+                          body=form.body.data.strip(),
+                          user_id=current_user.id,
+                          image=filename)
         return redirect(url_for('singlepost', postid=post.id))
     return render_template("add_post.html", form=form)
 
@@ -108,33 +111,37 @@ def add_post():
 @app.route('/last_posts', methods=['GET', 'POST'])
 @app.route('/last_posts/<int:page>', methods=['GET', 'POST'])
 def last_posts(page = 1):
-    posts = Post.query.order_by(Post.published_at.desc()).paginate(page, POSTS_PER_PAGE, False)
+    if request.args.get("sort") == "data":
+        posts=get_posts_ordering(Post.published_at.desc()).paginate(page, POSTS_PER_PAGE, False)
+    else:
+        posts=get_posts_ordering(Post.vote_count.desc()).paginate(page, POSTS_PER_PAGE, False)
+
     saved_list = []
     dict_like = {}
     if current_user.is_authenticated:
-        likes = get_user_like(Post)
-        for p in current_user.added_post:
-            saved_list.append(p.id)
+        likes = current_user.like_post
+        saved_list = create_saved_list(saved_list, posts.items, current_user.added_post)
+        print(current_user.added_post)
+        print(saved_list)
         dict_like = create_dict_like(dict_like, posts.items, likes)
     return render_template('last_posts.html',
-        dict = dict_like,
+        dict_like = dict_like,
         posts = posts,
         saved_list=saved_list)
 
 
 @app.route('/user/<username>')
 def user(username):
-    user = get_user(username=username)
+    user = get_user(username=username).first()
     if user == None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
     posts = get_posts_by_user_id(user.id)
     saved_list = []
     dict_like = {}
-    if current_user.is_authenticated:
-        for p in current_user.added_post:
-            saved_list.append(p.id)
-        likes = get_user_like(Post)
+    if current_user.is_authenticated and current_user.username == username:
+        saved_list = create_saved_list(saved_list, posts, current_user.added_post)
+        likes = current_user.like_post
         dict_like = create_dict_like(dict_like, posts, likes)
     return render_template('user.html',
                            saved_list=saved_list,
@@ -147,12 +154,17 @@ def user(username):
 @login_required
 def user_edit(username):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
-    user = get_user(username=username)
+
     if request.method == 'POST' and form.validate():
+        user = get_user(username=username)
         filename = create_filename(form.file.data, "icon-user-default.png")
-        user=update_user(db.session, user,filename, form.username.data, form.about_me.data)
+        update_rows(user,
+                         avatar = filename,
+                         username = form.username.data,
+                         about_me = form.about_me.data)
 
         return redirect(url_for('user', username=form.username.data))
+    user = get_user(username=username).first()
     form.username.data = user.username
     form.about_me.data = user.about_me
     return render_template('user_edit.html',
@@ -165,51 +177,41 @@ def singlepost(postid=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     ifsaved = False
     ifliked = False
-    print(current_user.added_post, 111)
     if current_user.is_authenticated:
-        likes = current_user.like_com
+        likes = current_user.like_com #all comment, liked by current user
     else:
         likes = False
     dict_like = {}
     if request.method == 'GET':
-
         posts=get_posts_ordering(Post.published_at.desc(), 10)
         post = get_post_by_id(postid).first()
         editable = check_post_editable(post)
         comments = get_comments_by_post_id(post.id)
-
         if current_user.is_authenticated:
-            liked = Post.query.filter(Post.user_like.any(id=current_user.id)).all()
-            print(liked)
-            ifliked = many_to_many(post, liked)#check if post in many to many table user liked post
-
+            if current_user in post.user_like: #if in all userlist liked this post
+                ifliked = True
             dict_like=create_dict_like(dict_like, comments, likes)
-            saved=get_user_save(current_user.id, Post) #get posts saved by user
-            ifsaved = many_to_many(post, saved)
+            if current_user in post.user_save: #if in all userlist saved this post
+                ifsaved = True
         return render_template("single_post.html",
-                               editable=editable,
-                               posts=posts,
-                               post=post,
-                               postid=postid,
-                               form=form,
-                               comments=comments,
-                               ifsaved=ifsaved,
-                               ifliked=ifliked,
+                               editable=editable, posts=posts,
+                               post=post, postid=postid,
+                               form=form, comments=comments,
+                               ifsaved=ifsaved,ifliked=ifliked,
                                dict_like=dict_like,
                                dictionary=get_comment_dict(comments))
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         filename = create_filename(form.file.data)
         if request.args.get('parent'):
             parent = request.args.get('parent')
         else:
             parent = 0
-        comment = create_element(db.session, Comment,
+        comment = create_obj(Comment,
                         text=form.text.data,
                         user_id=current_user.id,
                         post_id=postid,
                         image = filename,
                         parent=parent)
-
         comments = get_comments_by_post_id(postid)
         dict_like = create_dict_like(dict_like, comments, likes)
         data = {'comments' : render_template('comments.html',
@@ -223,7 +225,6 @@ def singlepost(postid=None):
 
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def singleproduct(product_id=None):
-
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     ifsaved = False
     ifliked = False
@@ -233,34 +234,29 @@ def singleproduct(product_id=None):
         likes=False
     dict_like = {}
     if request.method == 'GET':
-
         product = Product.query.filter_by(id=product_id).first()
         comments = get_prod_comments_by_product_id(product_id)
         if current_user.is_authenticated:
-            liked = Product.query.filter(Product.user_like.any(id=current_user.id)).all()
-            ifliked=many_to_many(product, liked)
-            dict_like = create_dict_like(dict_like, comments, likes)
-            saved=get_user_save(current_user.id, Product)
-
-            ifsaved=many_to_many(product, saved)
+            if current_user in product.user_like: #if in all userlist liked this post
+                ifliked = True
+            dict_like=create_dict_like(dict_like, comments, likes)
+            if current_user in product.user_save: #if in all userlist saved this post
+                ifsaved = True
         dictionary = get_comment_dict(comments)
-
         return render_template("single_product.html",
-                               ifsaved=ifsaved,
-                               ifliked=ifliked,
+                               ifsaved=ifsaved, ifliked=ifliked,
                                dict_like=dict_like,
-                               product=product,
-                               comments=comments,
+                               product=product, comments=comments,
                                product_id=product_id,
                                dictionary=dictionary,
                                form=form)
-    if request.method == 'POST':
+    if request.method == 'POST' and  form.validate():
         filename = create_filename(form.file.data)
         if request.args.get('parent'):
             parent = request.args.get('parent')
         else:
             parent = 0
-        comment = create_element(db.session, CommentProduct,
+        comment = create_obj(CommentProduct,
                                  text=form.text.data,
                                  user_id=current_user.id,
                                  product_id=product_id,
@@ -277,50 +273,50 @@ def singleproduct(product_id=None):
         return jsonify(data)
 
 
+
+
 @app.route('/add_product', methods = ['GET', 'POST'])
 def add_product():
     form = ProductForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'POST' and form.validate():
-        f = form.file.data
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(UPLOAD_FOLDER, filename))
-        product=create_element(db.session, Product, title=form.title.data.strip(),
+        filename = create_filename(form.file.data)
+        product=create_obj(Product, title=form.title.data.strip(),
                                price=form.price.data.strip(),
                                description=form.description.data.strip(),
                                user_id=current_user.id,
                                image=filename)
-
-
         return redirect(url_for('singleproduct', product_id=product.id))
     return render_template("add_product.html", form=form)
+
 
 
 @app.route('/like_post', methods=['POST'])
 def like_post():
     id = request.form.get('id')
     post = get_post_by_id(id).first()
-    data = check_for_like(db.session, post, current_user)
+    data = check_for_like(post, current_user)
     return jsonify(data)
+
 
 @app.route('/like_comment', methods=['POST'])
 def like_comment():
     id = request.form.get('id')
     comment = get_comment_by_id(id).first()
-    data = check_for_like(db.session, comment, current_user)
+    data = check_for_like(comment, current_user)
     return jsonify(data)
 
 @app.route('/like_product', methods=['POST'])
 def like_product():
     id = request.form.get('id')
     product = get_product_by_id(id).first()
-    data = check_for_like(db.session, product, current_user)
+    data = check_for_like(product, current_user)
     return jsonify(data)
 
 @app.route('/like_prodcomment', methods=['POST'])
 def like_prodcomment():
     id = request.form.get('id')
     comment = get_prod_comment_by_id(id).first()
-    data = check_for_like(db.session, comment, current_user)
+    data = check_for_like(comment, current_user)
     return jsonify(data)
 
 
@@ -328,14 +324,14 @@ def like_prodcomment():
 def unlike_post():
     id = request.form.get('id')
     post = get_post_by_id(id).first()
-    data = check_for_unlike(db.session, post, current_user)
+    data = check_for_unlike(post, current_user)
     return jsonify(data)
 
 @app.route('/unlike_comment', methods=['POST'])
 def unlike_comment():
     id = request.form.get('id')
     comment = get_comment_by_id(id).first()
-    data = check_for_unlike(db.session, comment, current_user)
+    data = check_for_unlike(comment, current_user)
     return jsonify(data)
 
 
@@ -343,7 +339,7 @@ def unlike_comment():
 def unlike_product():
     id = request.form.get('id')
     product = get_product_by_id(id).first()
-    data = check_for_unlike(db.session, product, current_user)
+    data = check_for_unlike( product, current_user)
     return jsonify(data)
 
 
@@ -351,7 +347,7 @@ def unlike_product():
 def unlike_prodcomment():
     id = request.form.get('id')
     comment = get_prod_comment_by_id(id).first()
-    data = check_for_unlike(db.session, comment, current_user)
+    data = check_for_unlike( comment, current_user)
     return jsonify(data)
 
 
@@ -365,7 +361,6 @@ def comment_form():
                                     parent_id=parent_id,
                                     form=form)}
     return jsonify(data)
-
 
 
 
@@ -414,16 +409,17 @@ def user_contain_comment():
 
     return jsonify(data)
 
+
+
 @app.route('/user_contain_product', methods=['POST'])
 def user_contain_product():
     if request.form.get('sort') == "data":
         products = get_products_by_user_id(request.form.get('user_id'), Product.published_at.desc())
     else:
         products = get_products_by_user_id(request.form.get('user_id'), Product.vote_count.desc())
-    likes = get_user_like(Product)
+    likes = current_user.like_product
     saved_list = []
-    for p in current_user.added_product:
-        saved_list.append(p.id)
+    saved_list = create_saved_list(saved_list, products, current_user.added_product)
     dict_like={}
     dict_like = create_dict_like(dict_like, products, likes)
     data = {'prod_container': render_template('user_contain_product.html',
@@ -433,6 +429,7 @@ def user_contain_product():
         )}
     return jsonify(data)
 
+
 @app.route('/user_contain_post', methods=['POST', 'GET'])
 def user_contain_post():
     if request.form.get('sort') == "data":
@@ -440,12 +437,11 @@ def user_contain_post():
     else:
         posts = get_posts_by_user_id(request.form.get('user_id'), Post.vote_count.desc())
     saved_list = []
-    for p in current_user.added_post:
-        saved_list.append(p.id)
-    likes = get_user_like(Post)
+    saved_list = create_saved_list(saved_list, posts, current_user.added_post)
+
+    likes = current_user.like_post
     dict_like = {}
     dict_like = create_dict_like(dict_like, posts, likes)
-
     data = {'post_container': render_template('user_contain_post.html',
                                               saved_list=saved_list,
                                               dict_like=dict_like,
@@ -453,22 +449,22 @@ def user_contain_post():
     )}
     return jsonify(data)
 
+
 @app.route('/user_contain_saved', methods=['POST'])
 def user_contain_saved():
     id = request.form.get('user_id')
-
     if request.form.get('contain') == "product":
         if request.form.get('sort') == "data":
             products=get_user_save(id, Product, Product.published_at.desc())
-            print(products)
+
+
         else:
             products = get_user_save(id, Product, Product.vote_count.desc())
-        likes = get_user_like(Product)
+        likes = current_user.like_product
         dict_like = {}
         dict_like = create_dict_like(dict_like, products, likes)
-        saved_list = []
-        for p in current_user.added_product:
-            saved_list.append(p.id)
+        saved_list=[]
+        saved_list = create_saved_list(saved_list, products, current_user.added_product)
 
         data = {'saved_container': render_template('user_contain_prod_saved.html',
                                                    dict_like=dict_like,
@@ -480,13 +476,12 @@ def user_contain_saved():
             posts = get_user_save(id, Post, Post.published_at.desc() )
         else:
             posts = get_user_save(id, Post, Post.vote_count.desc())
-        likes = get_user_like(Post)
+        likes = current_user.like_product
 
         dict_like = {}
         dict_like = create_dict_like(dict_like, posts, likes)
         saved_list = []
-        for p in current_user.added_post:
-            saved_list.append(p.id)
+        saved_list = create_saved_list(saved_list, posts, current_user.added_post)
 
         data = {'saved_container': render_template('user_contain_post_saved.html',
                                                    dict_like=dict_like,
@@ -497,48 +492,40 @@ def user_contain_saved():
 
 
 @app.route('/save_product', methods=['GET'])
-def save_product(**kwargs):
+def save_product():
     id = request.args.get("product_id")
-    User = current_user
-    Product = get_product_by_id(id).first()
-    User.added_product.append(Product)
-    db.session.add(User)
-    db.session.commit()
-    flash("You have saved", 'alert-success')
+    user = current_user
+    product = get_product_by_id(id).first()
+    add_product_to_saved(user, product)
     return jsonify(id)
+
 
 @app.route('/save_post', methods=['GET', 'POST'])
 def save_post():
     id = request.args.get("post_id")
-    User = current_user
-    Post=get_post_by_id(id).first()
-    User.added_post.append(Post)
-
-    db.session.add(User)
-    db.session.commit()
-
+    user = current_user
+    post=get_post_by_id(id).first()
+    add_post_to_saved(user, post)
     return jsonify(id)
 
 
 @app.route('/delete_post', methods=['GET', 'POST'])
 def delete_post():
     id = request.args.get("post_id")
-    User = current_user
-    Post = get_post_by_id(id).first()
-    print(User.added_post)
-    print(Post)
-    User.added_post.remove(Post)
-    db.session.commit()
+    user = current_user
+    post = get_post_by_id(id).first()
+    delete_post_from_saved(user, post)
     return jsonify(id)
+
 
 @app.route('/delete_product', methods=['GET', 'POST'])
 def delete_product():
-    id = request.args.get("product_id").first()
-    User = current_user
-    Product = get_product_by_id(id)
-    User.added_product.remove(Product)
-    db.session.commit()
+    id = request.args.get("product_id")
+    user = current_user
+    product = get_product_by_id(id).first()
+    delete_product_from_saved(user, product)
     return jsonify(id)
+
 
 @app.route('/post_contain_comment', methods=['POST'])
 def post_contain_comment():
@@ -563,7 +550,6 @@ def post_contain_comment():
 @app.route('/product_contain_comment', methods=['POST'])
 def product_contain_comment():
     form = CommentForm(request.form)
-
     if request.form.get('sort') == "data":
         comments = get_prod_comments_by_product_id(request.form.get('product_id'), CommentProduct.timestamp.desc())
     elif request.form.get('sort') == "rating":
@@ -572,7 +558,6 @@ def product_contain_comment():
     likes = current_user.like_prod_com
     dict_like = {}
     dict_like = create_dict_like(dict_like, comments, likes)
-
     dictionary = get_comment_dict(comments, 'sort')
     data = {'comments': render_template('comments.html',
                                         dict_like=dict_like,
@@ -583,17 +568,14 @@ def product_contain_comment():
     return jsonify(data)
 
 
-
 @app.route('/edit_prod_comment/<int:comment_id>', methods=['GET', 'POST'])
 def edit_prod_comment(comment_id=None):
+    form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
         comment = get_prod_comment_by_id(id=comment_id).first()
         if not check_com_editable(comment):
             data = {'noedit': "No_editable"}
-
             return jsonify(data)
-        form = CommentForm(CombinedMultiDict((request.files, request.form)))
-
         form.text.data = comment.text
         data = {'form': render_template('edit_comment.html',
                                         url="edit_prod_comment",
@@ -601,8 +583,6 @@ def edit_prod_comment(comment_id=None):
                                         form=form)}
         return jsonify(data)
     if request.method == 'POST':
-        form = CommentForm(CombinedMultiDict((request.files, request.form)))
-
         filename = create_filename(form.file.data)
         comment = get_prod_comment_by_id(id=comment_id)
         update_rows(comment, text=form.text.data, image=filename)
@@ -626,7 +606,6 @@ def edit_post_comment(comment_id=None):
         comment = get_comment_by_id(id=comment_id).first()
         if not check_com_editable(comment):
             data = {'noedit': "No_editable"}
-            print(111)
             return jsonify(data)
         form.text.data = comment.text
         data = {'form': render_template('edit_comment.html',
@@ -659,10 +638,9 @@ def del_post_comment():
         data = {'nodelet': "No deletable"}
     else:
         update_rows(comment, deleted=True)
-
         data = {'deleted': "Comment has been deleted"}
-
     return jsonify(data)
+
 
 @app.route('/delete_prod_comment', methods=['POST'])
 def del_prod_comment():
@@ -672,12 +650,8 @@ def del_prod_comment():
         data = {'nodelet': "No deletable"}
     else:
         update_rows(comment, deleted=True)
-
         data = {'deleted': "Comment has been deleted"}
-
     return jsonify(data)
-
-
 
 
 @app.route('/user_del_product', methods=['POST'])
@@ -694,7 +668,6 @@ def user_edit_product():
     id = request.args.get("id")
     if request.method == 'GET':
         product = get_product_by_id(id).first()
-
         form.description.data = product.description
         form.title.data=product.title
         form.price.data = product.price
@@ -721,7 +694,6 @@ def user_del_post():
 @app.route('/user_edit_post', methods=['POST', 'GET'])
 def user_edit_post():
     id = request.args.get("id")
-
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
         post = get_post_by_id(id).first()
@@ -731,14 +703,10 @@ def user_edit_post():
         form.body.data=post.body
         form.title.data=post.title
         return render_template("edit_post.html", form=form, id=id)
-
     elif request.method == 'POST' and form.validate():
-
-
         filename = create_filename(form.file.data)
         post = get_post_by_id(id)
         update_rows(post, body=form.body.data,
              title=form.title.data,
              image=filename)
-
         return redirect(url_for('singlepost', postid=id))

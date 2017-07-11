@@ -15,10 +15,6 @@
 
 <script>
 
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
 
 $( "img#white.post" ).clickToggle(function() {
     var post_id = $(this).attr("post_id");

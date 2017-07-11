@@ -8,7 +8,11 @@
             <li>
             {% for comment in comments %}
                 {% if comment.id == key %}
-                    {{ product_comment_macro(comment, dict_like) }}
+                    {% if comment.deleted %}
+                            comment has been deleted
+                        {%else%}
+                            {{ product_comment_macro(comment, dict_like) }}
+                    {% endif %}
                 {% endif %}
             {% endfor %}
                 <ul class="comment_ul">{{ loop(value.iteritems()) }}</ul>
@@ -19,42 +23,46 @@
 
 
 <script type="text/javascript">
-function del_prod_comment(e, id) {
 
-    e.preventDefault()
-    if (confirm('Are you sure you want to save this thing into the database?')) {
-
-        $.post( "{{ url_for('del_prod_comment')}}", {id:id},function( data ) {
-            $(".one_comment#comment" + id).html(data.deleted);
-             $("#edit" + id).text(data.nodelet);
+$(document).ready(function() {
+    $(function del_prod_comment(event, id) {
+        event.preventDefault();
 
 
-        });
-} else {
-    // Do nothing!
-}
 
-}
+        if (confirm('Are you sure you want to save this thing into the database?')) {
 
-function edit_prod_comment(event, id){
-    event.preventDefault();
+            $.post( "{{ url_for('del_prod_comment')}}", {id:id},function( data ) {
+                $(".one_comment#comment" + id).html(data.deleted);
+                 $("#edit" + id).text(data.nodelet);
 
-    $.ajax({
-        type: "GET",
-        url: '/edit_prod_comment/'+ id,
 
-        success: function (data) {
-             $(".one_comment#comment" + id).html(data.form);
-             $("#edit" + id).text(data.noedit);
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
+            });
+    } else {
+        // Do nothing!
+    };
     });
 
+    $(function edit_prod_comment(event, id){
+        event.preventDefault();
 
-};
+        $.ajax({
+            type: "GET",
+            url: '/edit_prod_comment/'+ id,
+
+            success: function (data) {
+                 $(".one_comment#comment" + id).html(data.form);
+                 $("#edit" + id).text(data.noedit);
+
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+
+    });
+});
+
 
 
 
