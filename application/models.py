@@ -1,60 +1,89 @@
 from application import db
 from datetime import datetime
-from flask_login import UserMixin
 from application import login_manager
 
 
+from flask_security import UserMixin, RoleMixin
 
 @login_manager.user_loader
 def get_user(ident):
     return User.query.get(int(ident))
 
 
-added_product = db.Table('added_product',
+favourite_product = db.Table('favourite_product',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('product_id', db.Integer, db.ForeignKey('product.id')),
     db.UniqueConstraint('user_id', 'product_id', name='UC_user_id_product_id'),
 )
 
-added_post = db.Table('added_post',
+favourite_post = db.Table('favourite_post',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
     db.UniqueConstraint('user_id', 'post_id', name='UC_user_id_post_id'),
 )
 
-like_prod_com = db.Table('like_prod_com',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('com_product_id', db.Integer, db.ForeignKey('commentproduct.id')),
-    db.UniqueConstraint('user_id', 'com_product_id', name='UC_user_id_com_product_id'),
-)
-like_com = db.Table('like_com',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('comment_id', db.Integer, db.ForeignKey('comment.id')),
-    db.UniqueConstraint('user_id', 'comment_id', name='UC_user_id_com_id'),
-)
+class PostReaction(db.Model):
+    __tablename__ = 'postreaction'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
+    type = db.Column(db.Integer)
+    post=db.relationship('Post', backref='like')
 
-like_post = db.Table('like_post',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.UniqueConstraint('user_id', 'post_id', name='UC_like_user_id_post_id'),
-)
 
-like_product = db.Table('like_product',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id')),
-    db.UniqueConstraint('user_id', 'product_id', name='UC_like_user_id_product_id'),
-)
+class ProductReaction(db.Model):
+    __tablename__ = 'productreaction'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    type = db.Column(db.Integer)
+    product = db.relationship('Product', backref='like')
+
+
+class PostComReaction(db.Model):
+    __tablename__ = 'postcomreaction'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    type = db.Column(db.Integer)
+    postcom = db.relationship('Comment', backref='like')
+
+
+class ProdComReaction(db.Model):
+    __tablename__ = 'prodcomreaction'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), )
+    comment_id = db.Column(db.Integer, db.ForeignKey('commentproduct.id'))
+    type = db.Column(db.Integer)
+    prodcom = db.relationship('CommentProduct',  backref='like')
+
+
+
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
 
 
 class User(db.Model, UserMixin):
-
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    password = db.Column(db.Integer, index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+
     registered_on = db.Column('registered_on', db.DateTime)
     last_seen = db.Column(db.DateTime)
-    avatar = db.Column(db.LargeBinary, nullable = True)
+    avatar = db.Column(db.LargeBinary, nullable=True)
+    avatar_min = db.Column(db.LargeBinary, nullable=True)
     about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
@@ -62,42 +91,51 @@ class User(db.Model, UserMixin):
     products = db.relationship('Product', backref='product_author', lazy='dynamic')
     com_products = db.relationship('CommentProduct', backref='com_author', lazy='dynamic')
 
-    added_product = db.relationship('Product', secondary=added_product, passive_deletes=True,
-                           backref=db.backref('user_save', lazy='dynamic'))
+    favourite_product = db.relationship('Product', secondary=favourite_product, passive_deletes=True,
+                           backref='favourite')
 
-    added_post = db.relationship('Post', secondary=added_post, passive_deletes=True,
-                           backref=db.backref('user_save', lazy='dynamic'))
-    like_post = db.relationship('Post', secondary=like_post, passive_deletes=True,
-                                 backref=db.backref('user_like', lazy='dynamic'))
-    like_product = db.relationship('Product', secondary=like_product, passive_deletes=True,
-                                backref=db.backref('user_like', lazy='dynamic'))
+    favourite_post = db.relationship('Post', secondary=favourite_post, passive_deletes=True,
+                           backref='favourite')
 
-    like_prod_com = db.relationship('CommentProduct', secondary=like_prod_com, passive_deletes=True,
-                                   backref=db.backref('user_like', lazy='dynamic'))
+    post_react = db.relationship('PostReaction', passive_deletes=True,
+                                 backref='user_like')
+    product_react = db.relationship('ProductReaction', backref='user_like')
 
-    like_com = db.relationship('Comment', secondary=like_com, passive_deletes=True,
-                                    backref=db.backref('user_like', lazy='dynamic'))
+    prod_com_react = db.relationship('ProdComReaction', passive_deletes=True,
+                                   backref='user_like')
 
-    def __init__(self, username, password, email, avatar=None, about_me=None):
+    post_com_react = db.relationship('PostComReaction', passive_deletes=True,
+                                    backref='user_like')
+
+    def __init__(self, username, password, email, roles, active):
         self.username = username
         self.password = password
         self.email = email
-        self.about_me = about_me
+        self.roles = roles
+        self.active = active
         self.registered_on = datetime.now()
-        self.avatar = avatar
 
-        def is_authenticated(self):
-            return True
 
-        def is_active(self):
-            return True
 
-        def is_anonymous(self):
-            return False
+    def get_security_payload(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email
+        }
 
-        def get_id(self):
-            return self.id
 
+class Connection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    provider_id = db.Column(db.String(255))
+    provider_user_id = db.Column(db.String(255))
+    access_token = db.Column(db.String(255))
+    secret = db.Column(db.String(255))
+    display_name = db.Column(db.String(255))
+    profile_url = db.Column(db.String(512))
+    image_url = db.Column(db.String(512))
+    rank = db.Column(db.Integer)
 
 
 
@@ -112,8 +150,10 @@ class Post(db.Model):
     image = db.Column(db.LargeBinary, nullable=True)
     deleted= db.Column(db.Boolean, default=False)
 
-    vote_count = db.Column(db.Integer, default=0)
-
+    like_count = db.Column(db.Integer, default=0)
+    unlike_count = db.Column(db.Integer, default=0)
+    funny_count = db.Column(db.Integer, default=0)
+    angry_count = db.Column(db.Integer, default=0)
 
     def __init__(self, title, body, image, user_id):
         self.title = title
@@ -135,8 +175,12 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
-    vote_count = db.Column(db.Integer, default=0)
     deleted= db.Column(db.Boolean, default=False)
+
+    like_count = db.Column(db.Integer, default=0)
+    unlike_count = db.Column(db.Integer, default=0)
+    funny_count = db.Column(db.Integer, default=0)
+    angry_count = db.Column(db.Integer, default=0)
 
     def __init__(self, text, post_id, user_id, image, vote_count=0, parent=0):
         self.text = text
@@ -159,10 +203,13 @@ class Product(db.Model):
     published_at = db.Column(db.DateTime)
     products = db.relationship('CommentProduct', backref='product', lazy='dynamic')
     image = db.Column(db.LargeBinary, nullable=True)
-    vote_count = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted= db.Column(db.Boolean, default=False)
 
+    like_count = db.Column(db.Integer, default=0)
+    unlike_count = db.Column(db.Integer, default=0)
+    funny_count = db.Column(db.Integer, default=0)
+    angry_count = db.Column(db.Integer, default=0)
 
     def __init__(self, title, description, user_id, image,price, vote_count=0):
         self.title = title
@@ -180,9 +227,6 @@ class Product(db.Model):
 
 
 
-
-
-
 class CommentProduct(db.Model):
     __tablename__ = "commentproduct"
     id = db.Column(db.Integer, primary_key=True)
@@ -193,7 +237,10 @@ class CommentProduct(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     deleted= db.Column(db.Boolean,  default=False)
-    vote_count = db.Column(db.Integer, default=0)
+    like_count = db.Column(db.Integer, default=0)
+    unlike_count = db.Column(db.Integer, default=0)
+    funny_count = db.Column(db.Integer, default=0)
+    angry_count = db.Column(db.Integer, default=0)
 
     def __init__(self, text, product_id, user_id, image, parent=0, vote_count=0):
         self.text = text

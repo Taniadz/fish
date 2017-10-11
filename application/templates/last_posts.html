@@ -22,7 +22,7 @@
 
 
 <script type="text/javascript">
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
 
 jQuery.fn.clickToggle = function(a,b) {
   function cb(){ [b,a][this._tog^=1].call(this); }

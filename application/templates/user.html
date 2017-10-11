@@ -6,21 +6,18 @@
           <h2>{{user.username}}</h2>
 
 
-<div class="demo"></div>
-<script>
-$('.demo').croppie({
-    url: '/static/media/avatar.jpg',
-});
-</script>
-<!-- or even simpler -->
-<img class="my-image" src="/static/media/avatar.jpg" />
-<script>
-$('.my-image').croppie();
-</script>
+
+
+
+
           <div id="max_avatar">
-            <img src="{{ url_for('static',filename="media/" + user.avatar) }}" />
+            {% if user.avatar %}
+                <img  src="{{ url_for('static',filename="media/" + user.avatar) }}" width="60"/>
+              {% else%}
+                  <img  src="{{ url_for('static',filename="media/icon-user-default.png") }}" width="60"/>
+              {% endif %}
           </div>
-          {% if user.id == g.user.id %}<p><a href="{{url_for('user_edit', username = user.username )}}">Edit</a></p>{% endif %}
+          {% if user.id == current_user.id %}<p><a href="{{url_for('user_edit', username = user.username )}}">Edit</a></p>{% endif %}
 
 
 
@@ -76,7 +73,7 @@ $('.my-image').croppie();
     <div class="row">
         <div class="col-xs-12 col-sm-10 col-md-8">
             <div id="active_contain">
-                 {% include 'user_contain_post.html' %}
+                 {% include '/user_container/user_contain_post.html' %}
             </div>
         </div>
     </div>

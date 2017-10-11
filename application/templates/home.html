@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-Hi {{ user.username }}! <br>
+
+
+<div id="status">
+</div>
+
+Hi {{ user.first_name }}! <br>
+<img  src="{{ url_for('static',filename="media/" + user.avatar_min) }}" width="60"/>
+{{user.avatar_min}}
+
+
 
 
 <style>
@@ -18,11 +27,16 @@ Hi {{ user.username }}! <br>
     }
   </style>
 
+
+
+
+
   <div class="container">
     <h1>my crop for little avatar</h1>
     <h3>Image</h3>
     <div>
-      <img id="image" src="https://i.imgur.com/xD9rzSt.jpg"  alt="Picture">
+
+
     </div>
     <h3>Result</h3>
     <button type="button" id="button">Crop</button>
@@ -30,9 +44,8 @@ Hi {{ user.username }}! <br>
   </div>
 
 
- <script>
-
-   (function () {
+<script>
+    (function () {
       function getRoundedCanvas(sourceCanvas) {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
@@ -67,6 +80,7 @@ Hi {{ user.username }}! <br>
           if (!croppable) {
             return;
           }
+
           // Crop
           croppedCanvas = cropper.getCroppedCanvas();
           // Round
@@ -75,16 +89,13 @@ Hi {{ user.username }}! <br>
           roundedImage = document.createElement('img');
           roundedImage.src = roundedCanvas.toDataURL()
           result.innerHTML = '';
+
           result.appendChild(roundedImage);
-          var formData = new FormData();
+          var image_data = cropper.getData();
 
-          formData.append('roundedImage', blob);
-          alert(formData);
-
+          $.post( "/index", image_data );
         };
       });
     })();
-  </script>
-</sctipt>
-
+</script>
 {% endblock %}

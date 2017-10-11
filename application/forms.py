@@ -4,8 +4,17 @@ from wtforms.widgets import TextArea
 from wtforms.validators import Required, Length
 from flask_uploads import UploadSet, IMAGES
 from flask_wtf.file import FileField, FileAllowed, FileRequired
+from flask_security.forms import RegisterForm
+
+
 
 images = UploadSet('images', IMAGES)
+
+
+class ExtendedRegisterForm(RegisterForm):
+    username = StringField('First Name', [validators.Required()])
+
+
 
 
 class UserEditForm(FlaskForm):
@@ -13,21 +22,6 @@ class UserEditForm(FlaskForm):
     about_me = StringField('about_me', widget=TextArea(), validators = [Length(min = 0, max = 1000)])
     file = FileField('image')
 
-
-class RegistrationForm(FlaskForm):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
-    about_me = StringField('Could you tell something about you?', widget=TextArea())
-
-
-class LoginForm(FlaskForm):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    password = PasswordField('Your Password')
 
 
 class PostForm(FlaskForm):

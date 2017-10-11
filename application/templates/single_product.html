@@ -1,251 +1,278 @@
 {% extends "base.html" %}
 {% block body %}
+{% from 'helpers.html' import popup_div_macro with context %}
 <div class="row">
 
-<div class="col-md-7" id="single_post">
-    <div id="product_box">
-        {% if current_user == product.product_author %}
+    <div class="col-md-7" id="single_post">
+        <div id="product_box">
+            {% if current_user == product.product_author %}
             <div class="btn-group btn-block">
-                  <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu">
+                <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">
+                    Edit <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
                     <li><a href="{{ url_for('user_edit_product', id= product.id  ) }}">edit</a></li>
                     <li><a href="#" onclick="user_del_product(event);">delete</a></li>
 
-                  </ul>
-                </div>
-        {% endif %}
-        <h1> {{ product.title }}</h1>
-        {% if product.image %}
+                </ul>
+            </div>
+            {% endif %}
+            <h1> {{ product.title }}</h1>
+            {% if product.image %}
             <img src="{{ url_for('static',filename="media/" + product.image) }}" width="200"/>
-        {% endif %}
+            {% endif %}
 
-        <p>
-        {{ product.description }}
-        </p>
+            <p>
+                {{ product.description }}
+            </p>
 
-        <p>
-            Write <a href="{{ url_for('user', username=product.product_author.username)}}">{{ product.product_author.username }}</a> at {{product.published_at}}
-        </p>
+            <p>
+                Write <a href="{{ url_for('user', username=product.product_author.username)}}">{{
+                product.product_author.username }}</a> at {{product.published_at}}
+            </p>
 
-        {% if current_user.is_authenticated %}
-                {% if ifliked%}
+            {% if current_user.is_authenticated %}
 
-                              <span id="vote_countproduct{{product.id}}">{{ product.vote_count }}</span>&nbsp;<img class="product" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
-                        product_id={{product.id}} width="20" /></a>
+                {% if product_like %}
 
-                      {% else %}
 
-                          <span id="vote_countproduct{{product.id}}">{{ product.vote_count }}</span>&nbsp;<img class="product" id="white"
-                                        src="{{ url_for('static',filename="image/white.png" )}}"
-                        width="20" product_id={{product.id}} /></a>
+                <div class="smile-container">
+                    <div class="parent_div">
 
-                      {% endif%}
+                        {{ popup_div_macro(product.id, "like_product ") }}
 
-                            {% if ifsaved %}
-                                  <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
-                                      width="20" product_id={{product.id}} /></a>
-                            {% else%}
-                                <span class="star product" id="star_white{{product.id}}">Add_to_saved</span>&nbsp;<img class = "product" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
-                                      width="20" product_id={{product.id}} /></a>
-                        {% endif %}
-        {% else %}
-            <span>{{ product.vote_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
-                         width="20" /></a>
-             <span class="star product">aDD TO_saved</span>&nbsp;<img  src="{{ url_for('static',filename="image/white_star.png" )}}"
-                                      width="20" /></a>
+                            {% if product_like.type == "like"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
+                        obj_id={{product.id}} url = "like_product" />
+
+                                {% elif product_like.type == "unlike"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
+                        obj_id={{product.id}} url = "like_product"  />
+
+                                {% elif product_like.type == "funny"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
+                        obj_id={{product.id}} url = "like_product" />
+
+
+                                {% elif product_like.type == "angry"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
+                        obj_id={{product.id}} url = "like_product"  />
+
+
+                             {% endif %}
+                    </div>
+                </div>
+
+            {% else %}
+
+                    <div class="smile-container">
+                        <div class="parent_div">
+
+                            {{ popup_div_macro(product.id, "like_product ") }}
+                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"
+                                     url = "like_product" obj_id={{product.id}} />
+                        </div>
+                    </div>
+
+            {% endif%}
+        <span id="like_count_like_product_{{product.id}}">{{ product.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>
+        <span id="unlike_count_like_product_{{product.id}}">{{ product.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>
+        <span id="funny_count_like_product_{{product.id}}">{{ product.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>
+        <span id="angry_count_like_product_{{product.id}}">{{ product.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>
+
+
+
+            {% if ifsaved %}
+            <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product"
+                                                                                                  id="gold_star"
+                                                                                                  src="{{ url_for('static',filename="image/gold_star.png"
+            )}}"
+            width="20" product_id={{product.id}} /></a>
+            {% else%}
+            <span class="star product" id="star_white{{product.id}}">Add_to_saved</span>&nbsp;<img class="product"
+                                                                                                   id="white_star"
+                                                                                                   src="{{ url_for('static',filename="image/white_star.png"
+            )}}"
+            width="20" product_id={{product.id}} /></a>
+            {% endif %}
+            {% else %}
+            <span>{{ product.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename=" image/white.png"
+            )}}"
+            width="20" /></a>
+            <span class="star product">aDD TO_saved</span>&nbsp;<img src="{{ url_for('static',filename=" image/white_star.png"
+            )}}"
+            width="20" /></a>
 
             {% endif %}
-    </div>
-    <div class="row">
-        {% if current_user.is_authenticated %}
+        </div>
+        <div class="row">
+            {% if current_user.is_authenticated %}
 
             <div class="col-md-3">
-                <button type="button"id="button_comment1" class="btn btn-primary btn-block">Comment</button>
+                <button type="button" id="button_comment1" class="btn btn-primary btn-block">Comment</button>
             </div>
-        {% else %}
-             <div class="col-md-3">
-                <button type="button"id="anon_comment" class="btn btn-primary btn-block">Comment</button>
+            {% else %}
+            <div class="col-md-3">
+                <button type="button" id="anon_comment" class="btn btn-primary btn-block">Comment</button>
             </div>
-        {%endif%}
-        <div class="col-md-3" id ="all_comment">
-             <div class="btn-group">
-                  <button type="button" class="btn btn-default btn-lg dropdown-toggle" id = "comment_but" data-toggle="dropdown">Sort <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="#" onclick="product_comment('data', event);">data</a></li>
-                    <li><a href="#" onclick="product_comment('rating', event);">rating</a></li>
+            {%endif%}
+            <div class="col-md-3" id="all_comment">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-lg dropdown-toggle" id="comment_but"
+                            data-toggle="dropdown">Sort <span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#" onclick="product_comment('data', event);">data</a></li>
+                        <li><a href="#" onclick="product_comment('rating', event);">rating</a></li>
 
-                  </ul>
-             </div>
+                    </ul>
+                </div>
+
+            </div>
+
 
         </div>
-
-
-
-    </div>
-                <div id = "hiden_form1">
-                    <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id ="form1"
-                          enctype=multipart/form-data  class="form-horizontal comment_form">
-                          {{ form.csrf_token }}
-                        <div class="control-group">
-                            <div class="controls">
-                                 {{form.hidden_tag()}}
-                                    <p>
-                                    {{ form.text.label }}:<br>
-                                    {{form.text(class_="form-control my_textarea", rows="4")}} <br>
-                                        {{form.file}}<br>
-
-                                    {% if form.errors %}
-                                        <ul class=errors>
-                                         {% for error in form.errors %}
-                                          <li>{{ error }}</li>
-                                        {% endfor %}
-                                        </ul>
-                                    {% endif %}
-                                  </p>
-
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <div class="controls">
-                              <button type="submit" class="btn btn-success">Add comment</button>
-                            </div>
-                        </div>
-                      </form>
-                </div>
-
-<div class="messages-container" >
-    <p>You have to <a href="{{ url_for('login')}}">login</a></p>
-</div>
-
-<div id="comment">
-
-    {% include "product_comments.html" %}
-</div>
-    {% if current_user.is_authenticated %}
-        <h1 id="button_comment2">Add comment</h1>
-
-            <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id = "form2"
+        <div id="hiden_form1">
+            <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form1"
                   enctype=multipart/form-data class="form-horizontal comment_form">
-                  {{ form.csrf_token }}
+                {{ form.csrf_token }}
                 <div class="control-group">
                     <div class="controls">
-                         {{form.hidden_tag()}}
-                            <p>
+                        {{form.hidden_tag()}}
+                        <p>
                             {{ form.text.label }}:<br>
-                            {{form.text(class_="form-control my_textarea", rows="4" )}}
-                             {{form.file}}<br>
+                            {{form.text(class_="form-control my_textarea", rows="4")}} <br>
+                            {{form.file}}<br>
 
                             {% if form.errors %}
-                                <ul class=errors>
-                                 {% for error in form.errors %}
-                                  <li>{{ error }}</li>
-                                {% endfor %}
-                                </ul>
-                            {% endif %}
-                          </p>
+                        <ul class=errors>
+                            {% for error in form.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        </p>
 
                     </div>
                 </div>
 
                 <div class="control-group">
                     <div class="controls">
-                      <button type="submit" class="btn btn-success">Add comment</button>
+                        <button type="submit" class="btn btn-success">Add comment</button>
                     </div>
                 </div>
-              </form>
-    {% else %}
-     <p>You have to <a href="{{ url_for('login')}}">login</a> to add comment</p>
-    {% endif %}
+            </form>
+        </div>
+
+        <div class="messages-container">
+            <p>You have to <a href="/login">login</a></p>
+        </div>
+
+        <div id="comment">
+
+            {% include "product_comments.html" %}
+        </div>
+        {% if current_user.is_authenticated %}
+        <h1 id="button_comment2">Add comment</h1>
+
+        <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form2"
+              enctype=multipart/form-data class="form-horizontal comment_form">
+            {{ form.csrf_token }}
+            <div class="control-group">
+                <div class="controls">
+                    {{form.hidden_tag()}}
+                    <p>
+                        {{ form.text.label }}:<br>
+                        {{form.text(class_="form-control my_textarea", rows="4" )}}
+                        {{form.file}}<br>
+
+                        {% if form.errors %}
+                    <ul class=errors>
+                        {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-success">Add comment</button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+        <p>You have to <a href="/login">login</a> to add comment</p>
+        {% endif %}
     </div>
 
 
-
-
- </div>
+</div>
 <div class="col-md-3" id="many_post">
     <h2>Popular posts</h2>
 
 </div>
- </div>
+</div>
 
 <script type="text/javascript">
-function user_del_product(e) {
-    var id = "{{product_id}}"
-    alert(id);
-    e.preventDefault()
-    if (confirm('Are you sure you want to save this thing into the database?')) {
+    function user_del_product(e) {
+        var id = "{{product_id}}"
+        alert(id);
+        e.preventDefault()
+        if (confirm('Are you sure you want to save this thing into the database?')) {
 
-        $.post( "{{ url_for('user_del_product')}}", {id:id},function( data ) {
-           window.location.href = "{{ url_for('popular_product') }}";
-        });
-} else {
-    // Do nothing!
-}
-
-}
-$(document).ready(function() {
-    $('.anon_like').click(function() {
-        $(".messages-container").fadeIn().delay(3000).fadeOut();
-   });
-
-    $('#anon_comment').click(function() {
-        $(".messages-container").fadeIn().delay(3000).fadeOut();
-   });
-});
-
-
-function product_comment(sort, event) {
-    $.ajax({
-        type: "POST",
-        url: "{{url_for('product_contain_comment' )}}",
-        data: "product_id="+ "{{product_id}}" + "&sort=" + sort,
-        success: function (data) {
-            $("#comment").html(data.comments);
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
+            $.post("{{ url_for('user_del_product')}}", {id: id}, function (data) {
+                window.location.href = "{{ url_for('popular_product') }}";
+            });
+        } else {
+            // Do nothing!
         }
+
+    }
+    $(document).ready(function () {
+        $('.anon_like').click(function () {
+            $(".messages-container").fadeIn().delay(3000).fadeOut();
+        });
+
+        $('#anon_comment').click(function () {
+            $(".messages-container").fadeIn().delay(3000).fadeOut();
+        });
     });
-    event.preventDefault();
-
-};
 
 
-$(document).ready(function() {
-    $('#button_comment1').click(function() {
-        $("#hiden_form1").slideToggle(500);
-    });
-    $("textarea.my_textarea").val("Type your comment");
-
-    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
-
-
-});
-
-$("#form1.comment_form").submit(function (event) {
-    $("#hiden_form1").slideToggle();
-    var formData = new FormData($(this)[0]);
-
-       $.ajax({
+    function product_comment(sort, event) {
+        $.ajax({
             type: "POST",
-            url: $(this).attr('action'),
-            data: formData,
-            processData: false,
-            contentType: false,
+            url: "{{url_for('product_contain_comment' )}}",
+            data: "product_id=" + "{{product_id}}" + "&sort=" + sort,
             success: function (data) {
                 $("#comment").html(data.comments);
-                $('textarea#text').val("");
-
             },
             error: function (xhr, str) {
                 alert('Mistake ' + xhr.responseCode);
             }
         });
-event.preventDefault();
-});
+        event.preventDefault();
 
-$("#form2.comment_form").submit(function (event) {
+    };
+
+
+    $(document).ready(function () {
+        $('#button_comment1').click(function () {
+            $("#hiden_form1").slideToggle(500);
+        });
+        $("textarea.my_textarea").val("Type your comment");
+
+        $("textarea.my_textarea").focus(function () {
+            $("textarea.my_textarea").val("");
+        });
+
+
+    });
+
+    $("#form1.comment_form").submit(function (event) {
+        $("#hiden_form1").slideToggle();
         var formData = new FormData($(this)[0]);
 
         $.ajax({
@@ -263,128 +290,31 @@ $("#form2.comment_form").submit(function (event) {
                 alert('Mistake ' + xhr.responseCode);
             }
         });
-event.preventDefault();
-});
-
-
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
-
-$( "img#white.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/blue_heart.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/like_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-}, function() {
-    $(this).attr("src", '/static/image/white.png');
-
-    var product_id = $(this).attr("product_id");
-      $.ajax({
-         type: 'POST',
-         url: "/unlike_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-});
-
-
-$( "img#blue.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/white.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/unlike_product",
-         data: "id=" +product_id,
-         success: function(data){
-
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/blue_heart.png');
-
-      $.ajax({
-         type: 'POST',
-         url: "/like_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-});
-
-
-
-$( "img#gold_star.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-
-    $(this).attr("src", '/static/image/white_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-
-             $('.product#star_gold' + product_id).text("Add to saved");
-         }
+        event.preventDefault();
     });
 
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/gold_star.png');
+    $("#form2.comment_form").submit(function (event) {
+        var formData = new FormData($(this)[0]);
 
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-             $('.product#star_gold' + product_id).text("Delete_from_saved");
-         }
-    });
-});
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $("#comment").html(data.comments);
+                $('textarea#text').val("");
 
-$( "img#white_star.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-
-    $(this).attr("src", '/static/image/gold_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_product') }}",
-         data: "product_id=" +product_id,
-
-         success: function(data){
-             $('.product#star_white' + product_id).text("Delete from saved");
-         }
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        event.preventDefault();
     });
 
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/white_star.png');
 
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-             $('.product#star_white' + product_id).text("Add to saved");
-         }
-    });
-});
 </script>
 {% endblock %}
 

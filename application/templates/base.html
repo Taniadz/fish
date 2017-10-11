@@ -15,9 +15,10 @@
 
 
 
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-1.11.1.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}"></script>
+      <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
      <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+
 
   </head>
   <body>
@@ -31,31 +32,33 @@
           {% if current_user.is_authenticated %}
             <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
               <span>
-
-                <img  src="{{ url_for('static',filename="media/" + current_user.avatar) }}" width="60"/>
-
-
+              {% if current_user.avatar %}
+                <img  src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" width="60"/>
+              {% else%}
+                  <img  src="{{ url_for('static',filename="media/icon-user-default.png") }}" width="60"/>
+              {% endif %}
                  <a href="{{ url_for('user', username = current_user.username) }}">{{current_user.username}}</a>
             </span>
   </div>
             <div class=" col-xs-3 col-sm-2 col-md-1">
                 <span>
-                    <a href="{{ url_for('logout') }}">Logout</a>
+                    Logout
                 </span>
             </div>
 
           {% else %}
             <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
-                <a href="{{ url_for('login') }}">Login</a>
+                Login
             </div>
             <div class="col-xs-3 col-sm-2 col-md-1">
-               <a href="{{ url_for('register') }}">Register</a>
+               Register
             </div>
 
 
          {% endif %}
       </div>
       <div class="row" id="body">
+
           <div class="col-md-2" id = "sidebar">
                 {% block sidebar %}
                     <a href="{{ url_for('popular_product')}}"><button type="button" class="btn btn-primary btn-block">Catalog</button></a>
@@ -82,4 +85,8 @@
     </div>
   </div>
   </body>
+
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 </html>

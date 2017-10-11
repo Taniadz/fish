@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
+
+{% from 'helpers.html' import popup_div_macro with context %}
+
 <div class="row">
 
 <div class="col-md-7" id="single_post">
@@ -29,29 +32,66 @@
         <p>
         Write <a href="{{ url_for('user', username= post.author.username )}}">{{ post.author.username }}</a>  at {{post.published_at}}
         </p>
+
         {% if current_user.is_authenticated %}
-            {% if ifliked%}
+            {% if post_like %}
 
-                          <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="blue" src="{{ url_for('static',filename="image/blue_heart.png" )}}"
-                    post_id={{post.id}} width="20" /></a>
 
-                  {% else %}
+                <div class="smile-container">
+                    <div class="parent_div">
 
-                      <span id="vote_countpost{{post.id}}">{{ post.vote_count }}</span>&nbsp;<img class="post" id="white"
-                                    src="{{ url_for('static',filename="image/white.png" )}}"
-                    width="20" post_id={{post.id}} /></a>
+                        {{ popup_div_macro(post.id, "like_post ") }}
 
-                  {% endif%}
+                            {% if post_like.type == "like"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
+                        obj_id={{post.id}} url = "like_post" />
+
+                                {% elif post_like.type == "unlike"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
+                        obj_id={{post.id}} url = "like_post"  />
+
+                                {% elif post_like.type == "funny"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
+                        obj_id={{post.id}} url = "like_post" />
+
+
+                                {% elif post_like.type == "angry"%}
+                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
+                        obj_id={{post.id}} url = "like_post"  />
+
+
+                             {% endif %}
+                            </div>
+                </div>
+
+            {% else %}
+
+                    <div class="smile-container">
+                        <div class="parent_div">
+
+                            {{ popup_div_macro(post.id, "like_post ") }}
+                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"
+                                     url = "like_post" obj_id={{post.id}} />
+                        </div>
+                    </div>
+
+            {% endif%}
+        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>
+        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>
+        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>
+        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>
+
+
 
                         {% if ifsaved %}
-                              <span class="star post" id="star_gold{{post.id}}">Delete_saved</span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
+                              </span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
                                   width="20" post_id={{post.id}} /></a>
                         {% else%}
-                            <span class="star post" id="star_white{{post.id}}">Add_to_saved</span>&nbsp;<img class = "post" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                            </span>&nbsp;<img class = "post" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
                                   width="20" post_id={{post.id}} /></a>
                     {% endif %}
         {% else %}
-            <span>{{ post.vote_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
+            <span>{{ post.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
                          width="20" /></a>
              <span class="star product">aDD TO_saved</span>&nbsp;<img  src="{{ url_for('static',filename="image/white_star.png" )}}"
                                       width="20" /></a>
@@ -115,7 +155,7 @@
                       </form>
                 </div>
 <div class="messages-container" >
-    <p>You have to <a href="{{ url_for('login')}}">login</a></p>
+    <p>You have to <a href="{{ url_for('security.login')}}">login</a></p>
 </div>
 
 <div id="comment">
@@ -155,7 +195,7 @@
                 </div>
               </form>
        {% else %}
-     <p>You have to <a href="{{ url_for('login')}}">login</a> to add comment</p>
+     <p>You have to <a href="{{ url_for('security.login')}}">login</a> to add comment</p>
     {% endif %}
     </div>
 
@@ -264,130 +304,17 @@ event.preventDefault();
 
 
 
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
-
-$( "img#white.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-    $(this).attr("src", '/static/image/blue_heart.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/like_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-}, function() {
-    $(this).attr("src", '/static/image/white.png');
-
-    var post_id = $(this).attr("post_id");
-      $.ajax({
-         type: 'POST',
-         url: "/unlike_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-});
-
-
-$( "img#blue.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-    $(this).attr("src", '/static/image/white.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/unlike_post",
-         data: "id=" +post_id,
-         success: function(data){
-
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", '/static/image/blue_heart.png');
-
-      $.ajax({
-         type: 'POST',
-         url: "/like_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-});
 
 
 
-$( "img#gold_star.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
 
-    $(this).attr("src", '/static/image/white_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-
-             $('.post#star_gold' + post_id).text("Add to saved");
-         }
-    });
-
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", '/static/image/gold_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-             $('.post#star_gold' + post_id).text("Delete_from_saved");
-         }
-    });
-});
-
-$( "img#white_star.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-
-    $(this).attr("src", '/static/image/gold_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_post') }}",
-         data: "post_id=" +post_id,
-
-         success: function(data){
-             $('.post#star_white' + post_id).text("Delete from saved");
-         }
-    });
-
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", '/static/image/white_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-             $('.post#star_white' + post_id).text("Add to saved");
-         }
-    });
-});
 
 function user_del_post(e) {
     var id = "{{postid}}"
 
     e.preventDefault()
     if (confirm('Are you sure you want to save this thing into the database?')) {
+
 
         $.post( "{{ url_for('user_del_post')}}", {id:id},function( data ) {
            window.location.href = "{{ url_for('last_posts') }}";

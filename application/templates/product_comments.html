@@ -21,47 +21,7 @@
     {%- endfor -%}
 
 
-
-<script type="text/javascript">
-
-$(document).ready(function() {
-    $(function del_prod_comment(event, id) {
-        event.preventDefault();
-
-
-
-        if (confirm('Are you sure you want to save this thing into the database?')) {
-
-            $.post( "{{ url_for('del_prod_comment')}}", {id:id},function( data ) {
-                $(".one_comment#comment" + id).html(data.deleted);
-                 $("#edit" + id).text(data.nodelet);
-
-
-            });
-    } else {
-        // Do nothing!
-    };
-    });
-
-    $(function edit_prod_comment(event, id){
-        event.preventDefault();
-
-        $.ajax({
-            type: "GET",
-            url: '/edit_prod_comment/'+ id,
-
-            success: function (data) {
-                 $(".one_comment#comment" + id).html(data.form);
-                 $("#edit" + id).text(data.noedit);
-
-            },
-            error: function (xhr, str) {
-                alert('Mistake ' + xhr.responseCode);
-            }
-        });
-
-    });
-});
+<script>
 
 
 
@@ -87,72 +47,5 @@ $(".discussion").click(function (event){
         }
     });
     event.preventDefault();
-
 });
-
-
-
-
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
-
-$( "img#white.comment" ).clickToggle(function() {
-    var comment_id = $(this).attr("comment_id");
-    $(this).attr("src", '/static/image/blue_heart.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/like_prodcomment",
-         data: "id=" +comment_id,
-         success: function(data){
-             $('#vote_countprodcomment' + comment_id).html(data);
-         }
-    });
-}, function() {
-    $(this).attr("src", '/static/image/white.png');
-
-    var comment_id = $(this).attr("comment_id");
-      $.ajax({
-         type: 'POST',
-         url: "/unlike_prodcomment",
-         data: "id=" +comment_id,
-         success: function(data){
-             $('#vote_countprodcomment' + comment_id).html(data);
-         }
-    });
-});
-
-
-$( "img#blue.comment" ).clickToggle(function() {
-    var comment_id = $(this).attr("comment_id");
-    $(this).attr("src", '/static/image/white.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/unlike_prodcomment",
-         data: "id=" +comment_id,
-         success: function(data){
-
-             $('#vote_countprodcomment' + comment_id).html(data);
-         }
-    });
-}, function() {
-    var comment_id = $(this).attr("comment_id");
-        $(this).attr("src", '/static/image/blue_heart.png');
-
-      $.ajax({
-         type: 'POST',
-         url: "/like_prodcomment",
-         data: "id=" +comment_id,
-         success: function(data){
-             $('#vote_countprodcomment' + comment_id).html(data);
-         }
-    });
-});
-
-
-
 </script>
-

@@ -1,13 +1,13 @@
-from models import User, Post, Comment, CommentProduct, Product
 import os
-from werkzeug.exceptions import abort
 from collections import OrderedDict
-from application import UPLOAD_FOLDER, db
-from werkzeug import secure_filename
-from flask_login import current_user
 from datetime import datetime, timedelta
 
+from werkzeug import secure_filename
+from werkzeug.exceptions import abort
 
+from __init__ import UPLOAD_FOLDER
+from application import UPLOAD_FOLDER, db
+from models import User, Post, Comment, CommentProduct, Product, PostReaction
 
 
 def create_dict(d, child, parent=0,):
@@ -113,37 +113,81 @@ def get_product_by_id(id):
         abort(404)
     return product
 
-def get_or_create(session, model, **kwargs):
-    instance = model.query.filter_by(**kwargs).first()
+def get_or_create(model, **kwargs):
+    instance = model.query.filter_by(**kwargs)
     if instance:
         return instance, False
     else:
 
         instance = model(**kwargs)
-        session.add(instance)
-        session.commit()
+        db.session.add(instance)
+        db.session.commit()
         return instance, True
 
-def check_for_like(obj, user):
-    if user in obj.user_like:
-        return obj.vote_count
-    else:
-        obj.user_like.append(user)
-        obj.vote_count = obj.vote_count + 1
-    db.session.add(obj)
-    db.session.commit()
-    return obj.vote_count
 
 
-def check_for_unlike(obj, user):
-    if user not in obj.user_like:
-        return obj.vote_count
+def type_of_count(obj, type, integer):
+    if type == "like":
+        new_count = obj[0].like_count + integer
+
+        update_rows(obj, like_count=new_count)
+
+    elif type == "unlike":
+        new_count = obj[0].unlike_count + integer
+
+        update_rows(obj, unlike_count=new_count)
+
+    elif type == "angry":
+        new_count = obj[0].angry_count + integer
+
+        update_rows(obj, angry_count=new_count)
+    elif type == "funny":
+        new_count = obj[0].funny_count + integer
+        update_rows(obj, funny_count=new_count)
+    return
+
+
+def increase_count(base_model, reaction_model, react_type, **kwargs):
+    like = reaction_model.query.filter_by(**kwargs).first()
+    if like:
+        if like.type == react_type:
+
+            return {"like": base_model[0].like_count, "unlike": base_model[0].unlike_count,
+                    "funny": base_model[0].funny_count, "angry": base_model[0].angry_count}
+
+        else:
+
+            prev_type = like.type
+
+            type_of_count(base_model, prev_type, -1)
+            type_of_count(base_model, react_type, 1)
+            reaction_model.query.filter_by(**kwargs).update(dict(type=react_type))
+            db.session.commit()
     else:
-        obj.user_like.remove(user)
-        obj.vote_count = obj.vote_count - 1
-    db.session.add(obj)
-    db.session.commit()
-    return obj.vote_count
+        like=reaction_model(**kwargs)
+        like.type = react_type  # creating of new like
+        db.session.add(like)
+        db.session.commit()
+        type_of_count(base_model, react_type, 1)
+
+    return {"like": base_model[0].like_count, "unlike": base_model[0].unlike_count,
+            "funny": base_model[0].funny_count, "angry": base_model[0].angry_count}
+
+
+
+
+def check_decrease_count(base_model, react_model, **kwargs):
+    like = react_model.query.filter_by(**kwargs).first()
+    if not like:
+        return {"like": base_model[0].like_count, "unlike": base_model[0].unlike_count,
+                "funny": base_model[0].funny_count, "angry": base_model[0].angry_count}
+    else:
+        type_of_count(base_model, like.type, -1)
+        db.session.delete(like)
+        db.session.commit()
+    return {"like": base_model[0].like_count, "unlike": base_model[0].unlike_count,
+            "funny": base_model[0].funny_count, "angry": base_model[0].angry_count}
+
 
 
 def create_filename(data, default=None):
@@ -156,14 +200,30 @@ def create_filename(data, default=None):
     return filename
 
 
-def create_dict_like(dict_like, model, likes):
-
+def post_dict_like(dict_like, model, likes):
     for m in model:
-
         for l in likes:
-            if m.id == l.id:
-                dict_like[m.id] = 1
+            if m.id == l.post_id:
+                dict_like[m.id] = l.type
     return(dict_like)
+
+
+
+def product_dict_like(dict_like, model, likes):
+    for m in model:
+        for l in likes:
+            if m.id == l.product_id:
+                dict_like[m.id] = l.type
+    return(dict_like)
+
+
+def comment_dict_like(dict_like, model, likes):
+    for m in model:
+        for l in likes:
+            if m.id == l.comment_id:
+                dict_like[m.id] = l.type
+    return(dict_like)
+
 
 
 
@@ -182,8 +242,8 @@ def get_user(**kwargs):
     return user
 
 
-def get_user_save(id, model, sorting=None):
-    some = model.query.filter(model.user_save.any(id=id)).order_by(sorting).all()
+def get_favourite(id, model, sorting=None):
+    some = model.query.filter(model.favourite.any(id=id)).order_by(sorting).all()
     return some
 
 
@@ -197,7 +257,7 @@ def create_obj(model, **kwargs):
 
 
 def update_post_saved(session, Post, model2):
-    User.added_post.append(Post)
+    User.favourite_post.append(Post)
     session.add(User)
     session.commit()
 
@@ -215,10 +275,11 @@ def check_post_editable(post):
 
 
 def update_rows(obj, **kwargs):
-    for el in kwargs:
-        print(type(el))
+
     obj.update(kwargs)
     db.session.commit()
+    print "updated"
+    return
 
 
 def create_saved_list(saved_list, obj, added_obj):
@@ -230,30 +291,38 @@ def create_saved_list(saved_list, obj, added_obj):
 
 def create_dict_like(dict_like, model, likes):
     for m in model:
-        if m in likes:
-            dict_like[m.id] = 1
+        for l in likes:
+            if m.id == l.post_id:
+                dict_like[m.id] = 1
     return(dict_like)
 
 
-def add_post_to_saved(user, post):
-    user.added_post.append(post)
+def add_post_fav(user, post):
+    user.favourite_post.append(post)
     db.session.add(user)
     db.session.commit()
 
 
-def add_product_to_saved(user, product):
-    user.added_product.append(product)
+def add_prod_fav(user, product):
+    user.favourite_product.append(product)
     db.session.add(user)
     db.session.commit()
 
 
-def delete_product_from_saved(user, product):
-    user.added_product.remove(product)
+def delete_prod_fav(user, product):
+    user.favourite_product.remove(product)
     db.session.add(user)
     db.session.commit()
 
 
-def delete_post_from_saved(user, post):
-    user.added_post.remove(post)
+def delete_post_fav(user, post):
+    user.favourite_post.remove(post)
     db.session.add(user)
     db.session.commit()
+
+
+def get_post_reaction(**kwargs):
+    return PostReaction.query.filter_by(**kwargs).all()
+
+def get_one_like(model, **kwargs):
+    return model.query.filter_by(**kwargs).first()
