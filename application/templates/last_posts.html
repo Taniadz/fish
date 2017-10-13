@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
 {% from 'helpers.html' import posts_macro with context %}
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+
 <div class="row">
       <div class="col-xs-12 col-sm-10 col-md-8">
           Sort by
@@ -8,7 +10,7 @@
   <a href="{{url_for('last_posts', sort = 'rating')}}">rating</a>
 
     {% for post in posts.items %}
-        {{ posts_macro(post, dict_like, saved_list) }}
+        {{ posts_macro(post, dict_like, list_of_favourite) }}
     {% endfor %}
 
  </div>
@@ -21,131 +23,7 @@
 
 
 
-<script type="text/javascript">
 
-
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
-
-$( "img#white.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-    $(this).attr("src", 'static/image/blue_heart.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/like_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-}, function() {
-    $(this).attr("src", 'static/image/white.png');
-
-    var post_id = $(this).attr("post_id");
-      $.ajax({
-         type: 'POST',
-         url: "/unlike_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-});
-
-
-$( "img#blue.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-    $(this).attr("src", 'static/image/white.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/unlike_post",
-         data: "id=" +post_id,
-         success: function(data){
-
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/blue_heart.png');
-
-      $.ajax({
-         type: 'POST',
-         url: "/like_post",
-         data: "id=" +post_id,
-         success: function(data){
-             $('#vote_countpost' + post_id).html(data);
-         }
-    });
-});
-
-
-
-$( "img#gold_star.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-
-    $(this).attr("src", 'static/image/white_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-
-             $('.post#star_gold' + post_id).text("Add to saved");
-         }
-    });
-
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/gold_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-             $('.post#star_gold' + post_id).text("Delete_from_saved");
-         }
-    });
-});
-
-$( "img#white_star.post" ).clickToggle(function() {
-    var post_id = $(this).attr("post_id");
-
-    $(this).attr("src", 'static/image/gold_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_post') }}",
-         data: "post_id=" +post_id,
-
-         success: function(data){
-             $('.post#star_white' + post_id).text("Delete from saved");
-         }
-    });
-
-}, function() {
-    var post_id = $(this).attr("post_id");
-        $(this).attr("src", 'static/image/white_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_post') }}",
-         data: "post_id=" +post_id,
-         success: function(data){
-             $('.post#star_white' + post_id).text("Add to saved");
-         }
-    });
-});
-
-
-
-</script>
 {% endblock %}
 
 

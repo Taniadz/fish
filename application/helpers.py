@@ -62,6 +62,7 @@ def get_prod_comments_by_user_id(user_id, sorting=None):
 
 def get_prod_comments_by_product_id(product_id, sorting=CommentProduct.timestamp):
     comments = CommentProduct.query.filter_by(product_id=product_id).order_by(sorting).all()
+    print comments, "com from help"
     if comments is None:
         abort(404)
     return comments
@@ -129,18 +130,16 @@ def get_or_create(model, **kwargs):
 def type_of_count(obj, type, integer):
     if type == "like":
         new_count = obj[0].like_count + integer
-
         update_rows(obj, like_count=new_count)
 
     elif type == "unlike":
         new_count = obj[0].unlike_count + integer
-
         update_rows(obj, unlike_count=new_count)
 
     elif type == "angry":
         new_count = obj[0].angry_count + integer
-
         update_rows(obj, angry_count=new_count)
+
     elif type == "funny":
         new_count = obj[0].funny_count + integer
         update_rows(obj, funny_count=new_count)
@@ -149,14 +148,14 @@ def type_of_count(obj, type, integer):
 
 def increase_count(base_model, reaction_model, react_type, **kwargs):
     like = reaction_model.query.filter_by(**kwargs).first()
-    if like:
+    print like
+    if like is not None:
         if like.type == react_type:
 
             return {"like": base_model[0].like_count, "unlike": base_model[0].unlike_count,
                     "funny": base_model[0].funny_count, "angry": base_model[0].angry_count}
 
         else:
-
             prev_type = like.type
 
             type_of_count(base_model, prev_type, -1)
@@ -165,6 +164,7 @@ def increase_count(base_model, reaction_model, react_type, **kwargs):
             db.session.commit()
     else:
         like=reaction_model(**kwargs)
+
         like.type = react_type  # creating of new like
         db.session.add(like)
         db.session.commit()
@@ -200,13 +200,13 @@ def create_filename(data, default=None):
     return filename
 
 
+# functions return dict with key - object id and value - type of reaction
 def post_dict_like(dict_like, model, likes):
     for m in model:
         for l in likes:
             if m.id == l.post_id:
                 dict_like[m.id] = l.type
     return(dict_like)
-
 
 
 def product_dict_like(dict_like, model, likes):
@@ -282,7 +282,7 @@ def update_rows(obj, **kwargs):
     return
 
 
-def create_saved_list(saved_list, obj, added_obj):
+def create_list_of_favourite(saved_list, obj, added_obj):
     for o in obj:
         if o in added_obj:
            saved_list.append(o)
@@ -326,3 +326,11 @@ def get_post_reaction(**kwargs):
 
 def get_one_like(model, **kwargs):
     return model.query.filter_by(**kwargs).first()
+
+
+
+def get_or_abort(model, code=404,**kwargs):
+    result = model.query.filter_by(**kwargs)
+    if result is None:
+        abort(code)
+    return result

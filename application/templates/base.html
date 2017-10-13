@@ -1,92 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <html>
-  <head>
+<head>
     {% if title %}
-    <title>{{title}} - microblog</title>
+        <title>{{ title }} - microblog</title>
     {% else %}
-    <title>microblog</title>
+        <title>microblog</title>
     {% endif %}
-      <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style/style.css') }}">
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style/bootstrap.css') }}">
-    <link rel= "stylesheet"  href= "{{ url_for('static',filename='style/cropper.css') }}">
-    <script  src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
-
-
-
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
 
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}"></script>
-      <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
-     <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
 
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
 
-  </head>
-  <body>
-    <div class="container-fluid">
-      <div class="row" id="header">
-
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="header">
         <div class="col-xs-3 col-sm-3 col-md-2">
-
-          <a href="{{ url_for('index') }}"><img class="img-responsive" src="{{ url_for('static',filename="image/logo.png") }}"  width="60"/></a>
+            <a href="{{ url_for('index') }}"><img class="img-responsive"
+                                                  src="{{ url_for('static',filename="image/logo.png") }}"
+                                                  width="60"/></a>
         </div>
-          {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated %}
             <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
               <span>
               {% if current_user.avatar %}
-                <img  src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" width="60"/>
-              {% else%}
-                  <img  src="{{ url_for('static',filename="media/icon-user-default.png") }}" width="60"/>
+                  <img src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" width="60"/>
+              {% else %}
+                  <img src="{{ url_for('static',filename="media/icon-user-default.png") }}" width="60"/>
               {% endif %}
-                 <a href="{{ url_for('user', username = current_user.username) }}">{{current_user.username}}</a>
+                  <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
             </span>
-  </div>
+            </div>
             <div class=" col-xs-3 col-sm-2 col-md-1">
                 <span>
-                    Logout
+                    <a href="{{ url_for('security.logout') }}">Logout</a>
                 </span>
             </div>
-
-          {% else %}
+        {% else %}
             <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
-                Login
+                <a href="{{ url_for('security.login') }}">Login</a>
             </div>
             <div class="col-xs-3 col-sm-2 col-md-1">
-               Register
+                <a href="{{ url_for('security.register') }}">Register</a>
             </div>
+        {% endif %}
+    </div>
+    <div class="row" id="body">
+        <div class="col-md-2" id="sidebar">
+            {% block sidebar %}
+                <a href="{{ url_for('popular_product') }}">
+                    <button type="button" class="btn btn-primary btn-block">Catalog</button>
+                </a>
+                <a href="{{ url_for('last_posts') }}">
+                    <button type="button" class="btn btn-primary btn-block">Blog</button>
+                </a>
+                <a href="{{ url_for('add_post') }}"><img class="img-responsive"
+                                                         src="{{ url_for('static',filename="image/add.png") }}"
+                                                         width="60"/>add post</a>
+                <a href="{{ url_for('add_product') }}"><img class="img-responsive"
+                                                            src="{{ url_for('static',filename="image/add.png") }}"
+                                                            width="60"/>add ptoduct</a>
 
-
-         {% endif %}
-      </div>
-      <div class="row" id="body">
-
-          <div class="col-md-2" id = "sidebar">
-                {% block sidebar %}
-                    <a href="{{ url_for('popular_product')}}"><button type="button" class="btn btn-primary btn-block">Catalog</button></a>
-                    <a href="{{ url_for('last_posts')}}"><button type="button" class="btn btn-primary btn-block">Blog</button></a>
-          <a href="{{ url_for('add_post') }}"><img class="img-responsive" src="{{ url_for('static',filename="image/add.png") }}"  width="60"/>add post</a>
-          <a href="{{ url_for('add_product') }}"><img class="img-responsive" src="{{ url_for('static',filename="image/add.png") }}"  width="60"/>add ptoduct</a>
-
-                {% endblock %}
-          </div>
-          <div class="col-xs-12 col-sm-12 col-md-10" id ="main">
-
-                {% block body %}{% endblock %}
-              {% with messages = get_flashed_messages() %}
-              {% if messages %}
-              <ul>
-              {% for message in messages %}
-                  <li>{{ message }} </li>
-              {% endfor %}
-              </ul>
-              {% endif %}
-              {% endwith %}
-
+            {% endblock %}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-10" id="main">
+            {% block body %}{% endblock %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }} </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         </div>
     </div>
-  </div>
-  </body>
 
-<script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-</script>
+</div>
+</body>
+
+
 </html>

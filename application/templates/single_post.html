@@ -2,6 +2,7 @@
 {% block body %}
 
 {% from 'helpers.html' import popup_div_macro with context %}
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
 
 <div class="row">
 
@@ -12,8 +13,8 @@
             <div class="btn-group btn-block">
                   <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>
                   <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('user_edit_post', id= post.id  ) }}">edit</a></li>
-                    <li><a href="#" onclick="user_del_post(event);">delete</a></li>
+                    <li><a href="{{ url_for('edit_post', id=post.id  ) }}">edit</a></li>
+                    <li><a href="#" onclick="delete_post({{ post.id }}, event);">delete</a></li>
 
                   </ul>
                 </div>
@@ -111,8 +112,8 @@
              <div class="btn-group">
                   <button type="button" class="btn btn-default btn-lg dropdown-toggle" id = "comment_but" data-toggle="dropdown">Sort <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" onclick="post_comment('data', event);">data</a></li>
-                    <li><a href="#" onclick="post_comment('rating', event);">rating</a></li>
+                    <li><a href="#" onclick="post_comment({{ post.id }}, 'data', event);">data</a></li>
+                    <li><a href="#" onclick="post_comment({{ post.id }}, 'rating', event);">rating</a></li>
 
                   </ul>
              </div>
@@ -219,114 +220,6 @@
 </div>
  </div>
 
-<script type="text/javascript">
 
-
-$(document).ready(function() {
-    $('.anon_like').click(function() {
-        $(".messages-container").fadeIn().delay(3000).fadeOut();
-   });
-
-    $('#anon_comment').click(function() {
-            $(".messages-container").fadeIn().delay(3000).fadeOut();
-       });
-});
-
-function post_comment(sort, event) {
-    $.ajax({
-        type: "POST",
-        url: "{{url_for('post_contain_comment' )}}",
-        data: "post_id="+ "{{postid}}" + "&sort=" + sort,
-        success: function (data) {
-            $("#comment").html(data.comments);
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-
-};
-
-
-$(document).ready(function() {
-    $('#button_comment1').click(function() {
-        $("#hiden_form1").slideToggle(500);
-    });
-    $("textarea.my_textarea").val("Type your comment");
-
-    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
-
-
-});
-
-$("#form1.comment_form").submit(function (event) {
-    $("#hiden_form1").slideToggle();
-    var formData = new FormData($(this)[0]);
-       $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                $("#comment").html(data.comments);
-                $('textarea#text').val("");
-
-            },
-            error: function (xhr, str) {
-                alert('Mistake ' + xhr.responseCode);
-            }
-        });
-event.preventDefault();
-});
-
-$("#form2.comment_form").submit(function (event) {
-    var formData = new FormData($(this)[0]);
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                $("#comment").html(data.comments);
-                $('textarea#text').val("");
-
-            },
-            error: function (xhr, str) {
-                alert('Mistake ' + xhr.responseCode);
-            }
-        });
-event.preventDefault();
-});
-
-
-
-
-
-
-
-
-
-function user_del_post(e) {
-    var id = "{{postid}}"
-
-    e.preventDefault()
-    if (confirm('Are you sure you want to save this thing into the database?')) {
-
-
-        $.post( "{{ url_for('user_del_post')}}", {id:id},function( data ) {
-           window.location.href = "{{ url_for('last_posts') }}";
-        });
-} else {
-    // Do nothing!
-}
-
-}
-
-
-
-</script>
 {% endblock %}
 

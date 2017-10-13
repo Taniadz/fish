@@ -1,10 +1,13 @@
 {% from 'helpers.html' import products_macro with context %}
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 {% if products|length >= 1 %}
-                <a href="#" onclick="Saved_container('data', 'product', event);">sort by data|</a>
-             <a href="#" onclick="Saved_container('vote', 'product', event);">sort by rating</a><br>
+    <li id="date" class="product" user ="{{ user_id }}"><a href="#">date</a></li>
+    <li id="vote" class="product" user ="{{ user_id }}"><a href="#">rating</a></li>
     {% for product in products %}
-            {{ products_macro(product, dict_like, saved_list, 5) }}
+            {{ products_macro(product, dict_like, list_of_favourite, 5) }}
 
     {% endfor %}
 
@@ -16,128 +19,3 @@
 
 
 
-<script type="text/javascript">
-
-
-jQuery.fn.clickToggle = function(a,b) {
-  function cb(){ [b,a][this._tog^=1].call(this); }
-  return this.on("click", cb);
-};
-
-$( "img#white.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/blue_heart.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/like_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-}, function() {
-    $(this).attr("src", '/static/image/white.png');
-
-    var product_id = $(this).attr("product_id");
-      $.ajax({
-         type: 'POST',
-         url: "/unlike_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-});
-
-
-$( "img#blue.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-    $(this).attr("src", '/static/image/white.png');
-
-    $.ajax({
-         type: 'POST',
-         url: "/unlike_product",
-         data: "id=" +product_id,
-         success: function(data){
-
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/blue_heart.png');
-
-      $.ajax({
-         type: 'POST',
-         url: "/like_product",
-         data: "id=" +product_id,
-         success: function(data){
-             $('#vote_countproduct' + product_id).html(data);
-         }
-    });
-});
-
-
-
-$( "img#gold_star.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-
-    $(this).attr("src", '/static/image/white_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-
-             $('.product#star_gold' + product_id).text("Add to saved");
-         }
-    });
-
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/gold_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-             $('.product#star_gold' + product_id).text("Delete_from_saved");
-         }
-    });
-});
-
-$( "img#white_star.product" ).clickToggle(function() {
-    var product_id = $(this).attr("product_id");
-
-    $(this).attr("src", '/static/image/gold_star.png');
-
-    $.ajax({
-         type: 'GET',
-         url: "{{ url_for('save_product') }}",
-         data: "product_id=" +product_id,
-
-         success: function(data){
-             $('.product#star_white' + product_id).text("Delete from saved");
-         }
-    });
-
-}, function() {
-    var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/white_star.png');
-
-      $.ajax({
-         type: 'GET',
-         url: "{{ url_for('delete_product') }}",
-         data: "product_id=" +product_id,
-         success: function(data){
-             $('.product#star_white' + product_id).text("Add to saved");
-         }
-    });
-});
-
-
-
-</script>

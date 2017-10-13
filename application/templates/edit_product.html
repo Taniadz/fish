@@ -2,7 +2,7 @@
 
 {% block body %}
 <h1>Add product</h1>
-<form action="{{ url_for('user_edit_product', id=id )}}" method="post" enctype="multipart/form-data" class="form-horizontal">
+<form action="{{ url_for('edit_product', id=id )}}" method="post" enctype="multipart/form-data" class="form-horizontal">
         {{ form.csrf_token }}
 
     <div class="control-group">
