@@ -176,33 +176,5 @@ $("#form2.comment_form").submit(function (event) {
 });
 
 
-
-
-
-
-
-// if user not the comments'author, user can discuss other comment
-// data send by ajax on server where render template with updated comment part
-$(".discussion").click(function (event){
-    var id = $(this).attr('id');
-    $(".answer#answer" + id).slideToggle();
-    var user = $(this).attr('user');
-    var product = $(this).attr('product_id');
-    $.ajax({
-        type: "POST",
-        url: '/product_comment_form',
-        data: "parent_id=" + id + "&product_id=" + product,
-        success: function (data) {
-             $(".answer#answer" + id).html(data.com_form);
-
-            $("textarea#text").val(user + ", ");
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-});
 });
 

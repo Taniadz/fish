@@ -1,2 +1,30 @@
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}" acync></script>
+
 {% from 'helpers.html' import post_comment_macro with context %}
                     {{ post_comment_macro(comment, dict_like) }}
+<script>
+$(".form-horizontal.edit_comment").submit(function(event) {
+    var id = "{{comment.id}}";
+    alert(123);
+    var formData = new FormData($(this)[0]);
+    $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function (data) {
+            $(".one_comment#comment" + id).html(data.comment);
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+});
+
+</script>

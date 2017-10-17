@@ -4,12 +4,10 @@
   {{ comment_edit(url, comment) }}
 
 
-
-
-
 <script>
 $(".form-horizontal.edit_comment").submit(function(event) {
     var id = "{{comment.id}}"
+    alert(123);
     var formData = new FormData($(this)[0]);
     $.ajax({
         type: "POST",

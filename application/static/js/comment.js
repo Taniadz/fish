@@ -32,3 +32,10 @@ function edit_comment(event, id, url) {
         }
     });
 };
+
+
+// if user not the comments'author, user can discuss other comment
+// data send by ajax on server where render template with updated comment part
+
+
+

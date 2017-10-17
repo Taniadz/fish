@@ -9,7 +9,9 @@
 
 $(document).ready(function() {
     // send data to sever to create reaction object and change count (in object and in html)
-    $( "img.unliked, img.liked").click(function() {
+    $( "img.unliked, img.liked").click(function(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
         var id = $(this).attr("obj_id");
         var url = $(this).attr("url");
         var div_class = $(this).attr("class");
@@ -54,7 +56,10 @@ $(document).ready(function() {
 
 //change reaction image after clicking in one big smile
 $(document).ready(function() {
-    $('.smile').click(function() {
+    $('.smile').click(function(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
         var type=$(this).attr("type");
 
         var id = $(this).attr("obj_id");

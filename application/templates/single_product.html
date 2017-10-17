@@ -3,6 +3,7 @@
 {% from 'helpers.html' import popup_div_macro with context %}
 
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
 
 <div class="row">
 
@@ -35,7 +36,7 @@
 
             {% if current_user.is_authenticated %}
 
-                {% if product_like %}
+                {% if product_liked %}
 
 
                 <div class="smile-container">
@@ -43,20 +44,20 @@
 
                         {{ popup_div_macro(product.id, "like_product ") }}
 
-                            {% if product_like.type == "like"%}
+                            {% if product_liked.type == "like"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
                         obj_id={{product.id}} url = "like_product" />
 
-                                {% elif product_like.type == "unlike"%}
+                                {% elif product_liked.type == "unlike"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
                         obj_id={{product.id}} url = "like_product"  />
 
-                                {% elif product_like.type == "funny"%}
+                                {% elif product_liked.type == "funny"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
                         obj_id={{product.id}} url = "like_product" />
 
 
-                                {% elif product_like.type == "angry"%}
+                                {% elif product_liked.type == "angry"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
                         obj_id={{product.id}} url = "like_product"  />
 
@@ -84,7 +85,7 @@
 
 
 
-            {% if ifsaved %}
+            {% if if_favorite %}
             <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product"
                                                                                                   id="gold_star"
                                                                                                   src="{{ url_for('static',filename="image/gold_star.png"

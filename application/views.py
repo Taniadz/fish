@@ -3,10 +3,10 @@ from flask import render_template,  flash, redirect, url_for, request
 from application import app, social, security, celery
 from forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
-from models import  PostComReaction, ProdComReaction, ProductReaction
+from models import  PostComReaction, ProdComReaction, ProductReaction, Product, Post
 from flask_login import current_user
 from flask_json import jsonify
-from werkzeug.datastructures import CombinedMultiDict
+from werkzeug.datastructures import CombinedMultiDict, FileStorage
 
 
 from flask_security import login_required
@@ -51,11 +51,12 @@ def popular_product(page = 1):
         products = products,
         list_of_favourite=list_of_favourite)
 
+
 @app.route('/add_post', methods = ['GET', 'POST'])
 def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
-    if request.method == 'POST' and form.validate():
-        filename = create_filename(form.file.data )
+    if request.method == 'POST' and form.validate_on_submit():
+        filename = create_filename(form.file.data)
         post = create_obj(Post,
                           title=form.title.data.strip(),
                           body=form.body.data.strip(),
@@ -95,8 +96,8 @@ def user(username):
     if user is None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
-    posts = get_posts_by_user_id(user.id)
-
+    posts = get_ordered_list(Post, Post.published_at.desc(),
+                             user_id=user.id)
     # empty for not authenticated users
     list_of_favourite = []
     dict_like = {}
@@ -111,7 +112,7 @@ def user(username):
         dict_like = post_dict_like(dict_like, posts, liked_posts)
     return render_template('user.html',
                            list_of_favourite=list_of_favourite, dict_like=dict_like,
-                           user=user, posts=posts)
+                           user=user, user_id=user.id, posts=posts)
 
 
 
@@ -136,8 +137,9 @@ def async_crop(data_image, username):
     draw.ellipse((0, 0) + bigsize, fill=255)
     mask = mask.resize(im.size, Image.ANTIALIAS)
     im.putalpha(mask)
-    filename = secure_filename("min_" + user[0].avatar)
 
+    # save image
+    filename = secure_filename("min_" + user[0].avatar)
     filename_png = filename[:-3] + "png"  # convert to png
     im.save(os.path.join(UPLOAD_FOLDER, filename_png))
     update_rows(user, avatar_min=filename_png)
@@ -149,12 +151,10 @@ def async_crop(data_image, username):
 @login_required
 def crop_image():
     username = current_user.username
-    user = get_user(username=username)
+    user = get_or_abort(User, username=username)
     if request.method == 'POST':
-
         data_image = request.form.to_dict()
-        result = async_crop.delay(data_image, username)
-
+        result = async_crop.delay(data_image, username)  # give it celery
         return redirect(url_for('user', username=username))
     else:
         return render_template('crop_image.html',
@@ -166,123 +166,112 @@ def crop_image():
 @login_required
 def user_edit(username):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
-    user = get_user(username=username)
-    if request.method == 'POST' and form.validate():
-        print form.file.data
-        filename = create_filename(form.file.data)
-        print filename
-        user = update_rows(user,
-        avatar = filename,
-        username = form.username.data,
-        about_me = form.about_me.data)
-        return redirect(url_for('crop_image'))
+    user = get_or_abort(User, username=username)
+    if request.method == 'POST' and form.validate_on_submit():
+
+        filename = create_filename(form.file.data)  # create secure filename
+        user = update_rows(user, avatar=filename,
+                           username=form.username.data,
+                           about_me=form.about_me.data,
+                           avatar_min=None)
+        if form.file.data is not None:
+            return redirect(url_for('crop_image'))
+        else:
+            return redirect(url_for('user', username=username))
     else:
-        user = get_user(username=username).first()
-        form.username.data = user.username
-        form.about_me.data = user.about_me
+        form.username.data = user[0].username
+        form.about_me.data = user[0].about_me
         return render_template('user_edit.html',
-                               user=user,
+                               user=user[0],
                                form=form)
 
 
 @app.route('/post/<int:postid>', methods=['GET', 'POST'])
 def singlepost(postid=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
-    ifsaved = False  # check if post added to popular by user, False for not login
-    post_like = None  # check if post liked by user, None for not login
+    dict_like = {}  # dict of comment like, where value - type of like; empty for not_authenticated
+
     if current_user.is_authenticated:
-        likes = current_user.post_com_react  # all comments, liked by current user
-    else:
-        likes = False  # false for not login
-    dict_like = {}
+        liked_comment = current_user.post_com_react  # all comments, liked by current user
+
     if request.method == 'GET':
-        posts=get_posts_ordering(Post.published_at.desc(), 10)
-        post = get_post_by_id(postid).first()
-        editable = check_post_editable(post) #check if user can edit post
-        comments = get_comments_by_post_id(post.id)
+        posts=get_posts_ordering(Post.published_at.desc(), 10)  # posts for side box
+        post = get_or_abort(Post, id=postid).first()
+
+        editable = check_post_editable(post)  # check if user can edit post
+        comments = get_all_obj(Comment, post_id=post.id)
+        if_favorite = check_if_favourite(current_user, post)  # check if post added to favourite by user, False for not login too
+
         if current_user.is_authenticated:
-            post_like = get_one_like(PostReaction, user_id=current_user.id, post_id=post.id) # check if the post liked by user
-            if current_user in post.favourite: #if in all userlist saved this post
-                ifsaved = True
-        dict_like = comment_dict_like(dict_like, comments, likes)
-        print(dict_like)
-        return render_template("single_post.html",
-                               editable=editable, posts=posts,
-                               post=post, postid=postid,
-                               form=form, comments=comments,
-                               ifsaved=ifsaved,post_like=post_like,
-                               dict_like=dict_like,
-                               dictionary=get_comment_dict(comments)) # create comment tree)
-    if request.method == 'POST' and form.validate():
-        filename = create_filename(form.file.data)
-        if request.args.get('parent'):
-            parent = request.args.get('parent')
+            post_liked = get_one_obj(PostReaction, user_id=current_user.id,
+                                     post_id=postid)  # check if the post liked by user
+            dict_like = comment_dict_like(dict_like, comments, liked_comment)
         else:
+            post_liked = False
+        return render_template("single_post.html", editable=editable,
+                               posts=posts, post=post,  form=form,
+                               comments=comments, if_favorite=if_favorite,
+                               post_liked=post_liked, dict_like=dict_like,
+                               comment_tree=get_comment_dict(comments))
+
+    if request.method == 'POST' and form.validate_on_submit():
+        filename = create_filename(form.file.data)
+        parent = request.args.get('parent')
+        if request.args.get('parent') is None:
             parent = 0
-        comment = create_obj(Comment,
-                        text=form.text.data,
-                        user_id=current_user.id,
-                        post_id=postid,
-                        image = filename,
-                        parent=parent)
-        comments = get_comments_by_post_id(postid)
-        data = {'comments' : render_template('comments.html',
-                                             dict_like=comment_dict_like(dict_like, comments, likes),
-                                             postid=postid,
-                                             comments=comments,
-                                             dictionary=get_comment_dict(comments),  # create comment tree
-                                             form=form)}
+        create_obj(Comment, text=form.text.data, user_id=current_user.id,
+                   post_id=postid, image=filename, parent=parent)
+        comments = get_ordered_list(Comment, Comment.timestamp, post_id=postid)
+        data = {'comments': render_template('comments.html', dict_like=comment_dict_like(dict_like, comments,
+                                            liked_comment), comments=comments,
+                                            comment_tree=get_comment_dict(comments),  form=form)}
         return jsonify(data)
+
+
+
 
 
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def singleproduct(product_id=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
-    ifsaved = False
-    product_like = None
+    dict_like = {}  # dict of comment like, where value - type of like; empty for not_authenticated
+
     if current_user.is_authenticated:
-        likes = current_user.prod_com_react
-    else:
-        likes=False
-    dict_like = {}
+        liked_comment = current_user.prod_com_react  # all comments, liked by current user
     if request.method == 'GET':
-        product = Product.query.filter_by(id=product_id).first()
-        comments = get_prod_comments_by_product_id(product_id)
+        product = get_one_obj(Product, id=product_id)
+        comments = get_all_obj(CommentProduct, product_id=product_id)
+        if_favorite = check_if_favourite(current_user, product)  # check if post added to favourite by user, False for not login too
+
         if current_user.is_authenticated:
-            product_like = get_one_like(ProductReaction, user_id=current_user.id,
+            product_liked = get_one_obj(ProductReaction, user_id=current_user.id,
                                    product_id=product.id)  # check if the product liked by user
-
-            if current_user in product.favourite:  #if in all userlist saved this product
-                ifsaved = True
-
+            dict_like = comment_dict_like(dict_like, comments, liked_comment)
+        else:
+            product_liked = False
         return render_template("single_product.html",
-                               ifsaved=ifsaved, product_like=product_like,
-                               dict_like=comment_dict_like(dict_like, comments, likes),
+                               if_favorite=if_favorite, product_liked=product_liked,
+                               dict_like=dict_like,
                                product=product, comments=comments,
                                product_id=product_id,
-                               dictionary=get_comment_dict(comments),
+                               comment_tree=get_comment_dict(comments),
                                form=form)
-    if request.method == 'POST' and  form.validate():
-        filename = create_filename(form.file.data)
-        if request.args.get('parent'):
-            parent = request.args.get('parent')
-        else:
-            parent = 0
-        comment = create_obj(CommentProduct,
-                                 text=form.text.data,
-                                 user_id=current_user.id,
-                                 product_id=product_id,
-                                 image=filename,
-                                 parent=parent)
-        comments = get_prod_comments_by_product_id(product_id)
-        dict_like = comment_dict_like(dict_like, comments, likes)
+    if request.method == 'POST' and form.validate_on_submit():
 
-        data = {'comments' : render_template('product_comments.html',
-                                             dict_like=dict_like,
-                                             product_id=product_id,
-                                             comments=comments,
-                                             dictionary=get_comment_dict(comments),
-                                             form=form)}
+        filename = create_filename(form.file.data)
+        parent = request.args.get('parent')
+        if request.args.get('parent') is None:
+            parent = 0
+        comment = create_obj(CommentProduct, text=form.text.data,
+                             user_id=current_user.id, product_id=product_id,
+                             image=filename, parent=parent)
+
+        comments = get_all_obj(CommentProduct, product_id=product_id)
+
+        dict_like = comment_dict_like(dict_like, comments, liked_comment)
+        data = {'comments' : render_template('product_comments.html', dict_like=dict_like,
+                                            comments=comments,
+                                             comment_tree=get_comment_dict(comments), form=form)}
         return jsonify(data)
 
 
@@ -306,48 +295,43 @@ def add_product():
 
 @app.route('/like_post', methods=['POST'])
 def like_post():
-    id = request.form.get('id')
     react_type = request.form.get('type')
     if react_type == None:
         react_type = "like"
-    print(react_type, "in view")
-    post = get_post_by_id(id)
-    data = increase_count(post, PostReaction, react_type, post_id=id, user_id=current_user.id)  # increase vote count of post
+    post = get_or_abort(Post, id=request.form.get('id'))
+    data = increase_count(post, PostReaction, react_type,
+                          post_id=request.form.get('id'), user_id=current_user.id)  # increase vote count of post
     return jsonify(data)
 
 
 @app.route('/like_comment', methods=['POST'])
 def like_comment():
-    id = request.form.get('id')
     react_type = request.form.get('type')
     if react_type == None:
         react_type = "like"
-    comment = get_comment_by_id(id)
-    data = increase_count(comment, PostComReaction, react_type, comment_id=id, user_id=current_user.id)  # increase vote count of post
+    comment = get_or_abort(Comment, id=request.form.get('id'))
+    data = increase_count(comment, PostComReaction, react_type,
+                          comment_id=request.form.get('id'), user_id=current_user.id)  # increase vote count of post
     return jsonify(data)
 
 @app.route('/like_product', methods=['POST'])
 def like_product():
-    id = request.form.get('id')
-    print id, "id"
     react_type = request.form.get('type')
     if react_type == None:
         react_type = "like"
-    post = get_product_by_id(id)
-    data = increase_count(post, ProductReaction, react_type, product_id=id,
+    product = get_or_abort(Product, id=request.form.get('id'))
+    data = increase_count(product, ProductReaction, react_type, product_id=request.form.get('id'),
                                user_id=current_user.id)  # increase vote count of post
     return jsonify(data)
 
+
 @app.route('/like_prodcomment', methods=['POST'])
 def like_prodcomment():
-    id = request.form.get('id')
-    print id, "id"
     react_type = request.form.get('type')
     if react_type == None:
         react_type = "like"
-    comment = get_prod_comment_by_id(id)
-    print comment
-    data = increase_count(comment, ProdComReaction, react_type, comment_id=id,
+    comment = get_or_abort(CommentProduct, id=request.form.get('id'))
+    data = increase_count(comment, ProdComReaction, react_type, comment_id=request.form.get('id'),
                           user_id=current_user.id)  # increase vote count of comment
     return jsonify(data)
 
@@ -355,93 +339,86 @@ def like_prodcomment():
 
 @app.route('/unlike_post', methods=['POST'])
 def unlike_post():
-    id = request.form.get('id')
-    post = get_post_by_id(id)
-    data = check_decrease_count(post, PostReaction, post_id=id, user_id=current_user.id)  # increase vote count of post if like doesn't exist
+    post = get_or_abort(Post, id=request.form.get('id'))
+    data = check_decrease_count(post, PostReaction, post_id=request.form.get('id'),
+                                user_id=current_user.id)  # increase vote count of post if like doesn't exist
     return jsonify(data)
 
 
 @app.route('/unlike_comment', methods=['POST'])
 def unlike_comment():
-    id = request.form.get('id')
-    comment = get_comment_by_id(id)
-    data = check_decrease_count(comment, PostComReaction, comment_id=id, user_id=current_user.id)  # increase vote count of post if like doesn't exist
+    comment = get_or_abort(Comment, id=request.form.get('id'))
+    data = check_decrease_count(comment, PostComReaction, comment_id=request.form.get('id'),
+                                user_id=current_user.id)  # increase vote count of post if like doesn't exist
     return jsonify(data)
 
 
 @app.route('/unlike_product', methods=['POST'])
 def unlike_product():
-    id = request.form.get('id')
-    product = get_product_by_id(id)
-
-    data = check_decrease_count(product, ProductReaction, product_id=id,
+    product = get_or_abort(Product, id=request.form.get('id'))
+    data = check_decrease_count(product, ProductReaction, product_id=request.form.get('id'),
                                 user_id=current_user.id)  # increase vote count of post if like doesn't exist
     return jsonify(data)
 
 
 @app.route('/unlike_prodcomment', methods=['POST'])
 def unlike_prodcomment():
-    id = request.form.get('id')
-    comment = get_prod_comment_by_id(id)
-    data = check_decrease_count(comment, ProdComReaction, comment_id=id,
+
+    comment = get_or_abort(CommentProduct, id=request.form.get('id'))
+    data = check_decrease_count(comment, ProdComReaction, comment_id=request.form.get('id'),
                                 user_id=current_user.id)  # increase vote count of post if like doesn't exist
     return jsonify(data)
 
 
+# render comment form for comment with parent (after click discussion button)
 @app.route('/comment_form', methods=['POST'])
 def comment_form():
-    parent_id =request.form.get('parent_id')
-    post_id = request.form.get('post_id')
     form = CommentForm(request.form)
-    data = {'com_form': render_template('comment_form.html',
-                                    post_id=post_id,
-                                    parent_id=parent_id,
-                                    form=form)}
+    data = {'com_form': render_template('comment_form.html', post_id=request.form.get('post_id'),
+                                        parent_id=request.form.get('parent_id'), form=form)}
     return jsonify(data)
 
 
-
+# render comment form for comment with parent (after click discussion button)
 @app.route('/product_comment_form', methods=['POST'])
 def product_comment_form():
-    parent_id =request.form.get('parent_id')
-    product_id = request.form.get('product_id', 0)
     form = CommentForm(request.form)
-    print product_id, "id"
-    print type(product_id), "type"
     data = {'com_form': render_template('product_comment_form.html',
-                                    product_id=product_id,
-                                    parent_id=parent_id,
-                                    form=form)}
+                                        product_id=request.form.get('product_id', 0),
+                                        parent_id=request.form.get('parent_id'), form=form)}
     return jsonify(data)
 
 
+# user_contain* - are the views, that render with ajax part of user container(in profile)
+# These are posts, product, comments and favourites written(added) by user
 @app.route('/user_contain_comment', methods=['POST'])
 def user_contain_comment():
     dict_like = {}
-    print request.form.get('sort')
-    print request.form.get('contain')
-    print request.form.get('user_id')
     if request.form.get('contain') == "comment":
         if request.form.get('sort') == "date":
-            print 1
-            comments = get_comments_by_user_id(request.form.get('user_id'), Comment.timestamp.desc())
+            comments = get_ordered_list(Comment, Comment.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
-            comments = get_comments_by_user_id(request.form.get('user_id'), Comment.like_count.desc())
-        if current_user.is_authenticated:
-            likes = current_user.post_com_react
-            dict_like={}
-            dict_like = comment_dict_like(dict_like, comments, likes)
-        print comments
+            comments = get_ordered_list(Comment, Comment.like_count.desc(), user_id=request.form.get('user_id'))
+            if current_user.is_authenticated:
+                likes = current_user.post_com_react
+                dict_like={}
+                dict_like = comment_dict_like(dict_like, comments, likes)
+        for c in comments:
+            print c.post_id
+
         data = {'com_container': render_template('/user_container/user_contain_comment.html',
                                             dict_like=dict_like,
                                              comments=comments,
                                             user_id=request.form.get('user_id')
                                              )}
     if request.form.get('contain') == "prod_comment":
+        print 123
         if request.form.get('sort') == "date":
-            comments = get_prod_comments_by_user_id(request.form.get('user_id'), CommentProduct.timestamp.desc())
+            comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
-            comments = get_prod_comments_by_user_id(request.form.get('user_id'), CommentProduct.like_count.desc())
+            comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), user_id=request.form.get('user_id'))
+        print comments
+
         if current_user.is_authenticated:
             likes = current_user.prod_com_react
             dict_like={}
@@ -451,7 +428,7 @@ def user_contain_comment():
                                                  comments=comments,
                                                  user_id=request.form.get('user_id')
         )}
-
+    print comments
     return jsonify(data)
 
 
@@ -459,9 +436,11 @@ def user_contain_comment():
 @app.route('/user_contain_product', methods=['POST'])
 def user_contain_product():
     if request.form.get('sort') == "date":
-        products = get_products_by_user_id(request.form.get('user_id'), Product.published_at.desc())
+        products = get_ordered_list(Product, Product.published_at.desc(),
+                                    user_id=request.form.get('user_id'))
     else:
-        products = get_products_by_user_id(request.form.get('user_id'), Product.like_count.desc())
+        products = get_ordered_list(Product, Product.like_count.desc(),
+                                    user_id=request.form.get('user_id'))
     likes = current_user.product_react
     list_of_favourite = []
     list_of_favourite = create_list_of_favourite(list_of_favourite, products, current_user.favourite_product)
@@ -478,14 +457,15 @@ def user_contain_product():
 
 @app.route('/user_contain_post', methods=['POST', 'GET'])
 def user_contain_post():
-
     if request.form.get('sort') == "date":
-        posts = get_posts_by_user_id(request.form.get('user_id'), Post.published_at.desc())
+        posts = get_ordered_list(Post, Post.published_at.desc(),
+                                    user_id=request.form.get('user_id'))
     else:
-        posts = get_posts_by_user_id(request.form.get('user_id'), Post.like_count.desc())
+        posts = get_ordered_list(Post, Post.like_count.desc(),
+                                    user_id=request.form.get('user_id'))
     list_of_favourite = []
     list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
-
+    print request.form.get('user_id'), "user"
     likes = current_user.post_react
     dict_like = {}
     dict_like = post_dict_like(dict_like, posts, likes)
@@ -543,58 +523,50 @@ def user_contain_saved():
 
 @app.route('/add_fav_product', methods=['GET'])
 def add_fav_product():
-    id = request.args.get("product_id")
-    user = current_user
-    product = get_product_by_id(id).first()
-    add_prod_fav(user, product)
-    return jsonify(id)
+    product = get_or_abort(Product, id=request.args.get("product_id")).first()
+    add_prod_fav(current_user, product)
+    return jsonify(request.args.get("product_id"))
 
 
 @app.route('/add_fav_post', methods=['GET', 'POST'])
 def add_fav_post():
-    id = request.args.get("post_id")
-    user = current_user
-    post=get_post_by_id(id).first()
-    add_post_fav(user, post)
-    return jsonify(id)
+    post=get_or_abort(Post, id=request.args.get("post_id")).first()
+    add_post_fav(current_user, post)
+    return jsonify(request.args.get("post_id"))
 
 
 @app.route('/delete_fav_post', methods=['GET', 'POST'])
 def delete_fav_post():
-    id = request.args.get("post_id")
-    user = current_user
-    post = get_post_by_id(id).first()
-    delete_post_fav(user, post)
-    print 1
-    return jsonify(id)
+    post = get_or_abort(Post, id=request.args.get("post_id")).first()
+    delete_post_fav(current_user, post)
+    return jsonify(request.args.get("post_id"))
 
 
 @app.route('/delete_fav_product', methods=['GET', 'POST'])
 def delete_fav_product():
-    id = request.args.get("product_id")
-    user = current_user
-    product = get_product_by_id(id).first()
-    delete_prod_fav(user, product)
-    print 1
-    return jsonify(id)
+    product = get_or_abort(Product, id=request.args.get("product_id")).first()
+    delete_prod_fav(current_user, product)
+    return jsonify(request.args.get("product_id"))
+
+
 
 # sort comment on page '/single_post' and update data with ajax
 @app.route('/post_contain_comment', methods=['POST'])
 def post_contain_comment():
     form = CommentForm(request.form)
     if request.form.get('sort') == "data":
-         comments = get_comments_by_post_id(request.form.get('post_id'), Comment.timestamp.desc())
+        comments = get_ordered_list(Comment, Comment.timestamp.desc(), post_id=request.form.get('post_id'))
     elif request.form.get('sort') == "rating":
-        comments = get_comments_by_post_id(request.form.get('post_id'), Comment.like_count.desc())
+        comments = get_ordered_list(Comment, Comment.like_count.desc(), post_id=request.form.get('post_id'))
     likes = current_user.post_com_react
     dict_like = {}
     dict_like = comment_dict_like(dict_like, comments, likes)
-    dictionary = get_comment_dict(comments, 'sort')
+    comment_tree = get_comment_dict(comments, 'sort')
     data = {'comments': render_template('comments.html',
                                         dict_like=dict_like,
                                         postid=request.form.get('post_id'),
                                         comments=comments,
-                                        dictionary=dictionary,
+                                        comment_tree=comment_tree,
                                         form=form)}
     return jsonify(data)
 
@@ -602,13 +574,11 @@ def post_contain_comment():
 # sort comment on page '/single_product' and update data with ajax
 @app.route('/product_contain_comment', methods=['POST'])
 def product_contain_comment():
-    print request.form.get('sort')
-    print request.form.get('product_id'), "pr_id"
     form = CommentForm(request.form)
     if request.form.get('sort') == "data":
-        comments = get_prod_comments_by_product_id(request.form.get('product_id'), CommentProduct.timestamp.desc())
+        comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), product_id=request.form.get('product_id'))
     elif request.form.get('sort') == "rating":
-        comments = get_prod_comments_by_product_id(request.form.get('product_id'), CommentProduct.like_count.desc())
+        comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), product_id=request.form.get('product_id'))
 
     likes = current_user.prod_com_react
     dict_like = {}
@@ -621,16 +591,19 @@ def product_contain_comment():
                                         dict_like=dict_like,
                                         product_id=request.form.get('product_id'),
                                         comments=comments,
-                                        dictionary=comment_tree,
+                                        comment_tree=comment_tree,
                                         form=form)}
     return jsonify(data)
 
 
+# The form rendered(get request) under the comment, that must be edited;
+# with post request renders with ajax part of page, that contain one comment with update data;
+# only one comment reloaded on the page this way
 @app.route('/edit_prod_comment/<int:comment_id>', methods=['GET', 'POST'])
 def edit_prod_comment(comment_id=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        comment = get_prod_comment_by_id(id=comment_id).first()
+        comment = get_or_abort(CommentProduct, id=comment_id).first()
         if not check_com_editable(comment):
             data = {'noedit': "No_editable"}
             return jsonify(data)
@@ -642,11 +615,11 @@ def edit_prod_comment(comment_id=None):
         return jsonify(data)
     if request.method == 'POST':
         filename = create_filename(form.file.data)
-        comment = get_prod_comment_by_id(id=comment_id)
+        comment = get_or_abort(CommentProduct, id=comment_id)
         update_rows(comment, text=form.text.data, image=filename)
         comment=comment[0]
         dict_like={}
-        if get_one_like(ProdComReaction, user_id = current_user.id, comment_id=comment.id):
+        if get_one_obj(ProdComReaction, user_id = current_user.id, comment_id=comment.id):
                 dict_like[comment.id]=1
 
         data = {'comment': render_template('/comment_box/product_comment_box.html',
@@ -660,7 +633,7 @@ def edit_prod_comment(comment_id=None):
 def edit_post_comment(comment_id=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        comment = get_comment_by_id(id=comment_id).first()
+        comment = get_or_abort(Comment, id=comment_id).first()
         if not check_com_editable(comment):
             data = {'noedit': "No_editable"}
             return jsonify(data)
@@ -672,11 +645,11 @@ def edit_post_comment(comment_id=None):
         return jsonify(data)
     if request.method == 'POST':
         filename = create_filename(form.file.data)
-        comment = get_comment_by_id(comment_id)
+        comment = get_or_abort(Comment, id=comment_id)
         update_rows(comment, text=form.text.data, image=filename)
         comment=comment[0]
         dict_like = {}
-        if get_one_like(PostComReaction, user_id = current_user.id, comment_id=comment.id):
+        if get_one_obj(PostComReaction, user_id = current_user.id, comment_id=comment.id):
                 dict_like[comment.id]=1
         data = {'comment': render_template('/comment_box/post_comment_box.html',
                                            dict_like=dict_like,
@@ -684,11 +657,9 @@ def edit_post_comment(comment_id=None):
         return jsonify(data)
 
 
-
 @app.route('/delete_post_comment', methods=['POST'])
 def delete_post_comment():
-    id = request.form.get("id")
-    comment = get_comment_by_id(id)
+    comment = get_or_abort(Comment, id = request.form.get("id"))
     if not check_com_editable(comment[0]):
         data = {'nodelet': "No deletable"}
     else:
@@ -699,8 +670,7 @@ def delete_post_comment():
 
 @app.route('/delete_prod_comment', methods=['POST'])
 def delete_prod_comment():
-    id = request.form.get("id")
-    comment = get_prod_comment_by_id(id)
+    comment = get_or_abort(CommentProduct, id=request.form.get("id"))
     if not check_com_editable(comment[0]):
         data = {'nodelet': "No deletable"}
     else:
@@ -711,8 +681,7 @@ def delete_prod_comment():
 
 @app.route('/delete_product', methods=['POST'])
 def delete_product():
-    id = request.form.get("id")
-    product = get_product_by_id(id)
+    product = get_or_abort(Product, id=request.form.get("id"))
     update_rows(product, deleted=True)
     return redirect(url_for('popular_product'))
 
@@ -720,48 +689,45 @@ def delete_product():
 @app.route('/edit_product', methods=['POST', 'GET'])
 def edit_product():
     form = ProductForm(CombinedMultiDict((request.files, request.form)))
-    id = request.args.get("id")
     if request.method == 'GET':
-        product = get_product_by_id(id).first()
+        product = get_or_abort(Product, id=request.args.get("id")).first()
         form.description.data = product.description
         form.title.data=product.title
         form.price.data = product.price
-    if request.method == 'POST' and form.validate():
 
+    if request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
-        product = get_product_by_id(id)
+        product = get_or_abort(Product, id=request.args.get("id"))
         update_rows(product, description=form.description.data,
-                                title = form.title.data,
-                                price = form.price.data,
-                                image= filename)
-        return redirect(url_for('singleproduct', product_id=id))
-    return render_template("edit_product.html", form=form, id=id)
+                                title=form.title.data,
+                                price=form.price.data,
+                                image=filename)
+        return redirect(url_for('singleproduct', product_id=request.args.get("id")))
+    return render_template("edit_product.html", form=form, id=request.args.get("id"))
 
 
 @app.route('/delete_post', methods=['POST'])
 def delete_post():
-    id = request.form.get("id")
-    post = get_post_by_id(id)
+    post = get_or_abort(Post, id=request.form.get("id"))
     update_rows(post, deleted=True)
     return redirect(url_for('last_posts'))
 
 
 @app.route('/edit_post', methods=['POST', 'GET'])
 def edit_post():
-    id = request.args.get("id")
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        post = get_post_by_id(id).first()
+        post = get_one_obj(Post, id=request.args.get("id"))
         if not check_post_editable(post):
-            flash("You can't edit it")
-            return redirect(url_for('singlepost', postid=id))
+            return redirect(url_for('singlepost', postid=request.args.get("id")))
         form.body.data=post.body
         form.title.data=post.title
-        return render_template("edit_post.html", form=form, id=id)
-    elif request.method == 'POST' and form.validate():
+        return render_template("edit_post.html", form=form, id=request.args.get("id"))
+
+    elif request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
-        post = get_post_by_id(id)
+        post = get_or_abort(Post, id=request.args.get("id"))
         update_rows(post, body=form.body.data,
              title=form.title.data,
              image=filename)
-        return redirect(url_for('singlepost', postid=id))
+        return redirect(url_for('singlepost', postid=request.args.get("id")))

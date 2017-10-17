@@ -44,87 +44,20 @@ def get_comment_dict(comments, sort=None):
         return comment_dict
 
 
+def get_ordered_list(model, sorting, **kwargs):
+    list = model.query.filter_by(**kwargs).order_by(sorting).all()
+    return list
 
-def get_comments_by_post_id(post_id, sorting=Comment.timestamp):
-    comments = Comment.query.filter_by(post_id = post_id ).order_by(sorting).all()
-    if comments is None:
-        abort(404)
-    return comments
-
-
-
-
-def get_prod_comments_by_user_id(user_id, sorting=None):
-    comments = CommentProduct.query.filter_by(user_id=user_id).order_by(sorting).all()
-    if comments is None:
-        abort(404)
-    return comments
-
-def get_prod_comments_by_product_id(product_id, sorting=CommentProduct.timestamp):
-    comments = CommentProduct.query.filter_by(product_id=product_id).order_by(sorting).all()
-    print comments, "com from help"
-    if comments is None:
-        abort(404)
-    return comments
-
-
-def get_comments_by_user_id(user_id, sorting=None):
-    comments = Comment.query.filter_by(user_id=user_id).order_by(sorting).all()
-    if comments is None:
-        abort(404)
-    return comments
-
-
-def get_products_by_user_id(user_id, sorting=None):
-    products = Product.query.filter_by(user_id=user_id).order_by(sorting).all()
-    if products is None:
-        abort(404)
-    return products
-
-
-def get_posts_by_user_id(user_id, sorting=None):
-    posts = Post.query.filter_by(user_id=user_id).order_by(sorting).all()
-    if posts is None:
-        abort(404)
-    return posts
-
-def get_comment_by_id(id):
-    comment = Comment.query.filter_by(id=id)
-    if comment is None:
-        abort(404)
-    return comment
-
-def get_prod_comment_by_id(id):
-    comment = CommentProduct.query.filter_by(id=id)
-    if comment is None:
-        abort(404)
-    return comment
-
-
-def get_post_by_id(id):
-    post = Post.query.filter_by(id=id)
-    if post is None:
-        abort(404)
-    else:
-        return post
-
-def get_product_by_id(id):
-    product = Product.query.filter_by(id=id)
-    if product is None:
-        abort(404)
-    return product
 
 def get_or_create(model, **kwargs):
     instance = model.query.filter_by(**kwargs)
     if instance:
         return instance, False
     else:
-
         instance = model(**kwargs)
         db.session.add(instance)
         db.session.commit()
         return instance, True
-
 
 
 def type_of_count(obj, type, integer):
@@ -148,7 +81,7 @@ def type_of_count(obj, type, integer):
 
 def increase_count(base_model, reaction_model, react_type, **kwargs):
     like = reaction_model.query.filter_by(**kwargs).first()
-    print like
+
     if like is not None:
         if like.type == react_type:
 
@@ -226,20 +159,15 @@ def comment_dict_like(dict_like, model, likes):
 
 
 
-
 def get_posts_ordering(order, limit=None):
     posts = Post.query.order_by(order).limit(limit)
     return posts
+
 
 def get_products_ordering(order, limit=None):
     products = Product.query.order_by(order).limit(limit)
     return products
 
-
-def get_user(**kwargs):
-    user = User.query.filter_by(**kwargs)
-
-    return user
 
 
 def get_favourite(id, model, sorting=None):
@@ -255,13 +183,6 @@ def create_obj(model, **kwargs):
 
 
 
-
-def update_post_saved(session, Post, model2):
-    User.favourite_post.append(Post)
-    session.add(User)
-    session.commit()
-
-
 def check_com_editable(comment):
     current_time = datetime.now()
     delta = timedelta(minutes=15)
@@ -275,10 +196,8 @@ def check_post_editable(post):
 
 
 def update_rows(obj, **kwargs):
-
     obj.update(kwargs)
     db.session.commit()
-    print "updated"
     return
 
 
@@ -324,9 +243,13 @@ def delete_post_fav(user, post):
 def get_post_reaction(**kwargs):
     return PostReaction.query.filter_by(**kwargs).all()
 
-def get_one_like(model, **kwargs):
+
+def get_one_obj(model, **kwargs):
     return model.query.filter_by(**kwargs).first()
 
+
+def get_all_obj(model, **kwargs):
+    return model.query.filter_by(**kwargs).all()
 
 
 def get_or_abort(model, code=404,**kwargs):
@@ -334,3 +257,12 @@ def get_or_abort(model, code=404,**kwargs):
     if result is None:
         abort(code)
     return result
+
+
+def check_if_favourite(user, checked):
+    print checked
+    if user.is_authenticated:
+        if user in checked.favourite:
+            return True
+    else:
+        return False

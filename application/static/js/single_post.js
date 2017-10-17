@@ -93,7 +93,7 @@ function post_comment(post_id, sort, event) {
     });
     event.preventDefault();
 
-};
+}
 
 
 // show comment from field under the post
@@ -134,6 +134,8 @@ event.preventDefault();
 
 // send comment by ajax from form field at the end of the page
 $("#form2.comment_form").submit(function (event) {
+    alert(123);
+
     var formData = new FormData($(this)[0]);
         $.ajax({
             type: "POST",
@@ -154,33 +156,6 @@ $("#form2.comment_form").submit(function (event) {
 event.preventDefault();
 });
 
-
-// if user not the comments'author, user can discuss other comment
-// data send by ajax on server where render template with updated comment part
-$(".discussion").click(function (event){
-    var id = $(this).attr('id');
-    $(".answer#answer" + id).slideToggle();
-    var user = $(this).attr('user');
-    var post = $(this).attr('post_id');
-    $.ajax({
-        type: "POST",
-        url: '/comment_form',
-        data: "parent_id=" + id + "&post_id=" + post,
-        success: function (data) {
-             $(".answer#answer" + id).html(data.com_form);
-
-            $("textarea#text").val(user + ", ");
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-
-});
-
-
 });
 
 // delete product and redirect
@@ -190,8 +165,8 @@ function delete_post(post_id, e) {
     if (confirm('Are you sure you want to save this thing into the database?')) {
 
 
-        $.post( "{{ url_for('delete_post')}}", {id:post_id},function( data ) {
-           window.location.href = "{{ url_for('last_posts') }}";
+        $.post(  $SCRIPT_ROOT + '/delete_post', {id:post_id},function( data ) {
+           window.location.href =  $SCRIPT_ROOT + '/last_posts';
         });
 } else {
     // Do nothing!

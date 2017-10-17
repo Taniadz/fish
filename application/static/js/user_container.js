@@ -49,14 +49,16 @@ $(document).ready(function() {
             event.preventDefault();
         });
 
-    $("button#post").click(function (event){
+    $("button#post, button#post_in_user").click(function (event){
         event.preventDefault();
-                event.stopImmediatePropagation();
+        event.stopImmediatePropagation();
 
         $('.user_but').removeClass("active");
         $("#post").addClass("active");
         var sort = $(this).attr('sort');
         var user = $(this).attr('user');
+        alert(user);
+        alert(sort);
             $.ajax({
                 type: "POST",
                 url: $SCRIPT_ROOT + '/user_contain_post',

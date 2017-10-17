@@ -22,12 +22,15 @@ favourite_post = db.Table('favourite_post',
     db.UniqueConstraint('user_id', 'post_id', name='UC_user_id_post_id'),
 )
 
+
 class PostReaction(db.Model):
     __tablename__ = 'postreaction'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
     type = db.Column(db.Integer)
-    post=db.relationship('Post', backref='like')
+    posts = db.relationship('Post', passive_deletes=True)
+    __table_args__ = (db.UniqueConstraint('user_id', 'post_id', name='post_user'),
+                      )
 
 
 class ProductReaction(db.Model):
@@ -36,17 +39,20 @@ class ProductReaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     type = db.Column(db.Integer)
-    product = db.relationship('Product', backref='like')
+    __table_args__ = (db.UniqueConstraint('user_id', 'product_id', name='product_user'),
+                      )
+
 
 
 class PostComReaction(db.Model):
     __tablename__ = 'postcomreaction'
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     type = db.Column(db.Integer)
-    postcom = db.relationship('Comment', backref='like')
+    __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='comment_user'),
+                      )
+
 
 
 class ProdComReaction(db.Model):
@@ -55,13 +61,14 @@ class ProdComReaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), )
     comment_id = db.Column(db.Integer, db.ForeignKey('commentproduct.id'))
     type = db.Column(db.Integer)
-    prodcom = db.relationship('CommentProduct',  backref='like')
-
+    __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='prod_comment_user'),
+                      )
 
 
 roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
@@ -149,6 +156,8 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     image = db.Column(db.LargeBinary, nullable=True)
     deleted= db.Column(db.Boolean, default=False)
+    reactions = db.relationship('PostReaction',
+                            backref=db.backref('post',  passive_deletes=True))
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -176,6 +185,9 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     deleted= db.Column(db.Boolean, default=False)
+    reactions = db.relationship('PostComReaction',
+                                backref=db.backref('post', passive_deletes=True))
+
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -205,6 +217,8 @@ class Product(db.Model):
     image = db.Column(db.LargeBinary, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted= db.Column(db.Boolean, default=False)
+    reactions = db.relationship('ProductReaction',
+                                backref=db.backref('post', passive_deletes=True))
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -237,6 +251,9 @@ class CommentProduct(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     deleted= db.Column(db.Boolean,  default=False)
+
+    reactions = db.relationship('ProdComReaction',
+                                backref=db.backref('post', passive_deletes=True))
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
     funny_count = db.Column(db.Integer, default=0)

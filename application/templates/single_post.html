@@ -2,7 +2,8 @@
 {% block body %}
 
 {% from 'helpers.html' import popup_div_macro with context %}
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"async></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"async></script>
 
 <div class="row">
 
@@ -35,7 +36,7 @@
         </p>
 
         {% if current_user.is_authenticated %}
-            {% if post_like %}
+            {% if post_liked %}
 
 
                 <div class="smile-container">
@@ -43,20 +44,20 @@
 
                         {{ popup_div_macro(post.id, "like_post ") }}
 
-                            {% if post_like.type == "like"%}
+                            {% if post_liked.type == "like"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
                         obj_id={{post.id}} url = "like_post" />
 
-                                {% elif post_like.type == "unlike"%}
+                                {% elif post_liked.type == "unlike"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
                         obj_id={{post.id}} url = "like_post"  />
 
-                                {% elif post_like.type == "funny"%}
+                                {% elif post_liked.type == "funny"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
                         obj_id={{post.id}} url = "like_post" />
 
 
-                                {% elif post_like.type == "angry"%}
+                                {% elif post_liked.type == "angry"%}
                                 <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
                         obj_id={{post.id}} url = "like_post"  />
 
@@ -84,7 +85,7 @@
 
 
 
-                        {% if ifsaved %}
+                        {% if if_favorite %}
                               </span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
                                   width="20" post_id={{post.id}} /></a>
                         {% else%}
@@ -117,6 +118,7 @@
 
                   </ul>
              </div>
+
 
         </div>
 

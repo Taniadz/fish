@@ -13,8 +13,11 @@
             <td>{{form.about_me(cols = 32, rows = 4)}}</td>
         </tr>
         <tr>
-            <td>Change avatar:</td>
-            <td>{{form.file}}</td>
+
+            <div class="hiddenfile">
+                {{form.file}}
+            </div>
+            <button id="change_avatar">Choose</button>
         </tr>
         <tr>
             <td></td>
@@ -31,4 +34,10 @@
         </tr>
     </table>
 </form>
+<script>
+    $('#change_avatar').click(function(event){
+        event.preventDefault();
+        $(".hiddenfile").show();
+    });
+</script>
 {% endblock %}

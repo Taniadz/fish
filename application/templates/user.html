@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block body %}
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
+
 
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-4" id="user_inf">
@@ -39,9 +41,10 @@
         <div class="row" id="user_activ">
             <div class="col-xs-8 col-sm-5 col-md-2">
                 <button type="button" class="btn btn-default btn-block active user_but"
-                        id="post" sort="date" user ="{{ user.id }}">Post
+                        id="post_in_user"  sort="date" user="{{ user.id }}">Post
                 </button>
             </div>
+
             <div class="col-xs-8 col-sm-5 col-md-2">
                 <div class="btn-group btn-block">
                     <button type="button" id="comment_block" class="btn btn-block btn-default dropdown-toggle user_but"
@@ -52,6 +55,7 @@
                     </ul>
                 </div>
             </div>
+
             <div class="col-xs-8 col-sm-5 col-md-2">
                 <button type="button" class="btn btn-default btn-block user_but" id="product"
                         sort="date" user ="{{ user.id }}">Product
