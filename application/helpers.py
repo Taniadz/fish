@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 
-from __init__ import UPLOAD_FOLDER
+
 from application import UPLOAD_FOLDER, db
-from models import User, Post, Comment, CommentProduct, Product, PostReaction
+from .models import User, Post, Comment, CommentProduct, Product, PostReaction
 
 
 def create_dict(d, child, parent=0,):
@@ -260,7 +260,6 @@ def get_or_abort(model, code=404,**kwargs):
 
 
 def check_if_favourite(user, checked):
-    print checked
     if user.is_authenticated:
         if user in checked.favourite:
             return True

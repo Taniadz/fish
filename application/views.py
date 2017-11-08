@@ -1,9 +1,9 @@
 
 from flask import render_template,  flash, redirect, url_for, request
-from application import app, social, security, celery
-from forms import PostForm, CommentForm, UserEditForm, ProductForm
+from application import app, security, celery
+from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
-from models import  PostComReaction, ProdComReaction, ProductReaction, Product, Post
+from .models import  PostComReaction, ProdComReaction, ProductReaction, Product, Post
 from flask_login import current_user
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict, FileStorage
@@ -12,7 +12,7 @@ from werkzeug.datastructures import CombinedMultiDict, FileStorage
 from flask_security import login_required
 
 POSTS_PER_PAGE = 3
-from helpers import *
+from .helpers import *
 from PIL import Image, ImageOps, ImageDraw
 
 
@@ -403,21 +403,19 @@ def user_contain_comment():
                 likes = current_user.post_com_react
                 dict_like={}
                 dict_like = comment_dict_like(dict_like, comments, likes)
-        for c in comments:
-            print c.post_id
+
 
         data = {'com_container': render_template('/user_container/user_contain_comment.html',
                                             dict_like=dict_like,
                                              comments=comments,
                                             user_id=request.form.get('user_id')
                                              )}
-    if request.form.get('contain') == "prod_comment":
-        print 123
+
         if request.form.get('sort') == "date":
             comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
             comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), user_id=request.form.get('user_id'))
-        print comments
+
 
         if current_user.is_authenticated:
             likes = current_user.prod_com_react
@@ -428,7 +426,7 @@ def user_contain_comment():
                                                  comments=comments,
                                                  user_id=request.form.get('user_id')
         )}
-    print comments
+
     return jsonify(data)
 
 
@@ -465,7 +463,7 @@ def user_contain_post():
                                     user_id=request.form.get('user_id'))
     list_of_favourite = []
     list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
-    print request.form.get('user_id'), "user"
+
     likes = current_user.post_react
     dict_like = {}
     dict_like = post_dict_like(dict_like, posts, likes)
@@ -583,9 +581,8 @@ def product_contain_comment():
     likes = current_user.prod_com_react
     dict_like = {}
     dict_like = comment_dict_like(dict_like, comments, likes)
-    print comments, "comments"
+
     comment_tree = get_comment_dict(comments, 'sort')
-    print comment_tree
 
     data = {'comments': render_template('comments.html',
                                         dict_like=dict_like,

@@ -5,12 +5,11 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore
-from flask_social.datastore import SQLAlchemyConnectionDatastore
-from flask_social import Social
+
 from flask_sqlalchemy import SQLAlchemy
 from celery import Celery
-import config
-
+from . import config
+from .config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(basedir, 'static/media')
@@ -18,6 +17,8 @@ ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
 
 app.config.from_object(config)
@@ -43,13 +44,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = '/login'
 
-from forms import ExtendedRegisterForm
-from models import User, Role, Connection
+from .forms import ExtendedRegisterForm
+from .models import User, Role, Connection
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore,
          register_form=ExtendedRegisterForm)
-social = Social(app, SQLAlchemyConnectionDatastore(db, Connection))
+
 
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
