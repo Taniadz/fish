@@ -340,6 +340,7 @@ def like_prodcomment():
 @app.route('/unlike_post', methods=['POST'])
 def unlike_post():
     post = get_or_abort(Post, id=request.form.get('id'))
+    print(request.form.get('id'))
     data = check_decrease_count(post, PostReaction, post_id=request.form.get('id'),
                                 user_id=current_user.id)  # increase vote count of post if like doesn't exist
     return jsonify(data)
@@ -519,7 +520,7 @@ def user_contain_saved():
     return jsonify(data)
 
 
-@app.route('/add_fav_product', methods=['GET'])
+@app.route('/add_fav_product', methods=['POST'])
 def add_fav_product():
     product = get_or_abort(Product, id=request.args.get("product_id")).first()
     add_prod_fav(current_user, product)
@@ -528,7 +529,7 @@ def add_fav_product():
 
 @app.route('/add_fav_post', methods=['GET', 'POST'])
 def add_fav_post():
-    post=get_or_abort(Post, id=request.args.get("post_id")).first()
+    post=get_or_abort(Post, id=request.form.get("post_id")).first()
     add_post_fav(current_user, post)
     return jsonify(request.args.get("post_id"))
 

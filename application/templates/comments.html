@@ -3,7 +3,7 @@
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}" acync></script>
 
 {% from 'helpers.html' import post_comment_macro with context %}
-    {%- for key, value in comment_tree.iteritems() recursive -%}
+    {%- for key, value in comment_tree.items() recursive -%}
 
         {% if key %}
             <li>
@@ -16,7 +16,7 @@
                         {% endif %}
                 {% endif %}
             {% endfor %}
-                <ul class="comment_ul">{{ loop(value.iteritems()) }}</ul>
+                <ul class="comment_ul">{{ loop(value.items()) }}</ul>
              </li>
         {% endif %}
     {%- endfor -%}

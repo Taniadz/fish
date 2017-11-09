@@ -86,11 +86,11 @@
 
 
                         {% if if_favorite %}
-                              </span>&nbsp;<img class="post" id="gold_star"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
-                                  width="20" post_id={{post.id}} /></a>
+                              </span>&nbsp;<img class="favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
+                                  width="20"/></a>
                         {% else%}
-                            </span>&nbsp;<img class = "post" id="white_star"  src="{{ url_for('static',filename="image/white_star.png" )}}"
-                                  width="20" post_id={{post.id}} /></a>
+                            </span>&nbsp;<img class="not-favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/white_star.png" )}}"
+                                  width="20"/></a>
                     {% endif %}
         {% else %}
             <span>{{ post.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
