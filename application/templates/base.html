@@ -1,93 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
 <html>
-<head>
-    {% if title %}
-        <title>{{ title }} - microblog</title>
-    {% else %}
-        <title>microblog</title>
-    {% endif %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
-
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
-    <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
-
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
-
-<script type=text/javascript>
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-</script>
-</head>
-<body>
-<div class="container-fluid">
-    <div class="row" id="header">
-        <div class="col-xs-3 col-sm-3 col-md-2">
-            <a href="{{ url_for('index') }}"><img class="img-responsive"
-                                                  src="{{ url_for('static',filename="image/logo.png") }}"
-                                                  width="60"/></a>
-        </div>
-        {% if current_user.is_authenticated %}
-            <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
-              <span>
-              {% if current_user.avatar_min %}
-                  <img src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" width="60"/>
-              {% else %}
-                  <img src="{{ url_for('static',filename="media/min_icon-user-default.png") }}" width="60"/>
-              {% endif %}
-                  <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
-            </span>
-            </div>
-            <div class=" col-xs-3 col-sm-2 col-md-1">
-                <span>
-                    <a href="{{ url_for('security.logout') }}">Logout</a>
-                </span>
-            </div>
+	<head>
+		<meta charset="utf-8">
+        {% if title %}
+            <title>{{ title }} - microblog</title>
         {% else %}
-            <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">
-                <a href="{{ url_for('security.login') }}">Login</a>
-            </div>
-            <div class="col-xs-3 col-sm-2 col-md-1">
-                <a href="{{ url_for('security.register') }}">Register</a>
-            </div>
+            <title>microblog</title>
         {% endif %}
-    </div>
-    <div class="row" id="body">
-        <div class="col-md-2" id="sidebar">
-            {% block sidebar %}
-                <a href="{{ url_for('popular_product') }}">
-                    <button type="button" class="btn btn-primary btn-block">Catalog</button>
-                </a>
-                <a href="{{ url_for('last_posts') }}">
-                    <button type="button" class="btn btn-primary btn-block">Blog</button>
-                </a>
-                <a href="{{ url_for('add_post') }}"><img class="img-responsive"
-                                                         src="{{ url_for('static',filename="image/add.png") }}"
-                                                         width="60"/>add post</a>
-                <a href="{{ url_for('add_product') }}"><img class="img-responsive"
-                                                            src="{{ url_for('static',filename="image/add.png") }}"
-                                                            width="60"/>add ptoduct</a>
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
 
-            {% endblock %}
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-10" id="main">
-            {% block body %}{% endblock %}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                            <li>{{ message }} </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        </div>
-    </div>
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
+            <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
 
-</div>
-</body>
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/snap.js") }}"></script>
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
+
+
+
+
+
+	</head>
+	<body cssAnimate>
+    <!-- :mobile Menu: -->
+
+
+        <div class="ct-navbarMobile">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+            </a>
+
+            <button type="button"  class="navbar-toggle" data-toggle="collapse" data-target=".ct-menuMobile.nav-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+
+
+            </button>
+
+        </div>
+        <div class="ct-menuMobile nav-collapse navbar-collapse collapse">
+                <ul class="ct-menuMobile-navbar">
+
+
+                    <li> <a href="">home</a></li>
+                    <li> <a href="">CATALOG</a></li>
+                    <li> <a href="">BLOG</a></li>
+                </ul>
+
+        </div>
+        <div class="ct-navbarMobile ct-navbarMobile--header">
+            <a href="{{ url_for('user', username = current_user.username) }}">username</a>
+
+
+        </div>
+		<div id="ct-js-wrapper" class="ct-pageWrapper">
+			<nav class="navbar ct-navbar navbar-default yamm ct-navbar--fadeIn" role="navigation">
+                <div class="container">
+                    <div class="ct-navbarContainer">
+                        <div class="navbar-header">
+
+                            <a class="navbar-brand" href="{{ url_for('index') }}">
+                                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+                            </a>
+                        </div>
+                        <ul class="nav navbar-nav">
+                            <li> <a href="">home</a></li>
+                            <li> <a href="">CATALOG</a></li>
+                            <li> <a href="">BLOG</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav yamm ct-navbar--right">
+                            {% if current_user.is_authenticated %}
+                                <li>
+                                    <a id="navbar-avatar" href="{{ url_for('user', username = current_user.username) }}">
+                                        {% if current_user.avatar_min %}
+                                            <img src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" />
+                                        {% else %}
+                                            <img src="{{ url_for('static',filename="media/min_icon-user-default.png") }}" />
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('security.logout') }}">Logout</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ url_for('security.login') }}">Login</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('security.register') }}">Register</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container ct-u-positionRelative">
+                <div id="log">
+
+                </div>
+                Whether you're keeping marine, tropical or cold water fish, Pets at Home has a great stock of equipment and accessories to choose from. From food and water conditioners to pumps and filters, we've got everything you need right here.
+                Metal tank stand is the perfect accent to any home. Our sturdy solid steel welded stand can be used for aquariums or terrariums. Stand is super easy to assemble.
+Made with durable solid steel and sturdy construction
+Fish tank stand features adjustable feet for leveling before you add your tank
+Sleek and modern design with black finish
+Looks great with any aquarium or terrarium
+Available in a variety of sizes to suit your needs and the size of your tank
+Modern aquarium stand designed to suit any style of home or decor
+                Metal tank stand is the perfect accent to any home. Our sturdy solid steel welded stand can be used for aquariums or terrariums. Stand is super easy to assemble.
+Made with durable solid steel and sturdy construction
+Fish tank stand features adjustable feet for leveling before you add your tank
+Sleek and modern design with black finish
+Looks great with any aquarium or terrarium
+Available in a variety of sizes to suit your needs and the size of your tank
+Modern aquarium stand designed to suit any style of home or decor
+
+            </div>
+			</header>
+			<aside>
+				...
+			</aside>
+			<main>
+				...
+			</main>
+			<footer>
+				...
+			</footer>
+		</div>
+	</body>
+<script>
+$('.ct-menuMobile.nav-collapse').on('show.bs.collapse', function () {
+    $('body').addClass("snapjs-right");
+    $("#ct-js-wrapper").css("transform","translate3d(-266px, 0px, 0px)");
+
+});
+
+$('.ct-menuMobile.nav-collapse').on('hide.bs.collapse', function () {
+    $("#ct-js-wrapper").css("transform","translate3d(0, 0px, 0px)");
+    $('body').removeClass("snapjs-right");
+});
+</script>
 
 
 </html>
+
+
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<html>#}
+{#<head>#}
+{#    {% if title %}#}
+{#        <title>{{ title }} - microblog</title>#}
+{#    {% else %}#}
+{#        <title>microblog</title>#}
+{#    {% endif %}#}
+{#    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">#}
+{#    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">#}
+{#    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">#}
+{##}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>#}
+{#    <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>#}
+{##}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>#}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>#}
+{##}
+{#<script type=text/javascript>#}
+{#    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};#}
+{#</script>#}
+{#</head>#}
+{#<body>#}
+{#<div class="container-fluid">#}
+{#    <div class="row" id="header">#}
+{#        <div class="col-xs-3 col-sm-3 col-md-2">#}
+{#            <a href="{{ url_for('index') }}"><img class="img-responsive"#}
+{#                                                  src="{{ url_for('static',filename="image/logo.png") }}"#}
+{#                                                  width="60"/></a>#}
+{#        </div>#}
+{#        {% if current_user.is_authenticated %}#}
+{#            <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">#}
+{#              <span>#}
+{#              {% if current_user.avatar_min %}#}
+{#                  <img src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}" width="60"/>#}
+{#              {% else %}#}
+{#                  <img src="{{ url_for('static',filename="media/min_icon-user-default.png") }}" width="60"/>#}
+{#              {% endif %}#}
+{#                  <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>#}
+{#            </span>#}
+{#            </div>#}
+{#            <div class=" col-xs-3 col-sm-2 col-md-1">#}
+{#                <span>#}
+{#                    <a href="{{ url_for('security.logout') }}">Logout</a>#}
+{#                </span>#}
+{#            </div>#}
+{#        {% else %}#}
+{#            <div class="col-xs-6 col-sm-3 col-sm-offset-4 col-md-2 col-md-offset-7">#}
+{#                <a href="{{ url_for('security.login') }}">Login</a>#}
+{#            </div>#}
+{#            <div class="col-xs-3 col-sm-2 col-md-1">#}
+{#                <a href="{{ url_for('security.register') }}">Register</a>#}
+{#            </div>#}
+{#        {% endif %}#}
+{#    </div>#}
+{#    <div class="row" id="body">#}
+{#        <div class="col-md-2" id="sidebar">#}
+{#            {% block sidebar %}#}
+{#                <a href="{{ url_for('popular_product') }}">#}
+{#                    <button type="button" class="btn btn-primary btn-block">Catalog</button>#}
+{#                </a>#}
+{#                <a href="{{ url_for('last_posts') }}">#}
+{#                    <button type="button" class="btn btn-primary btn-block">Blog</button>#}
+{#                </a>#}
+{#                <a href="{{ url_for('add_post') }}"><img class="img-responsive"#}
+{#                                                         src="{{ url_for('static',filename="image/add.png") }}"#}
+{#                                                         width="60"/>add post</a>#}
+{#                <a href="{{ url_for('add_product') }}"><img class="img-responsive"#}
+{#                                                            src="{{ url_for('static',filename="image/add.png") }}"#}
+{#                                                            width="60"/>add ptoduct</a>#}
+{##}
+{#            {% endblock %}#}
+{#        </div>#}
+{#        <div class="col-xs-12 col-sm-12 col-md-10" id="main">#}
+{#            {% block body %}{% endblock %}#}
+{#            {% with messages = get_flashed_messages() %}#}
+{#                {% if messages %}#}
+{#                    <ul>#}
+{#                        {% for message in messages %}#}
+{#                            <li>{{ message }} </li>#}
+{#                        {% endfor %}#}
+{#                    </ul>#}
+{#                {% endif %}#}
+{#            {% endwith %}#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#</div>#}
+{#</body>#}
+{##}
+{##}
+{#</html>#}
