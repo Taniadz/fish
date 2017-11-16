@@ -1,100 +1,41 @@
 {% extends "base.html" %}
 {% block body %}
+<div class="section"></div>
+<section class="ct-mediaSection" data-height="100%">
+<div class="flexslider ct-flexslider--fw ct-flexslider--controls3 ct-flexslider--mainSlider ct-u-marginBoth0 ct-js-flexslider"
+     data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="100%"
+     data-controlnav="true" data-animationloop="true" data-controlscontainer="ct-containerAbsolute"
+     data-slideshow="true"style="min-height: 100%; height: 545px;">
 
+    <div class="ct-flexslider-progress">
+        <div class="ct-flexslider-progressBar", style="width: 0px;">
 
-<div id="status">
-</div>
+        </div>
+    </div>
+        <ul class="slides" style="width: 1200%; transition-duration: 0s; transform: translate3d(-2298px, 0px, 0px);">
+            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel1.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                class="">
 
-Hi {{ user.first_name }}! <br>
+            </li>
+            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel2.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                class=""s>
 
+            </li>
+            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel3.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                class="">
 
+            </li>
+            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel4.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                class="">
 
+            </li>
 
-
-<style>
-    .container {
-      max-width: 640px;
-      margin: 20px auto;
-    }
-    img {
-      max-width: 100%;
-    }
-    /* Override Cropper's styles */
-    .cropper-view-box,
-    .cropper-face {
-      border-radius: 50%;
-    }
-  </style>
-
-
-
-
-
-  <div class="container">
-    <h1>my crop for little avatar</h1>
-    <h3>Image</h3>
-    <div>
-
+        </ul>
 
     </div>
-    <h3>Result</h3>
-    <button type="button" id="button">Crop</button>
-    <div id="result"></div>
-  </div>
 
+</div>
 
-<script>
-    (function () {
-      function getRoundedCanvas(sourceCanvas) {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var width = sourceCanvas.width;
-        var height = sourceCanvas.height;
-        canvas.width = width;
-        canvas.height = height;
-        context.imageSmoothingEnabled = true;
-        context.drawImage(sourceCanvas, 0, 0, width, height);
-        context.globalCompositeOperation = 'destination-in';
-        context.beginPath();
-        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
-        context.fill();
-        return canvas;
-      }
-      window.addEventListener('DOMContentLoaded', function () {
-        var image = document.getElementById('image');
-        var button = document.getElementById('button');
-        var result = document.getElementById('result');
-        var croppable = false;
-        var cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 1,
-          ready: function () {
-            croppable = true;
-          }
-        });
-        button.onclick = function () {
-          var croppedCanvas;
-          var roundedCanvas;
-          var roundedImage;
-          if (!croppable) {
-            return;
-          }
+</section>
 
-          // Crop
-          croppedCanvas = cropper.getCroppedCanvas();
-          // Round
-          roundedCanvas = getRoundedCanvas(croppedCanvas);
-          // Show
-          roundedImage = document.createElement('img');
-          roundedImage.src = roundedCanvas.toDataURL()
-          result.innerHTML = '';
-
-          result.appendChild(roundedImage);
-          var image_data = cropper.getData();
-
-          $.post( "/index", image_data );
-        };
-      });
-    })();
-</script>
 {% endblock %}

@@ -10,6 +10,8 @@
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/snap.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
 
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
             <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
@@ -18,33 +20,24 @@
 
         <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/snap.js") }}"></script>
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
 
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
+<script>
+    $(document).ready(function(){
+  $('.flexslider').flexslider({
+    animation: "slide"
+  });
+});
+</script>
 
 
 
 
 	</head>
-	<body cssAnimate>
+	<body class="">
     <!-- :mobile Menu: -->
-
-
-        <div class="ct-navbarMobile">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
-            </a>
-
-            <button type="button"  class="navbar-toggle" data-toggle="collapse" data-target=".ct-menuMobile.nav-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-
-
-            </button>
-
-        </div>
-        <div class="ct-menuMobile nav-collapse navbar-collapse collapse">
+   <div class="ct-menuMobile">
                 <ul class="ct-menuMobile-navbar">
 
 
@@ -54,6 +47,23 @@
                 </ul>
 
         </div>
+
+        <div class="ct-navbarMobile">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+            </a>
+
+            <button type="button"  id = "listener" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+
+
+            </button>
+
+        </div>
+
         <div class="ct-navbarMobile ct-navbarMobile--header">
             <a href="{{ url_for('user', username = current_user.username) }}">username</a>
 
@@ -70,9 +80,9 @@
                             </a>
                         </div>
                         <ul class="nav navbar-nav">
-                            <li> <a href="">home</a></li>
-                            <li> <a href="">CATALOG</a></li>
-                            <li> <a href="">BLOG</a></li>
+                            <li> <a href="">Home</a></li>
+                            <li> <a href="">Catalog</a></li>
+                            <li> <a href="">Blog</a></li>
                         </ul>
                         <ul class="nav navbar-nav yamm ct-navbar--right">
                             {% if current_user.is_authenticated %}
@@ -104,34 +114,10 @@
                     </div>
                 </div>
             </nav>
+            <main>
+                {% block body %}
+                {% endblock %}
 
-            <div class="container ct-u-positionRelative">
-                <div id="log">
-
-                </div>
-                Whether you're keeping marine, tropical or cold water fish, Pets at Home has a great stock of equipment and accessories to choose from. From food and water conditioners to pumps and filters, we've got everything you need right here.
-                Metal tank stand is the perfect accent to any home. Our sturdy solid steel welded stand can be used for aquariums or terrariums. Stand is super easy to assemble.
-Made with durable solid steel and sturdy construction
-Fish tank stand features adjustable feet for leveling before you add your tank
-Sleek and modern design with black finish
-Looks great with any aquarium or terrarium
-Available in a variety of sizes to suit your needs and the size of your tank
-Modern aquarium stand designed to suit any style of home or decor
-                Metal tank stand is the perfect accent to any home. Our sturdy solid steel welded stand can be used for aquariums or terrariums. Stand is super easy to assemble.
-Made with durable solid steel and sturdy construction
-Fish tank stand features adjustable feet for leveling before you add your tank
-Sleek and modern design with black finish
-Looks great with any aquarium or terrarium
-Available in a variety of sizes to suit your needs and the size of your tank
-Modern aquarium stand designed to suit any style of home or decor
-
-            </div>
-			</header>
-			<aside>
-				...
-			</aside>
-			<main>
-				...
 			</main>
 			<footer>
 				...
@@ -139,16 +125,7 @@ Modern aquarium stand designed to suit any style of home or decor
 		</div>
 	</body>
 <script>
-$('.ct-menuMobile.nav-collapse').on('show.bs.collapse', function () {
-    $('body').addClass("snapjs-right");
-    $("#ct-js-wrapper").css("transform","translate3d(-266px, 0px, 0px)");
 
-});
-
-$('.ct-menuMobile.nav-collapse').on('hide.bs.collapse', function () {
-    $("#ct-js-wrapper").css("transform","translate3d(0, 0px, 0px)");
-    $('body').removeClass("snapjs-right");
-});
 </script>
 
 
