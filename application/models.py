@@ -89,8 +89,8 @@ class User(db.Model, UserMixin):
 
     registered_on = db.Column('registered_on', db.DateTime)
     last_seen = db.Column(db.DateTime)
-    avatar = db.Column(db.LargeBinary, nullable=True)
-    avatar_min = db.Column(db.LargeBinary, nullable=True)
+    avatar = db.Column(db.String, nullable=True)
+    avatar_min = db.Column(db.String, nullable=True)
     about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
@@ -154,7 +154,7 @@ class Post(db.Model):
     published_at = db.Column('published_at', db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
-    image = db.Column(db.LargeBinary, nullable=True)
+    image = db.Column(db.String, nullable=True)
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostReaction',
                             backref=db.backref('post',  passive_deletes=True))
@@ -180,7 +180,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
     text = db.Column(db.String(800))
-    image = db.Column(db.LargeBinary, nullable=True)
+    image = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
@@ -214,7 +214,7 @@ class Product(db.Model):
     price = db.Column(db.String(200), nullable=True)
     published_at = db.Column(db.DateTime)
     products = db.relationship('CommentProduct', backref='product', lazy='dynamic')
-    image = db.Column(db.LargeBinary, nullable=True)
+    image = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('ProductReaction',
@@ -246,7 +246,7 @@ class CommentProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
     text = db.Column(db.String(800))
-    image = db.Column(db.LargeBinary, nullable=True)
+    image = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)

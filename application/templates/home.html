@@ -1,41 +1,123 @@
 {% extends "base.html" %}
-{% block body %}
-<div class="section"></div>
-<section class="ct-mediaSection" data-height="100%">
-<div class="flexslider ct-flexslider--fw ct-flexslider--controls3 ct-flexslider--mainSlider ct-u-marginBoth0 ct-js-flexslider"
-     data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="100%"
-     data-controlnav="true" data-animationloop="true" data-controlscontainer="ct-containerAbsolute"
-     data-slideshow="true"style="min-height: 100%; height: 545px;">
+{% block navbar %}
+    <nav class="navbar ct-navbar yamm ct-navbar--fadeIn ct-navbar-onepage navbar-transparent" role="navigation">
+        <div class="container">
+            <div class="ct-navbarContainer">
+                <div class="navbar-header">
 
-    <div class="ct-flexslider-progress">
-        <div class="ct-flexslider-progressBar", style="width: 0px;">
+                    <a class="navbar-brand" href="{{ url_for('index') }}">
+                        <img id="ct-js-logo"
+                             src="{{ url_for('static',filename="image/logo-gray.png") }}"
+                             alt="FISHtank"
+                             width="49px"   >
+                    </a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="">Home</a></li>
+                    <li><a href="">Catalog</a></li>
+                    <li><a href="">Blog</a></li>
+                </ul>
+                <ul class="nav navbar-nav yamm ct-navbar--right">
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a id="navbar-avatar" href="{{ url_for('user', username = current_user.username) }}">
+                                {% if current_user.avatar_min %}
+                                    <img src="{{ url_for('static',filename="media/" + current_user.avatar_min) }}"/>
+                                {% else %}
+                                    <img src="{{ url_for('static',filename="media/min_icon-user-default.png") }}"/>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('security.logout') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('security.login') }}">Login</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('security.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block body %}
+    <div class="section"></div>
+    <section class="ct-mediaSection" data-height="100%">
+        <div class="flexslider ct-flexslider--fw ct-flexslider--controls3 ct-flexslider--mainSlider ct-u-marginBoth0 ct-js-flexslider"
+             data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="100%"
+             data-controlnav="true" data-animationloop="true" data-controlscontainer="ct-containerAbsolute"
+             data-slideshow="true" style="min-height: 100%; height: 545px;">
+
+            <div class="ct-flexslider-progress">
+                <div class="ct-flexslider-progressBar" , style="width: 0px;">
+
+                </div>
+            </div>
+            <ul class="slides"
+                style="width: 1200%; transition-duration: 0s; transform: translate3d(-2298px, 0px, 0px);">
+                <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel1.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                        class="
+                ">
+
+                </li>
+                <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel2.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                        class="
+                ">
+
+                </li>
+                <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel3.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                        class="
+                ">
+
+                </li>
+                <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel4.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
+                        class="
+                ">
+
+                </li>
+
+            </ul>
 
         </div>
+
+        </div>
+
+    </section>
+    <div class="container ct-u-positionRelative">
+        <div class="ct-u-positionRelative">
+            <div class="ct-pageSectionHeader ct-u-paddingTop30 ct-u-borderBottomGrayLighter">
+                Why choose Pets at Home
+                <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">
+                    <span>Categores</span>
+                </h4>
+                <div class="ct-u-paddingBottom40">
+                    <p class="text-justify">
+                        Keeping tropical fish is a fascinating, rewarding and extremely colourful
+                    hobby. Whether you're a novice or an expert, you'll find all the
+                    tanks you need here to start a new aquarium or take your current one to new heights.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
     </div>
-        <ul class="slides" style="width: 1200%; transition-duration: 0s; transform: translate3d(-2298px, 0px, 0px);">
-            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel1.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                class="">
 
-            </li>
-            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel2.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                class=""s>
-
-            </li>
-            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel3.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                class="">
-
-            </li>
-            <li style="background-image: url({{ url_for('static',filename="media/flexslider/" + "carusel4.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                class="">
-
-            </li>
-
-        </ul>
-
-    </div>
-
-</div>
-
-</section>
-
+<script>
+$(document).ready(function() {
+   var $bodyel = jQuery("body");
+   $bodyel.addClass("cssAnimate ct-js-navbarMakeSmaller ct-navbar-isTransparent-toDefault");
+});
+</script>
 {% endblock %}

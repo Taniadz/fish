@@ -1,6 +1,8 @@
 
 var $devicewidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
 var $bodyel = jQuery("body");
+var $navbarel = jQuery(".navbar");
+var $deviceheight = (window.innerHeight > 0) ? window.innerHeight : screen.height;
 $(document).ready(function () {
 
     "use strict";
@@ -18,7 +20,6 @@ $(document).ready(function () {
     }
 
     snapper.on('start', function(){
-    console.log("start");
     });
 
  // Snap Navigation in Mobile // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,4 +54,89 @@ $(document).ready(function () {
             snapper.disable();
         }
     });
+
+     $(window).scroll(function(){
+        var scroll = $(window).scrollTop();
+        console.log(scroll);
+        if (scroll > 600) {
+            jQuery('.ct-js-btnScrollUp').addClass('is-active');
+        } else {
+            jQuery('.ct-js-btnScrollUp').removeClass('is-active');
+        }
+
+        // Navbar Height // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        if (($bodyel.hasClass("ct-navbar--fixedTop")) || ($bodyel.hasClass("ct-js-navbarMakeSmaller"))) {
+
+            if (scroll >= 100) {
+                $(".ct-navbar--fixedTop .navbar").css("box-shadow","0 0 15px -6px #4c505e");
+
+                if($bodyel.hasClass("ct-js-navbarMakeSmaller")){
+                    $bodyel.addClass("ct-navbar--fixedTop--is-small");
+
+
+
+                }
+                if ($bodyel.hasClass("ct-navbar-isTransparent-toInverse") || $bodyel.hasClass("ct-navbar-isTransparent-toDefault")){
+                    $navbarel.removeClass("ct-navbar--transparent");
+                }
+                if ($bodyel.hasClass("ct-navbar-isTransparent-toInverse")){
+                    $navbarel.addClass("navbar-inverse");
+                }
+                if ($bodyel.hasClass("ct-navbar-isTransparent-toDefault")){
+                    $navbarel.removeClass("navbar-transparent");
+                    $navbarel.addClass("navbar-default");
+
+                }
+            } else {
+                if($bodyel.hasClass("ct-js-navbarMakeSmaller")){
+                    $bodyel.removeClass("ct-navbar--fixedTop--is-small");
+                    $(".ct-navbar--fixedTop .navbar").css("box-shadow","none");
+
+
+                }
+                if ($bodyel.hasClass("ct-navbar-isTransparent-toDefault") || $bodyel.hasClass("ct-navbar-isTransparent-toInverse")){
+                    $navbarel.removeClass("navbar-default");
+                    $navbarel.removeClass("navbar-inverse");
+                    $navbarel.addClass("navbar-transparent");
+
+                }
+            }
+        }
+
+        // fixed navbar
+
+        if ($bodyel.is(".navbar-fixed.with-topbar")) {
+            if (scroll >= 100) {
+                $bodyel.addClass("hide-topbar");
+
+                if (!($bodyel.is(".revert-to-transparent"))) {
+                    $bodyel.addClass("navbar-with-shadow");
+                }
+            } else {
+                $bodyel.removeClass("hide-topbar navbar-with-shadow");
+            }
+        }
+
+    });
+     $(document).ready(function () {
+
+        // Flexslider height ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        var $mediaSection = $(".ct-mediaSection");
+        if($mediaSection.length > 0)
+        {
+            $mediaSection.each(function()
+            {
+                if( $(this).attr("data-height") == "100%")
+                {
+                    $(this).find(".flexslider").css("height",  $deviceheight + "px");
+                }
+            });
+        }
+
+
+    });
+
+
 });

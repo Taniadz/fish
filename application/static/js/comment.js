@@ -4,7 +4,7 @@ function delete_comment(e, id, url) {
     if (confirm('Are you sure you want to save this thing into the database?')) {
 
         $.post( url, {id:id},function( data ) {
-            $(".one_comment#comment" + id).html(data.deleted);
+            $("#comment" + id).html(data.deleted);
              $("#edit" + id).text(data.nodelet);
 
 
@@ -23,7 +23,7 @@ function edit_comment(event, id, url) {
         url: url + '/' + id,
 
         success: function (data) {
-            $(".one_comment#comment" + id).html(data.form);
+            $("#comment" + id).html(data.form);
             $("#edit" + id).text(data.noedit);
 
         },

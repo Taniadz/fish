@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import babel
 
 from flask import Flask
 from flask_login import LoginManager
@@ -23,6 +24,19 @@ db = SQLAlchemy(app)
 
 app.config.from_object(config)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
+def format_datetime(value, format='medium'):
+    if format == 'full':
+        format="EEEE, d. MMMM y 'at' HH:mm"
+    elif format == 'medium':
+        format="EE dd.MM.y HH:mm"
+    return babel.dates.format_datetime(value, format)
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
 # app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 # app.config['MAIL_PORT'] = 587
 # app.config['MAIL_USE_SSL'] = True

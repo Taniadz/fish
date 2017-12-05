@@ -6,18 +6,20 @@
     {%- for key, value in comment_tree.items() recursive -%}
 
         {% if key %}
-            <li>
+            <ul class="ct-mediaList list-unstyled">
             {% for comment in comments %}
                 {% if comment.id == key %}
                         {% if comment.deleted %}
                             comment has been deleted
                         {%else%}
-                            {{ post_comment_macro(comment, dict_like) }}
+                            <li class="ct-u-borderBottomGrayLighter ct-u-marginTop10">{{ post_comment_macro(comment, dict_like) }}</li>
+
+
                         {% endif %}
                 {% endif %}
             {% endfor %}
-                <ul class="comment_ul">{{ loop(value.items()) }}</ul>
-             </li>
+                <ul class="ct-mediaList list-unstyled">{{ loop(value.items()) }}</ul>
+             </ul>
         {% endif %}
     {%- endfor -%}
 

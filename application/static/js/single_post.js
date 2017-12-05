@@ -38,9 +38,10 @@ function ShowCommentForm() {
 
 }
 // show comment from field under the post
+$(document).ready(function() {
 
 $('#button_comment1').on("click", ShowCommentForm);
-
+});
 $(document).ready(function() {
     $("#form1.comment_form, #form2.comment_form").submit(function (event) {
         var formData = new FormData($(this)[0]);
@@ -51,7 +52,7 @@ $(document).ready(function() {
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    $("#comment").html(data.comments);
+                    $("#comments").html(data.comments);
                     $('textarea#text').val("");
                 },
                 error: function (xhr, str) {

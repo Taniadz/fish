@@ -1,26 +1,80 @@
 {% extends "base.html" %}
 {% block body %}
-{% from 'helpers.html' import posts_macro with context %}
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+    <section class="ct-blogGrid ct-u-paddingBottom50">
+        <div class="ct-pageSectionHeader ct-u-paddingBoth50">
+            <h3 class="text-uppercase ct-u-size40 text-center">BLOG</h3>
 
-<div class="row">
-      <div class="col-xs-12 col-sm-10 col-md-8">
-          Sort by
-  <a href="{{url_for('last_posts', sort = 'data')}}">data</a>
-  <a href="{{url_for('last_posts', sort = 'rating')}}">rating</a>
+            <div class="container">
+                <div class="row">
+                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
+                        {% for post in posts.items %}
+                            <div class="col-sm-4 ct-js-blogMasonry-item" >
 
-    {% for post in posts.items %}
-        {{ posts_macro(post, dict_like, list_of_favourite) }}
-    {% endfor %}
+                                <article class="ct-articleBox">
 
- </div>
- </div>
+                                    <a href="{{ url_for('singlepost', postid=post.id) }}"><h5>{{ post.title }}</h5></a>
+                                    <p class="ct-u-motiveLight">
+                                        By
+                                        <a href="#">{{ post.author.username }}</a>
+                                        on
+                                        {{ post.published_at|datetime }}
+
+                                    </p>
+                                    <p>
+                                        {% if post.image %}
+                                                                                    <img  src="{{ url_for('static',filename="media/" + post.image) }}"/><br>
+
+                                            {{ post.body|truncate(70, True) }}
+
+                                        {% else %}
+                                        {{ post.body|truncate(150, True) }}
+                                        {% endif %}
+                                    </p>
 
 
+                                </article>
+                            </div>
+                        {% endfor %}
+                    </div>
 
-    {% if posts.has_prev %}<a href="{{ url_for('last_posts', page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} |
-    {% if posts.has_next %}<a href="{{ url_for('last_posts', page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+<script>
+jQuery(window).on("load",function () {
 
+
+        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
+            $('.ct-js-blogMasonry').masonry({
+                itemSelector: '.ct-js-blogMasonry-item',
+                masonry: {
+                }
+            });
+        }
+     });
+</script>
+{#{% from 'helpers.html' import posts_macro with context %}#}
+{#        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>#}
+{##}
+{#<div class="row">#}
+{#      <div class="col-xs-12 col-sm-10 col-md-8">#}
+{#          Sort by#}
+{#  <a href="{{url_for('last_posts', sort = 'data')}}">data</a>#}
+{#  <a href="{{url_for('last_posts', sort = 'rating')}}">rating</a>#}
+{##}
+{#    {% for post in posts.items %}#}
+{#        {{ posts_macro(post, dict_like, list_of_favourite) }}#}
+{#    {% endfor %}#}
+{##}
+{# </div>#}
+{# </div>#}
+{##}
+{##}
+{##}
+{#    {% if posts.has_prev %}<a href="{{ url_for('last_posts', page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} |#}
+{#    {% if posts.has_next %}<a href="{{ url_for('last_posts', page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}#}
+{##}
 
 
 

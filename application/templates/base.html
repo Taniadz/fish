@@ -12,19 +12,23 @@
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/snap.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
 
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
-            <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
+
+        <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
 
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
         <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/snap.js") }}"></script>
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
+                    <script type="text/javascript" src="{{ url_for ('static', filename= "js/masonry.pkgd.js") }}" acync></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
 
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
 <script>
     $(document).ready(function(){
+
   $('.flexslider').flexslider({
     animation: "slide"
   });
@@ -70,13 +74,15 @@
 
         </div>
 		<div id="ct-js-wrapper" class="ct-pageWrapper">
+
+            {% block navbar %}
 			<nav class="navbar ct-navbar navbar-default yamm ct-navbar--fadeIn" role="navigation">
                 <div class="container">
                     <div class="ct-navbarContainer">
                         <div class="navbar-header">
 
                             <a class="navbar-brand" href="{{ url_for('index') }}">
-                                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" width="49px">
                             </a>
                         </div>
                         <ul class="nav navbar-nav">
@@ -114,6 +120,7 @@
                     </div>
                 </div>
             </nav>
+            {% endblock %}
             <main>
                 {% block body %}
                 {% endblock %}
@@ -124,9 +131,8 @@
 			</footer>
 		</div>
 	</body>
-<script>
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
 
-</script>
 
 
 </html>

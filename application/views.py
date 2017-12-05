@@ -11,7 +11,7 @@ from werkzeug.datastructures import CombinedMultiDict, FileStorage
 
 from flask_security import login_required
 
-POSTS_PER_PAGE = 3
+POSTS_PER_PAGE = 6
 from .helpers import *
 from PIL import Image, ImageOps, ImageDraw
 

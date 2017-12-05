@@ -1,226 +1,385 @@
 {% extends "base.html" %}
-{% block body %}
-
 {% from 'helpers.html' import popup_div_macro with context %}
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"async></script>
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"async></script>
+{% block body %}
+    <section class="ct-u-paddingBottom10">
+        <div class="container">
+            <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+                <h3 class="text-uppercase ct-u-size30 text-center">{{ post.title }}</h3>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter">
 
-<div class="row">
+                        {% if post.image %}
+                            <img src="{{ url_for('static',filename="media/" + post.image) }}" />
+                        {% endif %}
+                        <p class="ct-u-motiveLight">
+                            By
+                            <a href="#">{{ post.author.username }}</a>
+                            on
+                            {{ post.published_at|datetime }}
 
-<div class="col-md-7" id="single_post">
-    <div id="post_box">
+                        </p>
+                        <p>
+                            {{ post.body }}
+                        </p>
+                    </div>
+                    <div class="reaction-counter">
 
-        {% if current_user == post.author and editable %}
-            <div class="btn-group btn-block">
-                  <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('edit_post', id=post.id  ) }}">edit</a></li>
-                    <li><a href="#" onclick="delete_post({{ post.id }}, event);">delete</a></li>
+                        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
+                        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
+                        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
+                        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
 
-                  </ul>
-                </div>
-        {% endif %}
-
-        <h1> {{ post.title }}</h1>
-
-        {% if post.image %}
-            <img src="{{ url_for('static',filename="media/" + post.image) }}" />
-        {% endif %}
-
-        <p>
-        {{ post.body }}
-        </p>
-
-        <p>
-        Write <a href="{{ url_for('user', username= post.author.username )}}">{{ post.author.username }}</a>  at {{post.published_at}}
-        </p>
-
-        {% if current_user.is_authenticated %}
-            {% if post_liked %}
+                    </div>
 
 
-                <div class="smile-container">
-                    <div class="parent_div">
-
+                    <div class="under-box">
                         {{ popup_div_macro(post.id, "like_post ") }}
+                        <div class="reaction-button">
+                            <ul class="like-left like-inline">
+                                <li>
+                                    {% if current_user.is_authenticated %}
 
-                            {% if post_liked.type == "like"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
-                        obj_id={{post.id}} url = "like_post" />
+                                        {% if post_liked %}
 
-                                {% elif post_liked.type == "unlike"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
-                        obj_id={{post.id}} url = "like_post"  />
+                                            {% if post_liked.type == "like"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post" />
 
-                                {% elif post_liked.type == "funny"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
-                        obj_id={{post.id}} url = "like_post" />
+                                            {% elif post_liked.type == "unlike"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post"  />
 
+                                            {% elif post_liked.type == "funny"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-funny.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post" />
 
-                                {% elif post_liked.type == "angry"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
-                        obj_id={{post.id}} url = "like_post"  />
+                                            {% elif post_liked.type == "angry"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-angry.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post"  />
+                                            {% endif %}
+                                        {% else %}
+                                            <img class="unliked"  src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                                                     url = "like_post" obj_id={{post.id}} />
 
-
-                             {% endif %}
-                            </div>
-                </div>
-
-            {% else %}
-
-                    <div class="smile-container">
-                        <div class="parent_div">
-
-                            {{ popup_div_macro(post.id, "like_post ") }}
-                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"
-                                     url = "like_post" obj_id={{post.id}} />
+                                        {% endif%}
+                                    {% endif %}
+                                </li>
+                                <li><h4>like</h4></li>
+                            </ul>
+                        </div>
+                        <div id="button_comment1" class="comment-button">
+                            <ul>
+                                <li>
+                                    <i class="fa fa-comments-o" aria-hidden="true"></i>
+                                </li>
+                                <li><h4>comment</h4></li>
+                            </ul>
+                        </div>
+                        <div class="favourite-button">
+                            <ul>
+                                <li>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </li>
+                                <li><h4>Add to fav</h4></li>
+                            </ul>
                         </div>
                     </div>
 
-            {% endif%}
-        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>
-        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>
-        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>
-        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>
-
-
-
-                        {% if if_favorite %}
-                              </span>&nbsp;<img class="favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/gold_star.png" )}}"
-                                  width="20"/></a>
-                        {% else%}
-                            </span>&nbsp;<img class="not-favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/white_star.png" )}}"
-                                  width="20"/></a>
-                    {% endif %}
-        {% else %}
-            <span>{{ post.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"
-                         width="20" /></a>
-             <span class="star product">aDD TO_saved</span>&nbsp;<img  src="{{ url_for('static',filename="image/white_star.png" )}}"
-                                      width="20" /></a>
-        {% endif %}
-    </div>
-    <div class="row">
-        {% if current_user.is_authenticated %}
-            <div class="col-md-3">
-                <button type="button"id="button_comment1" class="btn btn-primary btn-block">Comment</button>
-            </div>
-        {% else %}
-             <div class="col-md-3">
-                <button type="button"id="anon_comment" class="btn btn-primary btn-block">Comment</button>
-            </div>
-        {%endif%}
-        <div class="col-md-3" id ="all_comment">
-             <div class="btn-group">
-                  <button type="button" class="btn btn-default btn-lg dropdown-toggle" id = "comment_but" data-toggle="dropdown">Sort <span class="caret"></span></button>
-                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" onclick="post_comment({{ post.id }}, 'data', event);">data</a></li>
-                    <li><a href="#" onclick="post_comment({{ post.id }}, 'rating', event);">rating</a></li>
-
-                  </ul>
-             </div>
-
-
-        </div>
-
-
-
-    </div>
-                <div id = "hiden_form1">
+                    <div id = "hiden_form1">
                     <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form1"
-                          enctype=multipart/form-data class="form-horizontal comment_form">
-                          {{ form.csrf_token }}
-                        <div class="control-group">
-                            <div class="controls">
-                                 {{form.hidden_tag()}}
-                                    <p>
-                                    {{ form.text.label }}:<br>
-                                    {{form.text(class_="form-control my_textarea", rows="4")}}
-                                        {{form.file}}<br>
+                          enctype=multipart/form-data class="comment_form">
+                        {{form.hidden_tag()}}
 
-                                        <br>
-                                    {% if form.errors %}
+                        <div class="form-group col-xs-9 col-sm-10">
+                            {{form.text(class_="form-control", rows=2)}}
+
+                        </div>
+                        <div id ="hide" class="form-group col-xs-3 col-sm-2">
+                            <label class="hand-cursor">
+                               {{form.file}}
+                                <span class="fa fa-camera"></span>
+                                <span class="photo_text hidden-xs">Image</span>
+                            </label>
+                            <button type="submit" class="btn btn-motive">comment</button>
+
+
+
+                        </div>
+
+                         {% if form.errors %}
                                         <ul class=errors>
                                          {% for error in form.errors %}
                                           <li>{{ error }}</li>
                                         {% endfor %}
                                         </ul>
                                     {% endif %}
-                                  </p>
+
+
+
+
+                    </form>
+                </div>
+                <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                    <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+                        <li role="presentation" class="active">
+                            <div class="ct-tabBorder">
+                                <a href="#new-arrivals" role="tab" data-toggle="tab">Latest</a>
+                            </div>
+                            <div class="mini-triangle">
 
                             </div>
-                        </div>
-
-                        <div class="control-group">
-                            <div class="controls">
-                              <button type="submit" class="btn btn-success">Add comment</button>
+                        </li>
+                         <li role="presentation" class="active">
+                            <div class="ct-tabBorder">
+                                <a href="#new-arrivals" role="tab" data-toggle="tab">Popular</a>
                             </div>
+                            <div class="mini-triangle">
+
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+                    <div class="ct-blogReviews">
+
+                        <div class="ct-u-paddingBoth30" id="comments">
+
+
+                             {% include "comments.html" %}
+
+
+
                         </div>
-                      </form>
-                </div>
-<div class="messages-container" >
-    <p>You have to <a href="{{ url_for('security.login')}}">login</a></p>
-</div>
-
-<div id="comment">
-    {% include "comments.html" %}
-</div>
-    {% if current_user.is_authenticated %}
-
-        <h1 id="button_comment2">Add comment</h1>
-        <div id = "hiden_form2">
-            <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form2"
-                   enctype=multipart/form-data class="form-horizontal comment_form">
-                  {{ form.csrf_token }}
-                <div class="control-group">
-                    <div class="controls">
-                         {{form.hidden_tag()}}
-                            <p>
-                            {{ form.text.label }}:<br>
-                            {{form.text(class_="form-control my_textarea", rows="4" )}}
-                                {{form.file}}<br>
-
-                            {% if form.errors %}
-                                <ul class=errors>
-                                 {% for error in form.errors %}
-                                  <li>{{ error }}</li>
-                                {% endfor %}
-                                </ul>
-                            {% endif %}
-                          </p>
 
                     </div>
+
                 </div>
 
-                <div class="control-group">
-                    <div class="controls">
-                      <button type="submit" class="btn btn-success">Add comment</button>
-                    </div>
-                </div>
-              </form>
-       {% else %}
-     <p>You have to <a href="{{ url_for('security.login')}}">login</a> to add comment</p>
-    {% endif %}
-    </div>
-
-
-
-
- </div>
-<div class="col-md-3" id="many_post">
-    <h2>Popular posts</h2>
-    {% for post in posts %}
-    <a href="{{url_for('singlepost', postid=post.id)}}">
-    <div class="single one_post">
-
-        <h4>{{post.title}}</h4>
-         <span>{{ post.vote_count }}</span>&nbsp;<img src="{{ url_for('static',filename="image/blue_heart.png" )}}"
-                width="20" />
-
-    </div>
-    </a>
-     {% endfor%}
-</div>
- </div>
+            </div>
+        </div>
+    </section>
+{#{% from 'helpers.html' import popup_div_macro with context %}#}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"async></script>#}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"async></script>#}
+{##}
+{#<div class="row">#}
+{##}
+{#<div class="col-md-7" id="single_post">#}
+{#    <div id="post_box">#}
+{##}
+{#        {% if current_user == post.author and editable %}#}
+{#            <div class="btn-group btn-block">#}
+{#                  <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">Edit <span class="caret"></span></button>#}
+{#                  <ul class="dropdown-menu" role="menu">#}
+{#                    <li><a href="{{ url_for('edit_post', id=post.id  ) }}">edit</a></li>#}
+{#                    <li><a href="#" onclick="delete_post({{ post.id }}, event);">delete</a></li>#}
+{##}
+{#                  </ul>#}
+{#                </div>#}
+{#        {% endif %}#}
+{##}
+{#        <h1> {{ post.title }}</h1>#}
+{##}
+{#        {% if post.image %}#}
+{#            <img src="{{ url_for('static',filename="media/" + post.image) }}" />#}
+{#        {% endif %}#}
+{##}
+{#        <p>#}
+{#        {{ post.body }}#}
+{#        </p>#}
+{##}
+{#        <p>#}
+{#        Write <a href="{{ url_for('user', username= post.author.username )}}">{{ post.author.username }}</a>  at {{post.published_at}}#}
+{#        </p>#}
+{##}
+{#        {% if current_user.is_authenticated %}#}
+{#            {% if post_liked %}#}
+{##}
+{##}
+{#                <div class="smile-container">#}
+{#                    <div class="parent_div">#}
+{##}
+{#                        {{ popup_div_macro(post.id, "like_post ") }}#}
+{##}
+{#                            {% if post_liked.type == "like"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"#}
+{#                        obj_id={{post.id}} url = "like_post" />#}
+{##}
+{#                                {% elif post_liked.type == "unlike"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"#}
+{#                        obj_id={{post.id}} url = "like_post"  />#}
+{##}
+{#                                {% elif post_liked.type == "funny"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"#}
+{#                        obj_id={{post.id}} url = "like_post" />#}
+{##}
+{##}
+{#                                {% elif post_liked.type == "angry"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"#}
+{#                        obj_id={{post.id}} url = "like_post"  />#}
+{##}
+{##}
+{#                             {% endif %}#}
+{#                            </div>#}
+{#                </div>#}
+{##}
+{#            {% else %}#}
+{##}
+{#                    <div class="smile-container">#}
+{#                        <div class="parent_div">#}
+{##}
+{#                            {{ popup_div_macro(post.id, "like_post ") }}#}
+{#                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"#}
+{#                                     url = "like_post" obj_id={{post.id}} />#}
+{#                        </div>#}
+{#                    </div>#}
+{##}
+{#            {% endif%}#}
+{#        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>#}
+{#        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>#}
+{#        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>#}
+{#        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>#}
+{##}
+{##}
+{##}
+{#                        {% if if_favorite %}#}
+{#                              </span>&nbsp;<img class="favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/gold_star.png" )}}"#}
+{#                                  width="20"/></a>#}
+{#                        {% else%}#}
+{#                            </span>&nbsp;<img class="not-favourite" id="{{post.id}}"  src="{{ url_for('static',filename="image/white_star.png" )}}"#}
+{#                                  width="20"/></a>#}
+{#                    {% endif %}#}
+{#        {% else %}#}
+{#            <span>{{ post.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename="image/white.png" )}}"#}
+{#                         width="20" /></a>#}
+{#             <span class="star product">aDD TO_saved</span>&nbsp;<img  src="{{ url_for('static',filename="image/white_star.png" )}}"#}
+{#                                      width="20" /></a>#}
+{#        {% endif %}#}
+{#    </div>#}
+{#    <div class="row">#}
+{#        {% if current_user.is_authenticated %}#}
+{#            <div class="col-md-3">#}
+{#                <button type="button"id="button_comment1" class="btn btn-primary btn-block">Comment</button>#}
+{#            </div>#}
+{#        {% else %}#}
+{#             <div class="col-md-3">#}
+{#                <button type="button"id="anon_comment" class="btn btn-primary btn-block">Comment</button>#}
+{#            </div>#}
+{#        {%endif%}#}
+{#        <div class="col-md-3" id ="all_comment">#}
+{#             <div class="btn-group">#}
+{#                  <button type="button" class="btn btn-default btn-lg dropdown-toggle" id = "comment_but" data-toggle="dropdown">Sort <span class="caret"></span></button>#}
+{#                  <ul class="dropdown-menu dropdown-menu-right" role="menu">#}
+{#                    <li><a href="#" onclick="post_comment({{ post.id }}, 'data', event);">data</a></li>#}
+{#                    <li><a href="#" onclick="post_comment({{ post.id }}, 'rating', event);">rating</a></li>#}
+{##}
+{#                  </ul>#}
+{#             </div>#}
+{##}
+{##}
+{#        </div>#}
+{##}
+{##}
+{##}
+{#    </div>#}
+{#                <div id = "hiden_form1">#}
+{#                    <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form1"#}
+{#                          enctype=multipart/form-data class="form-horizontal comment_form">#}
+{#                          {{ form.csrf_token }}#}
+{#                        <div class="control-group">#}
+{#                            <div class="controls">#}
+{#                                 {{form.hidden_tag()}}#}
+{#                                    <p>#}
+{#                                    {{ form.text.label }}:<br>#}
+{#                                    {{form.text(class_="form-control my_textarea", rows="4")}}#}
+{#                                        {{form.file}}<br>#}
+{##}
+{#                                        <br>#}
+{#                                    {% if form.errors %}#}
+{#                                        <ul class=errors>#}
+{#                                         {% for error in form.errors %}#}
+{#                                          <li>{{ error }}</li>#}
+{#                                        {% endfor %}#}
+{#                                        </ul>#}
+{#                                    {% endif %}#}
+{#                                  </p>#}
+{##}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="control-group">#}
+{#                            <div class="controls">#}
+{#                              <button type="submit" class="btn btn-success">Add comment</button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                      </form>#}
+{#                </div>#}
+{#<div class="messages-container" >#}
+{#    <p>You have to <a href="{{ url_for('security.login')}}">login</a></p>#}
+{#</div>#}
+{##}
+{#<div id="comment">#}
+{#    {% include "comments.html" %}#}
+{#</div>#}
+{#    {% if current_user.is_authenticated %}#}
+{##}
+{#        <h1 id="button_comment2">Add comment</h1>#}
+{#        <div id = "hiden_form2">#}
+{#            <form action="{{ url_for('singlepost', postid=post.id  ) }}" method="post" id="form2"#}
+{#                   enctype=multipart/form-data class="form-horizontal comment_form">#}
+{#                  {{ form.csrf_token }}#}
+{#                <div class="control-group">#}
+{#                    <div class="controls">#}
+{#                         {{form.hidden_tag()}}#}
+{#                            <p>#}
+{#                            {{ form.text.label }}:<br>#}
+{#                            {{form.text(class_="form-control my_textarea", rows="4" )}}#}
+{#                                {{form.file}}<br>#}
+{##}
+{#                            {% if form.errors %}#}
+{#                                <ul class=errors>#}
+{#                                 {% for error in form.errors %}#}
+{#                                  <li>{{ error }}</li>#}
+{#                                {% endfor %}#}
+{#                                </ul>#}
+{#                            {% endif %}#}
+{#                          </p>#}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="control-group">#}
+{#                    <div class="controls">#}
+{#                      <button type="submit" class="btn btn-success">Add comment</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#              </form>#}
+{#       {% else %}#}
+{#     <p>You have to <a href="{{ url_for('security.login')}}">login</a> to add comment</p>#}
+{#    {% endif %}#}
+{#    </div>#}
+{##}
+{##}
+{##}
+{##}
+{# </div>#}
+{#<div class="col-md-3" id="many_post">#}
+{#    <h2>Popular posts</h2>#}
+{#    {% for post in posts %}#}
+{#    <a href="{{url_for('singlepost', postid=post.id)}}">#}
+{#    <div class="single one_post">#}
+{##}
+{#        <h4>{{post.title}}</h4>#}
+{#         <span>{{ post.vote_count }}</span>&nbsp;<img src="{{ url_for('static',filename="image/blue_heart.png" )}}"#}
+{#                width="20" />#}
+{##}
+{#    </div>#}
+{#    </a>#}
+{#     {% endfor%}#}
+{#</div>#}
+{# </div>#}
 
 
 {% endblock %}
