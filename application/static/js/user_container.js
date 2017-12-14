@@ -1,17 +1,18 @@
 
-//
-$(document).ready(function() {
-    $("li.comment#date,  li.prod_comment#date, li.comment#vote, li.prod_comment#vote" ).click(function (event){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        $('.user_but').removeClass("active");
-        $("#comment_block").addClass("active");
-        var sort = $(this).attr('id');
-        var contain = $(this).attr('class');
-        var user = $(this).attr('user');
-        alert(user);
+function AddClassActive(class_to_add) {
+    $('.user_but').removeClass("active");
+    $(class_to_add).addClass("active");
 
-            $.ajax({
+}
+
+function UpdatePostContainer() {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    AddClassActive("#comment_block");
+    var sort = $(this).attr('id');
+    var contain = $(this).attr('class');
+    var user = "{{ user.id }}";
+    $.ajax({
                 type: "POST",
                 url: $SCRIPT_ROOT + '/user_contain_comment',
                 data: "user_id=" + user + "&sort=" + sort + "&contain=" + contain,
@@ -23,7 +24,12 @@ $(document).ready(function() {
                     alert('Mistake ' + xhr.responseCode);
                 }
             });
-        });
+}
+
+$(document).ready(function() {
+
+
+    $("li.comment#date,  li.prod_comment#date, li.comment#vote, li.prod_comment#vote" ).on("click", UpdatePostContainer);
 
 
         $("button#product").click(function (event) {

@@ -1,9 +1,19 @@
-                            <form action="{{ url_for('singlepost', postid=post_id) }}" method="post"  enctype="multipart/form-data" class="form-horizontal answer_form" id ="{{ parent_id }}">
-                                     {{ form.csrf_token }}
-                                    <p>
-                               {{form.text(class_="form-control my_textarea", rows="2")}}
-                                 {{form.file}}<br>
+                            <form action="{{ url_for('singlepost', postid=post_id) }}" method="post"  enctype="multipart/form-data" class="answer_form" id ="{{ parent_id }}">
+                        {{form.hidden_tag()}}
+                                    <div class="form-group col-xs-9 col-sm-10">
+                               {{form.text(class_="form-control", rows="2")}}
+                                    </div>
+                                 <div id ="hide" class="form-group col-xs-3 col-sm-2">
+                            <label class="hand-cursor">
+                               {{form.file}}
+                                <span class="fa fa-camera"></span>
+                                <span class="photo_text hidden-xs">Image</span>
+                            </label>
+                            <button type="submit" class="btn btn-motive">comment</button>
 
+
+
+                        </div>
 
                                         {% if form.errors %}
                                             <ul class=errors>
@@ -12,21 +22,14 @@
                                             {% endfor %}
                                             </ul>
                                         {% endif %}
-                                      </p>
 
 
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <button type="submit" class="btn btn-success">Add comment</button>
-                                    </div>
-                                </div>
-                          </form>
-
+</form>
 
 
 
 <script>
-$(".form-horizontal.answer_form").submit(function(event) {
+$(".answer_form").submit(function(event) {
 
     var formData = new FormData($(this)[0]);
 
@@ -38,7 +41,9 @@ $(".form-horizontal.answer_form").submit(function(event) {
         contentType: false,
 
         success: function (data) {
-            $("#comment").html(data.comments);
+                        alert(data.comments);
+
+            $("#comments").html(data.comments);
             $("textarea#text").val("");
 
         },

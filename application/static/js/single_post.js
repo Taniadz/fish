@@ -32,7 +32,7 @@ function post_comment(post_id, sort, event) {
 }
 
 function ShowCommentForm() {
-    $("#hiden_form1").slideToggle(500);
+    $("#hiden_form1").slideToggle(400);
     $("textarea.my_textarea").val("Type your comment");
     $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
 

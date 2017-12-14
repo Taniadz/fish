@@ -14,7 +14,10 @@
 
             <p class="ct-u-paddingBottom5">
                 <span>{{ comment.com_author.username }} </span>
-                -{{ comment.timestamp|datetime }}
+                - {{ comment.timestamp|datetime }}
+
+
+
 
             </p>
             <p>
@@ -22,44 +25,37 @@
                     <img class="img-inherited" src="{{ url_for('static',filename="media/" + comment.image) }}"/>
                 {% endif %}
                 {{ comment.text }}
-
             </p>
-            <div class="reaction-counter">
-                <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
-                <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
-                <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
-                <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
 
-            </div>
 
-                    <div class="under-box">
-                        {{ popup_div_macro(post.id, "like_post ") }}
+                    <div class="under-box comment-under-box">
+                        {{ popup_div_macro(comment.id, "like_comment ") }}
                         <div class="reaction-button">
                             <ul class="like-left like-inline">
                                 <li>
                                     {% if current_user.is_authenticated %}
 
-                                        {% if post_liked %}
+                                        {% if dict_like[comment.id] %}
 
-                                            {% if post_liked.type == "like"%}
+                                            {% if dict_like[comment.id] == "like"%}
                                                 <img class="liked" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
-                                                    obj_id={{post.id}} url = "like_post" />
+                                                    obj_id={{comment.id}} url = "like_comment" />
 
-                                            {% elif post_liked.type == "unlike"%}
+                                            {% elif dict_like[comment.id] == "unlike"%}
                                                 <img class="liked" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}"
-                                                    obj_id={{post.id}} url = "like_post"  />
+                                                    obj_id={{comment.id}} url = "like_comment"  />
 
-                                            {% elif post_liked.type == "funny"%}
+                                            {% elif dict_like[comment.id] == "funny"%}
                                                 <img class="liked" src="{{ url_for('static',filename="image/reaction-funny.png" )}}"
-                                                    obj_id={{post.id}} url = "like_post" />
+                                                    obj_id={{comment.id}} url = "like_comment" />
 
-                                            {% elif post_liked.type == "angry"%}
+                                            {% elif dict_like[comment.id] == "angry"%}
                                                 <img class="liked" src="{{ url_for('static',filename="image/reaction-angry.png" )}}"
-                                                    obj_id={{post.id}} url = "like_post"  />
+                                                    obj_id={{comment.id}} url = "like_comment"  />
                                             {% endif %}
                                         {% else %}
-                                            <img class="unliked"  src="{{ url_for('static',filename="image/reaction-like.png" )}}"
-                                                                     url = "like_post" obj_id={{post.id}} />
+                                            <img class="unliked"  src="{{ url_for('static',filename="image/not-reaction.png" )}}"
+                                                                     url = "like_comment" obj_id={{comment.id}} />
 
                                         {% endif%}
                                     {% endif %}
@@ -72,19 +68,61 @@
                                 <li>
                                     <i class="fa fa-comments-o" aria-hidden="true"></i>
                                 </li>
-                                <li><h4>comment</h4></li>
-                            </ul>
+{#                                 {% if current_user != comment.com_author %}#}
+                                <li><h4 class="discussion" id="{{ comment.id }}"
+                      user="{{ comment.com_author.username }}"
+                      post_id = "{{ comment.post_id }}" >discussion</h4></li>
+
+                                </ul>
+
+
+{#            {% endif %}#}
+
                         </div>
-                        <div class="favourite-button">
+
+
+
+
+                        <div class="comment-edit">
+                            {% if current_user == comment.com_author %}
+
+                                <div class=" post_com_edit" id="edit{{ comment.id }}">
+
+                                    <h4 type="button"  class="dropdown-toggle " data-toggle="dropdown">
+                                        <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                                        edit
+                                    </h4>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">edit</a></li>
+                                        <li><a href="#"
+                                               onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a></li>
+
+                                    </ul>
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                        <div class="comment-counter reaction-counter">
                             <ul>
                                 <li>
-                                    <i class="fa fa-star" aria-hidden="true"></i>
+
+                                    <span id="like_count_like_comment_{{comment.id}}">{{ comment.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
+                                    <span id="unlike_count_like_comment_{{comment.id}}">{{ comment.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
+                                    <span id="funny_count_like_comment_{{comment.id}}">{{ comment.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
+                                    <span id="angry_count_like_comment_{{comment.id}}">{{ comment.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
+
+
                                 </li>
-                                <li><h4>Add to fav</h4></li>
+
                             </ul>
                         </div>
+
                     </div>
 
+<div class=answer id="answer{{ comment.id }}">
+
+                </div>
         </div>
 
 
@@ -161,20 +199,7 @@
 {#            {% endif %}#}
 {#            </p>#}
 {#        </div>#}
-{#        {% if current_user == comment.com_author %}#}
-{#            {{ comment.id }}#}
-{#            <div class="btn-group btn-xs post_com_edit" id="edit{{ comment.id }}">#}
-{#                <button type="button" class="btn btn-default btn-xs dropdown-toggle " data-toggle="dropdown">Edit <span#}
-{#                        class="caret"></span></button>#}
-{#                <ul class="dropdown-menu" role="menu">#}
-{#                    <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">edit</a></li>#}
-{#                    <li><a href="#"#}
-{#                           onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a></li>#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{##}
-{#        {% endif %}#}
+
     </div>
 {%- endmacro %}
 

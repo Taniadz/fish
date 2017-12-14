@@ -7,7 +7,7 @@
                 <h3 class="text-uppercase ct-u-size30 text-center">{{ post.title }}</h3>
             </div>
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-xs-12 col-sm-8">
                     <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter">
 
                         {% if post.image %}
@@ -44,7 +44,7 @@
                                         {% if post_liked %}
 
                                             {% if post_liked.type == "like"%}
-                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
                                                     obj_id={{post.id}} url = "like_post" />
 
                                             {% elif post_liked.type == "unlike"%}
@@ -60,7 +60,7 @@
                                                     obj_id={{post.id}} url = "like_post"  />
                                             {% endif %}
                                         {% else %}
-                                            <img class="unliked"  src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                            <img class="unliked"  src="{{ url_for('static',filename="image/not-reaction.png" )}}"
                                                                      url = "like_post" obj_id={{post.id}} />
 
                                         {% endif%}
@@ -69,12 +69,12 @@
                                 <li><h4>like</h4></li>
                             </ul>
                         </div>
-                        <div id="button_comment1" class="comment-button">
+                        <div id="button_comment1" class="comment-button">oy
                             <ul>
                                 <li>
                                     <i class="fa fa-comments-o" aria-hidden="true"></i>
                                 </li>
-                                <li><h4>comment</h4></li>
+                                <li><h4  title="buzz hover text">comment</h4 ></li>
                             </ul>
                         </div>
                         <div class="favourite-button">
@@ -92,7 +92,7 @@
                           enctype=multipart/form-data class="comment_form">
                         {{form.hidden_tag()}}
 
-                        <div class="form-group col-xs-9 col-sm-10">
+                        <div class="form-group col-xs-9 col-sm-9">
                             {{form.text(class_="form-control", rows=2)}}
 
                         </div>
@@ -155,6 +155,68 @@
 
                     </div>
 
+                </div>
+                <div class="col-xs-12 col-sm-3 col-sm-offset-1">
+                    <div class="ct-inputSearch ct-u-marginBottom40">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <div class="panel-title">
+                                    <a class="collapsed" href="#">
+                                        new post
+                                       <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                    </a>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <div class="panel-title">
+                                <a class="collapsed" href="#">
+                                    new product
+                                   <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
+                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+
+                        {% for post in posts %}
+                            <li>
+                            <a href="{{url_for('singlepost', postid=post.id)}}">
+                            {% if post.image %}
+
+                                <img class="img-circle left-image" src="{{ url_for('static',filename="media/" + post.image )}}" style="height:50px">
+
+                            {% else %}
+                                <img class="img-circle left-image" src="{{ url_for('static',filename="media/" + "carusel4.jpg" )}}" style="height:50px">
+
+                            {% endif %}
+                            <div class="description side">
+                                <p class="ct-fw-600 ct-u-size18">{{post.title|truncate(50, True) }}</p>
+
+
+                                 <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>
+
+
+                            </div>
+                            </a>
+                             </li>
+                             {% endfor%}
+
+
+
+                </ul>
+                <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Latest Comments</h4>
+                <ul class="ct-simpleList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+                    {% for comment in post.comments  %}
+                    <li><i class="fa fa-chevron-right"></i>{{ comment.com_author.username }} on <a href="#"><span>{{ comment.post.title }}</span></a></li>
+                    {% endfor %}
+                </ul>
                 </div>
 
             </div>

@@ -1,24 +1,68 @@
 {% extends "base.html" %}
 {% block body %}
-{% from 'helpers.html' import products_macro with context %}
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+{#{% from 'helpers.html' import products_macro with context %}#}
+{#        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>#}
+{##}
+{##}
+{#  Sort by#}
+{#  <a href="{{url_for('popular_product', sort = 'data')}}">data</a>#}
+{#  <a href="{{url_for('popular_product', sort = 'rating')}}">rating</a>#}
+<div class="container">
+    <div id="product_container" class="row ct-u-paddingTop20">
+        <div class="ct-product animated fadeIn">
+
+          {% for product in products.items %}
+              <div class="col-sm-4 col-xs-12 ct-u-paddingTop40">
+                <a href="{{ url_for('singleproduct', product_id=product.id) }}">
+                    <div class="ct-imgWrapper">
 
 
-  Sort by
-  <a href="{{url_for('popular_product', sort = 'data')}}">data</a>
-  <a href="{{url_for('popular_product', sort = 'rating')}}">rating</a>
+                        <h5 class="ct-imgWrapper-name opacity-title ct-u-size24">{{ product.title }}</h5>
+                        <div class="ct-shopIcon"><i class="fa fa-shopping-cart"></i></div>
 
-<div id="product_container">
+                        {% if product.image %}
+                            <img src="{{ url_for('static',filename="media/" + product.image) }}"/>
+                        {% else %}
+                            <img src="{{ url_for('static',filename="image/default_product.jpg") }}"/>
+                        {% endif %}
+                        <div class="ct-imgWrapper-triangle"></div>
+                    <div class="ct-starRating">
+                            <span id="like_count_like_product_{{ product.id }}">{{ product.like_count }} </span><img class="smile"
+                                                                                                 src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
+                                                                                                 />
+                            <span id="unlike_count_like_product_{{ product.id }}">{{ product.unlike_count }} </span><img class="smile"
+                                                                                                                         src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
+                                                                                                                         />
+                            <span id="funny_count_like_product_{{ product.id }}">{{ product.funny_count }} </span><img class="smile"
+                                                                                                                       src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
+                                                                                                                       />
+                            <span id="angry_count_like_product_{{ product.id }}">{{ product.angry_count }} </span><img class="smile"
+                                                                                                                       src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
+                                                                                                                       />
 
-  {% for product in products.items %}
+                        </div>
 
-    {{ products_macro(product, dict_like, list_of_favourite, 3) }}
+                    </div>
+
+                </a>
 
 
-{% endfor%}
+                <p class="ct-u-paddingTop30"> {{ product.description | truncate(150, False) }}</p>
+                <span class="ct-fw-600 ct-u-motiveDark ct-u-size30">{{ product.price }}</span>
+                <a class="ct-fakeButton text-uppercase pull-right ct-u-motiveDark--bg">In stock</a>
+            </div>
 
 
+
+
+        {% endfor%}
+         </div>
+
+    </div>
 </div>
 
-
 {% endblock %}
+
+
+
+{#{{ products_macro(product, dict_like, list_of_favourite, 3) }}#}

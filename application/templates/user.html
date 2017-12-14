@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block body %}
-            <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
 
 
     <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-4" id="user_inf">
+        <div class="col-sm-8 col-sm-offset-2">
             <h2>{{ user.username }}</h2>
 
 
@@ -20,7 +20,7 @@
                 <p><a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a></p>{% endif %}
 
 
-        </div>
+
         <div class="col-xs-12 col-sm-6 col-md-4" id=user_about>
             {% if user.last_seen %}
                 <p><i>Last seen on: {{ user.last_seen }}</i></p>
@@ -35,53 +35,86 @@
                 {% endif %}
             {% endif %}
         </div>
-    </div>
+
 
     {% if current_user == user %}
-        <div class="row" id="user_activ">
-            <div class="col-xs-8 col-sm-5 col-md-2">
-                <button type="button" class="btn btn-default btn-block active user_but"
-                        id="post_in_user"  sort="date" user="{{ user.id }}">Post
-                </button>
+        <div class="user-activities panel-group">
+            <div class="col-xs-12 col-sm-6 col-md-3">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                              <h4 class="active user_but" id="post_block"  sort="date" user="{{ user.id }}">
+                                  <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                                  Post
+                            </h4>
+
+                          </div>
+                        </div>
+                    </div>
+
+
             </div>
 
-            <div class="col-xs-8 col-sm-5 col-md-2">
-                <div class="btn-group btn-block">
-                    <button type="button" id="comment_block" class="btn btn-block btn-default dropdown-toggle user_but"
-                            data-toggle="dropdown">Comment <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li id="date" class="comment" user ="{{ user.id }}"><a href="#">for post</a></li>
-                        <li id="date" class="prod_comment" user ="{{ user.id }}"><a href="#">for product</a></li>
-                    </ul>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                                <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
+                                        data-toggle="dropdown">
+                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                                    comment
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li id="date" class="comment"><a href="#">for post</a></li>
+                                    <li id="date" class="prod_comment" ><a href="#">for product</a></li>
+                                </ul>
+                        </div>
+                        </div>
                 </div>
             </div>
 
-            <div class="col-xs-8 col-sm-5 col-md-2">
-                <button type="button" class="btn btn-default btn-block user_but" id="product"
-                        sort="date" user ="{{ user.id }}">Product
-                </button>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                <h4  class="user_but" id="product" sort="date">
+                    <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                    product
+                </h4>
+                          </div>
+                        </div>
+                </div>
             </div>
-            <div class="col-xs-8 col-sm-5 col-md-2">
-                <div class="btn-group btn-block">
-                    <button type="button" id="saved_block" class="btn btn-block btn-default dropdown-toggle user_but"
-                            data-toggle="dropdown">Saved <span class="caret"></span></button>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                    <h4 type="button" id="saved_block" class="dropdown-toggle user_but"
+                            data-toggle="dropdown">
+                        <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                        saved </h4>
                     <ul class="dropdown-menu" role="menu">
                         <li id="date" class="post" user ="{{ user.id }}"><a href="#">for post</a></li>
                         <li id="date" class="product" user ="{{ user.id }}"><a href="#">for product</a></li>
 
                     </ul>
                 </div>
+                        </div>
             </div>
-
+            </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-10 col-md-8">
-                <div id="active_contain">
+
+
+                <div id="active-container">
                     {% include '/user_container/user_contain_post.html' %}
                 </div>
-            </div>
-        </div>
+
     {% endif %}
+    </div>
+    </div>
 
+<script>
 
+</script>
 {% endblock %}
