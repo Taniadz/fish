@@ -1,11 +1,34 @@
 {% from 'helpers.html' import products_macro with context %}
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 {% if products|length >= 1 %}
-    <li id="date" class="product" user ="{{ user_id }}"><a href="#">date</a></li>
-    <li id="vote" class="product" user ="{{ user_id }}"><a href="#">rating</a></li>
+
+     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+        <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+            <li role="presentation" class="active">
+                <div class="ct-tabBorder">
+
+                    <a href="" id="date" class="product"  user="{{ user_id }}" role="tab" data-toggle="tab">latest</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+            <li role="presentation" class="">
+                <div class="ct-tabBorder">
+
+
+                    <a href="" id="vote" class="product"  user="{{ user_id }}" role="tab" data-toggle="tab">popular</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
     {% for product in products %}
             {{ products_macro(product, dict_like, list_of_favourite, 5) }}
 
@@ -19,3 +42,13 @@
 
 
 
+<script>
+    $(document).ready(function() {
+
+
+    $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
+
+
+
+});
+</script>

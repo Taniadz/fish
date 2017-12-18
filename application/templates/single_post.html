@@ -69,7 +69,7 @@
                                 <li><h4>like</h4></li>
                             </ul>
                         </div>
-                        <div id="button_comment1" class="comment-button">oy
+                        <div id="button_comment1" class="comment-button">
                             <ul>
                                 <li>
                                     <i class="fa fa-comments-o" aria-hidden="true"></i>
@@ -80,7 +80,13 @@
                         <div class="favourite-button">
                             <ul>
                                 <li>
-                                    <i class="fa fa-star" aria-hidden="true"></i>
+
+
+                                    {% if if_favorite %}
+                                        <i class="fa fa-star favourite" id="{{post.id}}" aria-hidden="true"></i>
+                                    {% else%}
+                                        <i class="fa fa-star-o not-favourite" id="{{post.id}}" aria-hidden="true"></i>
+                                    {% endif %}
                                 </li>
                                 <li><h4>Add to fav</h4></li>
                             </ul>

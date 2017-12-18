@@ -66,8 +66,8 @@
                                     comment
                                 </h4>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li id="date" class="comment"><a href="#">for post</a></li>
-                                    <li id="date" class="prod_comment" ><a href="#">for product</a></li>
+                                    <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">for post</a></li>
+                                    <li id="date" class ="comment_block" rel_obj="prod_comment" user="{{ user.id }}"><a href="#">for product</a></li>
                                 </ul>
                         </div>
                         </div>
@@ -78,7 +78,7 @@
                 <div class="panel panel-default">
                         <div class="panel-heading">
                           <div class="panel-title">
-                <h4  class="user_but" id="product" sort="date">
+                <h4  class="user_but" id="product_block" sort="date" user="{{ user.id }}">
                     <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
                     product
                 </h4>
@@ -90,13 +90,13 @@
                 <div class="panel panel-default">
                         <div class="panel-heading">
                           <div class="panel-title">
-                    <h4 type="button" id="saved_block" class="dropdown-toggle user_but"
+                    <h4 type="button" id="favourite_block" class="dropdown-toggle user_but"
                             data-toggle="dropdown">
                         <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
                         saved </h4>
                     <ul class="dropdown-menu" role="menu">
-                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">for post</a></li>
-                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">for product</a></li>
+                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">posts</a></li>
+                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">products</a></li>
 
                     </ul>
                 </div>
@@ -115,6 +115,14 @@
     </div>
 
 <script>
+$(document).ready(function() {
 
+     $("li.comment_block, li.comment_block, li.comment, a.prod_comment").on("click", UpdateCommentContainer);
+     $("#product_block, li#product_block").on("click", UpdateProductContainer);
+     $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
+
+
+
+ });
 </script>
 {% endblock %}

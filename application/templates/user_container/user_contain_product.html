@@ -1,12 +1,35 @@
 {% from 'helpers.html' import products_macro with context %}
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 
 {% if products|length >= 1 %}
-    <button id="product" sort="date" user ="{{ user_id }}">date</button>
-    <button id="product" sort="vote" user ="{{ user_id }}">rating</button>
+     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+        <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+            <li role="presentation" class="active" id="product_block" sort="date" user ="{{ user_id }}">
+                <div class="ct-tabBorder">
+
+
+                    <a href=""  role="tab" data-toggle="tab">latest</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+            <li role="presentation" class="" id="product_block" sort="vote" user ="{{ user_id }}">
+                <div class="ct-tabBorder">
+
+
+                    <a href=""  role="tab" data-toggle="tab">popular</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
     {% for product in products %}
             {{ products_macro(product, dict_like, list_of_favourite, 5) }}
 
@@ -16,3 +39,14 @@
     <p>Could you add one?</p>
     <a href="{{url_for('add_product')}}">Add_product</a>
             {% endif %}
+
+<script>
+    $(document).ready(function() {
+
+
+    $("#product_block, li#product_block").on("click", UpdateProductContainer);
+
+
+
+});
+</script>

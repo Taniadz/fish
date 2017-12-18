@@ -13,18 +13,22 @@
 
           {% for product in products.items %}
               <div class="col-sm-4 col-xs-12 ct-u-paddingTop40">
-                <a href="{{ url_for('singleproduct', product_id=product.id) }}">
+
+                <div class="product-title">
+                    <h5 class="ct-imgWrapper-name opacity-title ct-u-size24">{{ product.title }}</h5>
+                </div>
                     <div class="ct-imgWrapper">
 
 
-                        <h5 class="ct-imgWrapper-name opacity-title ct-u-size24">{{ product.title }}</h5>
-                        <div class="ct-shopIcon"><i class="fa fa-shopping-cart"></i></div>
 
-                        {% if product.image %}
-                            <img src="{{ url_for('static',filename="media/" + product.image) }}"/>
-                        {% else %}
-                            <img src="{{ url_for('static',filename="image/default_product.jpg") }}"/>
-                        {% endif %}
+                        <div class="ct-shopIcon"><i class="fa fa-shopping-cart"></i></div>
+                        <div class="image-container">
+                            {% if product.image %}
+                                <img class="product-img" src="{{ url_for('static',filename="media/" + product.image) }}"/>
+                            {% else %}
+                                <img class="product-img" src="{{ url_for('static',filename="image/default_product.jpg") }}"/>
+                            {% endif %}
+                        </div>
                         <div class="ct-imgWrapper-triangle"></div>
                     <div class="ct-starRating">
                             <span id="like_count_like_product_{{ product.id }}">{{ product.like_count }} </span><img class="smile"
@@ -44,7 +48,7 @@
 
                     </div>
 
-                </a>
+
 
 
                 <p class="ct-u-paddingTop30"> {{ product.description | truncate(150, False) }}</p>

@@ -27,7 +27,8 @@ from PIL import Image, ImageOps, ImageDraw
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     user = User.query.filter(User.id==1).first()
-    return render_template('home.html', user=current_user)
+    posts =get_ordered_list(Post, Post.published_at.desc(), user_id=current_user.id)
+    return render_template('home.html', user=current_user, posts=posts)
 
 
 @app.route('/popular_product', methods=['GET', 'POST'])
@@ -395,10 +396,15 @@ def product_comment_form():
 @app.route('/user_contain_comment', methods=['POST'])
 def user_contain_comment():
     dict_like = {}
+    print(request.form.get('contain'))
+    print(request.form.get('sort'))
+    print(request.form.get('user_id'))
     if request.form.get('contain') == "comment":
         if request.form.get('sort') == "date":
+            print(1)
             comments = get_ordered_list(Comment, Comment.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
+            print(2)
             comments = get_ordered_list(Comment, Comment.like_count.desc(), user_id=request.form.get('user_id'))
             if current_user.is_authenticated:
                 likes = current_user.post_com_react
@@ -411,10 +417,12 @@ def user_contain_comment():
                                              comments=comments,
                                             user_id=request.form.get('user_id')
                                              )}
-
+    else:
         if request.form.get('sort') == "date":
+            print(3)
             comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
+            print(4)
             comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), user_id=request.form.get('user_id'))
 
 
@@ -427,7 +435,8 @@ def user_contain_comment():
                                                  comments=comments,
                                                  user_id=request.form.get('user_id')
         )}
-
+    print(comments)
+    print(data)
     return jsonify(data)
 
 
@@ -445,7 +454,7 @@ def user_contain_product():
     list_of_favourite = create_list_of_favourite(list_of_favourite, products, current_user.favourite_product)
     dict_like={}
     dict_like = product_dict_like(dict_like, products, likes)
-    data = {'prod_container': render_template('/user_container/user_contain_product.html',
+    data = {'product_container': render_template('/user_container/user_contain_product.html',
                                               list_of_favourite=list_of_favourite,
                                               dict_like=dict_like,
                                                 products=products,
@@ -477,8 +486,8 @@ def user_contain_post():
     return jsonify(data)
 
 
-@app.route('/user_contain_saved', methods=['POST'])
-def user_contain_saved():
+@app.route('/user_contain_favourite', methods=['POST'])
+def user_contain_favourite():
     id = request.form.get('user_id')
     if request.form.get('contain') == "product":
         if request.form.get('sort') == "date":
@@ -493,7 +502,7 @@ def user_contain_saved():
         list_of_favourite=[]
         list_of_favourite = create_list_of_favourite(list_of_favourite, products, current_user.favourite_product)
 
-        data = {'saved_container': render_template('/user_container/user_contain_prod_saved.html',
+        data = {'favourite_container': render_template('/user_container/user_contain_prod_saved.html',
                                                    dict_like=dict_like,
                                                    products=products,
                                                    list_of_favourite=list_of_favourite,
@@ -511,7 +520,7 @@ def user_contain_saved():
         list_of_favourite = []
         list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
 
-        data = {'saved_container': render_template('/user_container/user_contain_post_saved.html',
+        data = {'favourite_container': render_template('/user_container/user_contain_post_saved.html',
                                                    dict_like=dict_like,
                                                    list_of_favourite=list_of_favourite,
                                                    posts=posts,
@@ -522,7 +531,7 @@ def user_contain_saved():
 
 @app.route('/add_fav_product', methods=['POST'])
 def add_fav_product():
-    product = get_or_abort(Product, id=request.args.get("product_id")).first()
+    product = get_or_abort(Product, id=request.form.get("product_id")).first()
     add_prod_fav(current_user, product)
     return jsonify(request.args.get("product_id"))
 
@@ -536,14 +545,14 @@ def add_fav_post():
 
 @app.route('/delete_fav_post', methods=['GET', 'POST'])
 def delete_fav_post():
-    post = get_or_abort(Post, id=request.args.get("post_id")).first()
+    post = get_or_abort(Post, id=request.form.get("post_id")).first()
     delete_post_fav(current_user, post)
     return jsonify(request.args.get("post_id"))
 
 
 @app.route('/delete_fav_product', methods=['GET', 'POST'])
 def delete_fav_product():
-    product = get_or_abort(Product, id=request.args.get("product_id")).first()
+    product = get_or_abort(Product, id=request.form.get("product_id")).first()
     delete_prod_fav(current_user, product)
     return jsonify(request.args.get("product_id"))
 

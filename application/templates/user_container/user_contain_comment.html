@@ -3,13 +3,40 @@
         <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
 
 {% if comments|length >= 1 %}
-    <li id="date" class="comment" user ="{{ user_id }}"><a href="#">date</a></li>
-    <li id="vote" class="comment" user ="{{ user_id }}"><a href="#">rating</a></li>
+    <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+        <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+            <li role="presentation" class="active comment_block" id="date" rel_obj="comment"  user="{{ user_id }}">
+                <div class="ct-tabBorder">
+
+                    <a href=""  role="tab" data-toggle="tab">latest</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+            <li role="presentation" class="comment_block" id="vote" rel_obj="comment"  user="{{ user_id }}">
+                <div class="ct-tabBorder">
+
+
+                    <a href=""  role="tab" data-toggle="tab">popular</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+<div id="comments">
     {% for comment in comments %}
         {% if not comment.deleted %}
+
+            <div class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">
             Comment for post
             <a href="{{ url_for('singlepost', postid = comment.post_id ) }}">{{ comment.post.title }}</a>
             {{ post_comment_macro(comment, dict_like) }}
+            </div>
         {% endif %}
     {% endfor %}
 {% else %}
@@ -17,5 +44,12 @@
     <p>Could you read something?</p>
     <a href="{{ url_for('last_posts') }}">Read latest</a>
 {% endif %}
+</div>
 
+<script>
+$(document).ready(function() {
 
+     $("li.comment_block, li.comment_block").on("click", UpdateCommentContainer);
+
+ });
+</script>

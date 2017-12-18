@@ -1,11 +1,38 @@
 {% from 'helpers.html' import posts_macro with context %}
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 {% if posts|length >= 1 %}
-    <button id="post" sort="date" user ="{{ user_id }}">date</button>
-    <button id="post" sort="vote" user ="{{ user_id }}">rating</button>
+    <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+        <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">
+            <li id="post_block" sort="date" user ="{{ user_id }}" role="presentation" class="active">
+                <div class="ct-tabBorder">
+
+
+                    <a href="#"  role="tab" data-toggle="tab">latest</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+            <li role="presentation"  id="post_block" sort="vote" user ="{{ user_id }}">
+                <div class="ct-tabBorder">
+
+
+                    <a href="#" role="tab" data-toggle="tab">popular</a>
+                </div>
+                <div class="mini-triangle">
+
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+
+
+
+
 
 
     {% for post in posts %}
@@ -16,3 +43,13 @@
     <p>Could you write something?</p>
     <a href="{{ url_for('add_post') }}">Add_post</a>
 {% endif %}
+<script>
+    $(document).ready(function() {
+
+
+    $("#post_block, li#post_block").on("click", UpdatePostContainer);
+
+
+
+});
+</script>

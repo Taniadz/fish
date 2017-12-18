@@ -342,94 +342,56 @@
 
 {% macro posts_macro(post, dict, list_of_favourite) -%}
 
-    <div class="post_container">
-        <h4><a href="{{ url_for('singlepost', postid=post.id) }}">{{ post.title }}</a></h4>
-        {{ dict[post.id]  }}
+   <div class="col-sm-4 ct-js-blogMasonry-item" >
 
-        {% if post.image %}
-            <div class="is_image">
-                <img class="img-responsive" src="{{ url_for('static',filename="media/" + post.image) }}"/><br>
-                {{ post.body|truncate(95, True) }}
-            </div>
-        {% else %}
-            {{ post.body|truncate(400, True) }}<br>
+                                <article class="ct-articleBox">
 
-        {% endif %}
-        <span>   Write {{ post.author.username }} at: <b>{{ post.published_at }}</b> </span><br>
-        <hr class="myhrline"/>
+                                    <a href="{{ url_for('singlepost', postid=post.id) }}"><h5>{{ post.title }}</h5></a>
+                                    <p class="ct-u-motiveLight">
+                                        By
+                                        <a href="#">{{ post.author.username }}</a>
+                                        on
+                                        {{ post.published_at|datetime }}
 
+                                    </p>
+                                    <p>
+                                        {% if post.image %}
+                                                                                    <img  src="{{ url_for('static',filename="media/" + post.image) }}"/><br>
 
-            {% if dict[post.id] %}
+                                            {{ post.body|truncate(70, True) }}
 
+                                        {% else %}
+                                        {{ post.body|truncate(150, True) }}
+                                        {% endif %}
+                                    </p>
+                                <div class="under-box">
+                                     <div class="reaction-counter grid">
 
-                <div class="smile-container">
-                <div class="parent_div">
+                                        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
+                                        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
+                                        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
+                                        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
 
-                {{ popup_div_macro(post.id, "like_post ") }}
-
-                {% if dict[post.id] == "like" %}
-                    <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" ) }}"
-                         obj_id="{{ post.id }}" url = "like_post" />
-
-                {% elif dict[post.id] == "unlike" %}
-                    <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" ) }}"
-                         obj_id="{{ post.id }}" url = "like_post"  />
-
-                {% elif dict[post.id] == "funny" %}
-                    <img class="liked" src="{{ url_for('static',filename="image/funny.png" ) }}"
-                         obj_id="{{ post.id }}" url = "like_post" />
+                                    </div>
+                                    <div class="favourite-button grid">
+                                        <ul class="list-unstyled">
+                                            <li>
 
 
-                {% elif dict[post.id] == "angry" %}
-                    <img class="liked" src="{{ url_for('static',filename="image/angry.png" ) }}"
-                         obj_id="{{ post.id }}" url = "like_post"  />
+                                                {% if if_favorite %}
+                                                    <i class="fa fa-star favourite" id="{{post.id}}" aria-hidden="true"></i>
+                                                {% else%}
+                                                    <i class="fa fa-star-o not-favourite" id="{{post.id}}" aria-hidden="true"></i>
+                                                {% endif %}
+                                            </li>
 
-                {% endif %}
-
-
-        </div>
-        </div>
-
-        {% else %}
-
-            <div class="smile-container">
-                <div class="parent_div">
-
-                    {{ popup_div_macro(post.id, "like_post ") }}
-                    <img class="unliked" src="{{ url_for('static',filename="image/gray.png" ) }}"
-                         url="like_post" obj_id="{{ post.id }}"/>
-                </div>
-            </div>
-
-        {% endif %}
-        <span id="like_count_like_post_{{ post.id }}">{{ post.like_count }} </span><img class="smile"
-                                                                                        src="{{ url_for('static',filename="image/like_smile.png" ) }}"
-                                                                                        width=20/>
-        <span id="unlike_count_like_post_{{ post.id }}">{{ post.unlike_count }} </span><img class="smile"
-                                                                                            src="{{ url_for('static',filename="image/unlike_smile.png" ) }}"
-                                                                                            width=20/>
-        <span id="funny_count_like_post_{{ post.id }}">{{ post.funny_count }} </span><img class="smile"
-                                                                                          src="{{ url_for('static',filename="image/funny.png" ) }}"
-                                                                                          width=20/>
-        <span id="angry_count_like_post_{{ post.id }}">{{ post.angry_count }} </span><img class="smile"
-                                                                                          src="{{ url_for('static',filename="image/angry.png" ) }}"
-                                                                                          width=20/>
+                                        </ul>
+                                    </div>
+                                </div>
 
 
-
-
-        {% if post in list_of_favourite %}
-            <span class="star post" id="star_gold{{ post.id }}">Delete_saved</span>&nbsp;
-            <img class="post" id="gold_star" src="{{ url_for('static',filename="image/gold_star.png" ) }}"
-                 width="20" post_id="{{ post.id }}"/></a>
-        {% else %}
-            <span class="star post" id="star_white{{ post.id }}">Add_to_saved</span>&nbsp;
-            <img class="post" id="white_star" src="{{ url_for('static',filename="image/white_star.png" ) }}"
-                 width="20" post_id="{{ post.id }}"/></a>
-        {% endif %}
-
-
-    </div>
+                                </article>
+                            </div>
 {%- endmacro %}
 
 
