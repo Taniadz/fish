@@ -15,6 +15,7 @@
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/magnific-popup.css') }}">
 
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
 
@@ -27,6 +28,8 @@
             <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
                     <script type="text/javascript" src="{{ url_for ('static', filename= "js/masonry.pkgd.js") }}" acync></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
 
 <script>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};

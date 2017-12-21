@@ -15,8 +15,8 @@
                 {{form.price(size=80)}}<br>
                 {{ form.description.label }}:<br>
                 {{form.description(size=80)}}<br>
-                {{ form.file.label }}<br>
-                {{form.file}}<br>
+                {{ form.images.label }}<br>
+                {{form.images(multiple="")}}<br>
                 {% if form.errors %}
                        <ul class=errors>
                      {% for field, errors in form.errors.items(): %}

@@ -6,8 +6,11 @@ from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 
 
-from application import UPLOAD_FOLDER, db
+from application import UPLOAD_FOLDER, db, app
 from .models import User, Post, Comment, CommentProduct, Product, PostReaction
+
+
+
 
 
 def create_dict(d, child, parent=0,):
@@ -126,7 +129,9 @@ def check_decrease_count(base_model, react_model, **kwargs):
 def create_filename(data, default=None):
     if  data != None:
         f = data
+        print(f.filename)
         filename = secure_filename(f.filename)
+
         f.save(os.path.join(UPLOAD_FOLDER, filename))
     else:
         filename = default
@@ -252,9 +257,10 @@ def get_all_obj(model, **kwargs):
     return model.query.filter_by(**kwargs).all()
 
 
-def get_or_abort(model, code=404,**kwargs):
+def get_or_abort(model, code=404, **kwargs):
     result = model.query.filter_by(**kwargs)
-    if result is None:
+    print(result.first())
+    if result.first() is None:
         abort(code)
     return result
 

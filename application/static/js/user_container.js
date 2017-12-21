@@ -1,7 +1,9 @@
 
 function AddClassActive(class_to_add) {
     $('.user_but').removeClass("active");
+    $(".panel-title").removeClass("active");
     $(class_to_add).addClass("active");
+    $(class_to_add).parent().addClass("active");
 
 }
 function UpdatePostContainer() {

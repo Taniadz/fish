@@ -48,6 +48,6 @@ class ProductCommentForm(FlaskForm):
 class ProductForm(FlaskForm):
     title = StringField('Title', [validators.Length(min =1, max=200)])
     price = StringField('Price', [validators.Length(min=1, max=200)])
-    file = FileField('image')
+    images = FileField('images')
     description = StringField('Description', [validators.Length(min = 5, max=1500)], widget=TextArea())
 

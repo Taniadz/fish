@@ -6,26 +6,36 @@
 
     <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
-            <h2>{{ user.username }}</h2>
+            <div class="ct-pageSectionHeader ct-u-paddingBoth20">
 
+                    <h3 class="text-uppercase ct-u-size30 text-center">{{ user.username }}</h3>
 
-            <div id="max_avatar">
+            </div>
+
+            <div class="row">
+            <div class="max_avatar col-sm-4 col-xs-12">
                 {% if user.avatar %}
                     <img src="{{ url_for('static',filename="media/" + user.avatar) }}" width="60"/>
                 {% else %}
                     <img src="{{ url_for('static',filename="media/icon-user-default.png") }}" width="60"/>
                 {% endif %}
+                <div class="avatar-edit">
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">
+                        <i class="fa fa-camera" aria-hidden="true"></i> edit your avatar
+                    </a>
+                </div>
             </div>
-            {% if user.id == current_user.id %}
-                <p><a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a></p>{% endif %}
 
 
 
-        <div class="col-xs-12 col-sm-6 col-md-4" id=user_about>
+        <div class="col-xs-12 col-sm-8" id=user_about>
             {% if user.last_seen %}
                 <p><i>Last seen on: {{ user.last_seen }}</i></p>
             {% endif %}
-            Registered on: <i><p>{{ user.registered_on }}</i></p>
+            <p class="ct-u-paddingBottom5">
+                <span>Registered on</span>
+                {{ user.registered_on }}
+            </p>
             {% if user.about_me %}
                 <p>{{ user.about_me }}</p>
             {% else %}
@@ -35,15 +45,19 @@
                 {% endif %}
             {% endif %}
         </div>
+        </div>
 
 
     {% if current_user == user %}
-        <div class="user-activities panel-group">
+        <section class="ct-u-motiveLight2--bg  ct-u-paddingBoth20">
+        <div class="row">
+
+        <div class="user-activities panel-group ">
             <div class="col-xs-12 col-sm-6 col-md-3">
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                          <div class="panel-title">
+                          <div class="panel-title active">
                               <h4 class="active user_but" id="post_block"  sort="date" user="{{ user.id }}">
                                   <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
                                   Post
@@ -55,7 +69,6 @@
 
 
             </div>
-
             <div class="col-xs-12 col-sm-6 col-md-3">
                 <div class="panel panel-default">
                         <div class="panel-heading">
@@ -103,14 +116,19 @@
                         </div>
             </div>
             </div>
+
+
+            </div>
         </div>
-
-
+            <div class="row ct-u-paddingTop10 child-active">
                 <div id="active-container">
                     {% include '/user_container/user_contain_post.html' %}
                 </div>
+            </div>
+
 
     {% endif %}
+        </section>
     </div>
     </div>
 

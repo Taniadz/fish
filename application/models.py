@@ -23,6 +23,16 @@ favourite_post = db.Table('favourite_post',
 )
 
 
+class ProductImage(db.Model):
+    __tablename__ = 'product_image'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    filename = db.Column(db.String)
+    image = db.relationship('Product', passive_deletes=True,  backref='image')
+
+
+
 class PostReaction(db.Model):
     __tablename__ = 'postreaction'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -214,7 +224,6 @@ class Product(db.Model):
     price = db.Column(db.String(200), nullable=True)
     published_at = db.Column(db.DateTime)
     products = db.relationship('CommentProduct', backref='product', lazy='dynamic')
-    image = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('ProductReaction',
@@ -225,13 +234,12 @@ class Product(db.Model):
     funny_count = db.Column(db.Integer, default=0)
     angry_count = db.Column(db.Integer, default=0)
 
-    def __init__(self, title, description, user_id, image,price, vote_count=0):
+    def __init__(self, title, description, user_id,price, vote_count=0):
         self.title = title
         self.description = description
         self.user_id = user_id
         self.published_at = datetime.now()
         self.vote_count = vote_count
-        self.image=image
         self.price = price
 
 

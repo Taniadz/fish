@@ -2,6 +2,7 @@
 // toggle function for add to favourite one post / delete from favourite one post
 
 function TogglePostfavour(){
+    alert("post");
     if ($(this).hasClass("fa-star")){
         $.post( $SCRIPT_ROOT + '/delete_fav_post', {post_id: this.id});
         alert(this.id);
@@ -19,12 +20,14 @@ function TogglePostfavour(){
 
 // sort comment by data or rating (work only for comment with parent id = 0)
 function post_comment(post_id, sort, event) {
+    alert(1111111);
     $.ajax({
         type: "POST",
         url:  $SCRIPT_ROOT + '/post_contain_comment',
         data: "post_id="+ post_id + "&sort=" + sort,
         success: function (data) {
-            $("#comment").html(data.comments);
+            alert(data.comments);
+            $("#comments").html(data.comments);
         },
         error: function (xhr, str) {
             alert('Mistake ' + xhr.responseCode);
@@ -35,16 +38,16 @@ function post_comment(post_id, sort, event) {
 }
 
 function ShowCommentForm() {
-    $("#hiden_form1").slideToggle(400);
+    $("#hiden_form1.post-form").slideToggle(400);
     $("textarea.my_textarea").val("Type your comment");
     $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
 
 }
 // show comment from field under the post
 $(document).ready(function() {
-$("i.favourite, i.not-favourite").on('click', TogglePostfavour);
+$("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
 
-$('#button_comment1').on("click", ShowCommentForm);
+$('.post-form #button_comment1').on("click", ShowCommentForm);
 });
 $(document).ready(function() {
     $("#form1.comment_form, #form2.comment_form").submit(function (event) {

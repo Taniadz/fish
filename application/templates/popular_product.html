@@ -21,7 +21,13 @@
 
 
 
-                        <div class="ct-shopIcon"><i class="fa fa-shopping-cart"></i></div>
+                        <div class="ct-shopIcon">
+                            {% if product in list_of_favourite %}
+                                        <i class="fa fa-star favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
+                                    {% else%}
+                                        <i class="fa fa-star-o not-favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
+                                    {% endif %}
+                        </div>
                         <div class="image-container">
                             {% if product.image %}
                                 <img class="product-img" src="{{ url_for('static',filename="media/" + product.image) }}"/>

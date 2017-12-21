@@ -1,224 +1,518 @@
 {% extends "base.html" %}
-{% block body %}
 {% from 'helpers.html' import popup_div_macro with context %}
+{% block body %}
+    <section class="ct-u-paddingBottom10">
+        <div class="container">
 
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
-    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
+            <div class="row">
+                <div class="col-xs-12 col-sm-8">
+                <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+                    <div class="product-title">
+                    <h3 class="text-uppercase ct-u-size30 text-center">{{ product.title }}</h3>
+                     </div>
+                        <div class="edit-product-block dropdown ct-u-paddingBoth20 ct-u-size22">
 
-<div class="row">
+                            <i class="fa fa-pencil-square-o  dropdown-toggle" aria-hidden="true"  data-toggle="dropdown">edit</i>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url_for('edit_product', id=product.id  ) }}">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> edit</a></li>
+                                <li><a href="#" onclick="delete_product({{ product.id }}, event);">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>delete</a></li>
 
-    <div class="col-md-7" id="single_post">
-        <div id="product_box">
-            {% if current_user == product.product_author %}
-            <div class="btn-group btn-block">
-                <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">
-                    Edit <span class="caret"></span></button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('edit_product', id= product.id  ) }}">edit</a></li>
-                    <li><a href="#" onclick="delete_product({{ product.id }}, event);">delete</a></li>
+                              </ul>
 
-                </ul>
-            </div>
-            {% endif %}
-            <h1> {{ product.title }}</h1>
-            {% if product.image %}
-            <img src="{{ url_for('static',filename="media/" + product.image) }}" width="200"/>
-            {% endif %}
+                        </div>
 
-            <p>
-                {{ product.description }}
-            </p>
-
-            <p>
-                Write <a href="{{ url_for('user', username=product.product_author.username)}}">{{
-                product.product_author.username }}</a> at {{product.published_at}}
-            </p>
-
-            {% if current_user.is_authenticated %}
-
-                {% if product_liked %}
-
-
-                <div class="smile-container">
-                    <div class="parent_div">
-
-                        {{ popup_div_macro(product.id, "like_product ") }}
-
-                            {% if product_liked.type == "like"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"
-                        obj_id={{product.id}} url = "like_product" />
-
-                                {% elif product_liked.type == "unlike"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"
-                        obj_id={{product.id}} url = "like_product"  />
-
-                                {% elif product_liked.type == "funny"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"
-                        obj_id={{product.id}} url = "like_product" />
-
-
-                                {% elif product_liked.type == "angry"%}
-                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"
-                        obj_id={{product.id}} url = "like_product"  />
-
-
-                             {% endif %}
-                    </div>
                 </div>
+                    <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter ct-clear-both">
 
-            {% else %}
+                        <div class="popup-gallery">
+                            {% for img in product.image  %}
+                                <a href="{{ url_for('static',filename="media/" + img.filename) }}">
+                                    <img src="{{ url_for('static',filename="media/" + img.filename) }}" width="200"/>
+                                </a>
+                            {% endfor %}
+                        </div>
 
-                    <div class="smile-container">
-                        <div class="parent_div">
 
-                            {{ popup_div_macro(product.id, "like_product ") }}
-                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"
-                                     url = "like_product" obj_id={{product.id}} />
+                        <p class="ct-u-motiveLight">
+                            By
+                            <a href="#">{{ product.product_author.username }}</a>
+                            on
+                            {{ product.published_at|datetime }}
+
+                        </p>
+                        <p>
+                            {{ product.description }}
+                        </p>
+                    </div>
+                    <div class="reaction-counter">
+
+
+                        <span id="like_count_like_product_{{product.id}}">{{ product.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
+                        <span id="unlike_count_like_product_{{product.id}}">{{ product.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
+                        <span id="funny_count_like_product_{{product.id}}">{{ product.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
+                        <span id="angry_count_like_product_{{product.id}}">{{ product.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
+
+
+                    </div>
+
+
+                    <div class="under-box">
+                        {{ popup_div_macro(product.id, "like_product ") }}
+                        <div class="reaction-button">
+                            <ul class="like-left like-inline">
+                                <li>
+                                    {% if current_user.is_authenticated %}
+
+                                        {% if product_liked %}
+
+                                            {% if product_liked.type == "like"%}
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                                    obj_id={{product.id}} url = "like_product" />
+
+                                            {% elif product_liked.type == "unlike"%}
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}"
+                                                    obj_id={{post.id}} url = "like_product"  />
+
+                                            {% elif product_liked.type == "funny"%}
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-funny.png" )}}"
+                                                    obj_id={{product.id}} url = "like_product" />
+
+                                            {% elif product_liked.type == "angry"%}
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-angry.png" )}}"
+                                                    obj_id={{product.id}} url = "like_product"  />
+                                            {% endif %}
+                                        {% else %}
+                                            <img class="unliked"  src="{{ url_for('static',filename="image/not-reaction.png" )}}"
+                                                                     url = "like_product" obj_id={{product.id}} />
+
+                                        {% endif%}
+                                    {% endif %}
+                                </li>
+                                <li><h4>like</h4></li>
+                            </ul>
+                        </div>
+                        <div id="button_comment1" class="comment-button">
+                            <ul>
+                                <li>
+                                    <i class="fa fa-comments-o" aria-hidden="true"></i>
+                                </li>
+                                <li><h4  title="buzz hover text">comment</h4 ></li>
+                            </ul>
+                        </div>
+                        <div class="favourite-button ct-product">
+                            <ul>
+                                <li>
+
+
+                                    {% if if_favorite %}
+                                        <i class="fa fa-star favourite" id="{{product.id}}" aria-hidden="true"></i>
+                                    {% else%}
+                                        <i class="fa fa-star-o not-favourite" id="{{product.id}}" aria-hidden="true"></i>
+                                    {% endif %}
+                                </li>
+                                <li><h4>Add to fav</h4></li>
+                            </ul>
                         </div>
                     </div>
 
-            {% endif%}
-        <span id="like_count_like_product_{{product.id}}">{{ product.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>
-        <span id="unlike_count_like_product_{{product.id}}">{{ product.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>
-        <span id="funny_count_like_product_{{product.id}}">{{ product.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>
-        <span id="angry_count_like_product_{{product.id}}">{{ product.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>
-
-
-
-            {% if if_favorite %}
-            <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product"
-                                                                                                  id="gold_star"
-                                                                                                  src="{{ url_for('static',filename="image/gold_star.png"
-            )}}"
-            width="20" product_id={{product.id}} /></a>
-            {% else%}
-            <span class="star product" id="star_white{{product.id}}">Add_to_saved</span>&nbsp;<img class="product"
-                                                                                                   id="white_star"
-                                                                                                   src="{{ url_for('static',filename="image/white_star.png"
-            )}}"
-            width="20" product_id={{product.id}} /></a>
-            {% endif %}
-            {% else %}
-            <span>{{ product.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename=" image/white.png"
-            )}}"
-            width="20" /></a>
-            <span class="star product">aDD TO_saved</span>&nbsp;<img src="{{ url_for('static',filename=" image/white_star.png"
-            )}}"
-            width="20" /></a>
-
-            {% endif %}
-        </div>
-        <div class="row">
-            {% if current_user.is_authenticated %}
-
-            <div class="col-md-3">
-                <button type="button" id="button_comment1" class="btn btn-primary btn-block">Comment</button>
-            </div>
-            {% else %}
-            <div class="col-md-3">
-                <button type="button" id="anon_comment" class="btn btn-primary btn-block">Comment</button>
-            </div>
-            {%endif%}
-            <div class="col-md-3" id="all_comment">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-lg dropdown-toggle" id="comment_but"
-                            data-toggle="dropdown">Sort <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" onclick="product_comment( {{ product.id }}, 'data', event);">data</a></li>
-                        <li><a href="#" onclick="product_comment({{ product.id }}, 'rating', event);">rating</a></li>
-
-                    </ul>
-                </div>
-
-            </div>
-
-
-        </div>
-        <div id="hiden_form1">
-            <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form1"
-                  enctype=multipart/form-data class="form-horizontal comment_form">
-                {{ form.csrf_token }}
-                <div class="control-group">
-                    <div class="controls">
+                    <div id = "hiden_form1" class="product-form">
+                    <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form1"
+                          enctype=multipart/form-data class="comment_form">
                         {{form.hidden_tag()}}
-                        <p>
-                            {{ form.text.label }}:<br>
-                            {{form.text(class_="form-control my_textarea", rows="4")}} <br>
-                            {{form.file}}<br>
 
-                            {% if form.errors %}
-                        <ul class=errors>
-                            {% for error in form.errors %}
-                            <li>{{ error }}</li>
-                            {% endfor %}
+                        <div class="form-group col-xs-9 col-sm-9">
+                            {{form.text(class_="form-control", rows=2)}}
+
+                        </div>
+                        <div id ="hide" class="form-group col-xs-3 col-sm-2">
+                            <label class="hand-cursor">
+                               {{form.file}}
+                                <span class="fa fa-camera"></span>
+                                <span class="photo_text hidden-xs">Image</span>
+                            </label>
+                            <button type="submit" class="btn btn-motive">comment</button>
+
+
+
+                        </div>
+
+                         {% if form.errors %}
+                                        <ul class=errors>
+                                         {% for error in form.errors %}
+                                          <li>{{ error }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
+
+
+
+
+                    </form>
+                </div>
+                <div class="ct-u-paddingBoth10">
+                    <h3 class="text-uppercase ct-u-size30 text-center">Comments</h3>
+                    <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                        <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+
+
+
+                            <li role="presentation" class="active">
+                                <div class="ct-tabBorder">
+                                    <a href="" onclick="product_comment({{ product.id }}, 'data', event);" role="tab" data-toggle="tab">Latest</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+                             <li role="presentation" class="active">
+                                <div class="ct-tabBorder">
+                                    <a href="" onclick="product_comment({{ product.id }}, 'rating', event);" role="tab" data-toggle="tab">Popular</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+
                         </ul>
-                        {% endif %}
-                        </p>
-
                     </div>
-                </div>
+                        <div class="ct-blogReviews">
 
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" class="btn btn-success">Add comment</button>
+                            <div class="ct-u-paddingBoth30" id="comments">
+
+
+                                 {% include "product_comments.html" %}
+
+
+
+                            </div>
+
+                        </div>
+
+                </div>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-sm-offset-1">
+                    <div class="ct-inputSearch ct-u-marginBottom40">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <div class="panel-title">
+                                    <a class="collapsed" href="#">
+                                        new post
+                                       <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                    </a>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <div class="panel-title">
+                                <a class="collapsed" href="#">
+                                    new product
+                                   <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                </a>
+                              </div>
+                            </div>
+                        </div>
                     </div>
+                    </div>
+
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent products</h4>
+                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+
+                        {% for product in products %}
+                            <li>
+                            <a href="{{url_for('singleproduct', product_id=product.id)}}">
+                            {% if product.image %}
+
+                                <img class="img-circle left-image" src="{{ url_for('static',filename="media/" + product.image[0].filename )}}" style="height:50px">
+
+                            {% else %}
+                                <img class="img-circle left-image" src="{{ url_for('static',filename="media/" + "carusel4.jpg" )}}" style="height:50px">
+
+                            {% endif %}
+                            <div class="description side">
+                                <p class="ct-fw-600 ct-u-size18">{{product.title|truncate(50, True) }}</p>
+
+
+                                 <p class="ct-mediaList-date">{{ product.published_at|datetime }}</p>
+
+
+                            </div>
+                            </a>
+                             </li>
+                             {% endfor%}
+
+
+
+                </ul>
+                <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Latest Comments</h4>
+                <ul class="ct-simpleList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+                    {% for comment in product.comments  %}
+                    <li><i class="fa fa-chevron-right"></i>{{ product.com_author.username }} on <a href="#"><span>{{ comment.product.title }}</span></a></li>
+                    {% endfor %}
+                </ul>
                 </div>
-            </form>
-        </div>
 
-        <div class="messages-container">
-            <p>You have to <a href="/login">login</a></p>
-        </div>
-
-        <div id="comment">
-
-            {% include "product_comments.html" %}
-        </div>
-        {% if current_user.is_authenticated %}
-        <h1 id="button_comment2">Add comment</h1>
-
-        <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form2"
-              enctype=multipart/form-data class="form-horizontal comment_form">
-            {{ form.csrf_token }}
-            <div class="control-group">
-                <div class="controls">
-                    {{form.hidden_tag()}}
-                    <p>
-                        {{ form.text.label }}:<br>
-                        {{form.text(class_="form-control my_textarea", rows="4" )}}
-                        {{form.file}}<br>
-
-                        {% if form.errors %}
-                    <ul class=errors>
-                        {% for error in form.errors %}
-                        <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                    </p>
-
-                </div>
             </div>
-
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" class="btn btn-success">Add comment</button>
-                </div>
-            </div>
-        </form>
-        {% else %}
-        <p>You have to <a href="/login">login</a> to add comment</p>
-        {% endif %}
-    </div>
-
-
-</div>
-<div class="col-md-3" id="many_post">
-    <h2>Popular posts</h2>
-
-</div>
-</div>
-
-
+        </div>
+    </section>
+<script>
+ $('.popup-gallery').magnificPopup({
+ delegate: 'a',
+ type: 'image',
+ tLoading: 'Загрузка изображения #%curr%...',
+ gallery: {
+     enabled: true,
+     navigateByImgClick: true,
+     preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+ }
+ });
+</script>
 {% endblock %}
 
+
+
+
+
+
+{#{% extends "base.html" %}#}
+{#{% block body %}#}
+{#{% from 'helpers.html' import popup_div_macro with context %}#}
+{##}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>#}
+{#    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>#}
+{##}
+{#<div class="row">#}
+{##}
+{#    <div class="col-md-7" id="single_post">#}
+{#        <div id="product_box">#}
+{#            {% if current_user == product.product_author %}#}
+{#            <div class="btn-group btn-block">#}
+{#                <button type="button" class="btn btn-block btn-default dropdown-toggle user_but" data-toggle="dropdown">#}
+{#                    Edit <span class="caret"></span></button>#}
+{#                <ul class="dropdown-menu" role="menu">#}
+{#                    <li><a href="{{ url_for('edit_product', id= product.id  ) }}">edit</a></li>#}
+{#                    <li><a href="#" onclick="delete_product({{ product.id }}, event);">delete</a></li>#}
+{##}
+{#                </ul>#}
+{#            </div>#}
+{#            {% endif %}#}
+{#            <h1> {{ product.title }}</h1>#}
+{#            <div class="popup-gallery">#}
+{#                {% for img in product.image  %}#}
+{#                    <a href="{{ url_for('static',filename="media/" + img.filename) }}">#}
+{#                        <img src="{{ url_for('static',filename="media/" + img.filename) }}" width="200"/>#}
+{#                    </a>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{##}
+{#            <p>#}
+{#                {{ product.description }}#}
+{#            </p>#}
+{##}
+{#            <p>#}
+{#                Write <a href="{{ url_for('user', username=product.product_author.username)}}">{{#}
+{#                product.product_author.username }}</a> at {{product.published_at}}#}
+{#            </p>#}
+{##}
+{#            {% if current_user.is_authenticated %}#}
+{##}
+{#                {% if product_liked %}#}
+{##}
+{##}
+{#                <div class="smile-container">#}
+{#                    <div class="parent_div">#}
+{##}
+{#                        {{ popup_div_macro(product.id, "like_product ") }}#}
+{##}
+{#                            {% if product_liked.type == "like"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/like_smile.png" )}}"#}
+{#                        obj_id={{product.id}} url = "like_product" />#}
+{##}
+{#                                {% elif product_liked.type == "unlike"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/unlike_smile.png" )}}"#}
+{#                        obj_id={{product.id}} url = "like_product"  />#}
+{##}
+{#                                {% elif product_liked.type == "funny"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/funny.png" )}}"#}
+{#                        obj_id={{product.id}} url = "like_product" />#}
+{##}
+{##}
+{#                                {% elif product_liked.type == "angry"%}#}
+{#                                <img class="liked" src="{{ url_for('static',filename="image/angry.png" )}}"#}
+{#                        obj_id={{product.id}} url = "like_product"  />#}
+{##}
+{##}
+{#                             {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#            {% else %}#}
+{##}
+{#                    <div class="smile-container">#}
+{#                        <div class="parent_div">#}
+{##}
+{#                            {{ popup_div_macro(product.id, "like_product ") }}#}
+{#                             <img class="unliked"  src="{{ url_for('static',filename="image/gray.png" )}}"#}
+{#                                     url = "like_product" obj_id={{product.id}} />#}
+{#                        </div>#}
+{#                    </div>#}
+{##}
+{#            {% endif%}#}
+{#        <span id="like_count_like_product_{{product.id}}">{{ product.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/like_smile.png" )}}" width=20/>#}
+{#        <span id="unlike_count_like_product_{{product.id}}">{{ product.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/unlike_smile.png" )}}" width=20/>#}
+{#        <span id="funny_count_like_product_{{product.id}}">{{ product.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/funny.png" )}}" width=20/>#}
+{#        <span id="angry_count_like_product_{{product.id}}">{{ product.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/angry.png" )}}" width=20/>#}
+{##}
+{##}
+{##}
+{#            {% if if_favorite %}#}
+{#            <span class="star product" id="star_gold{{product.id}}">Delete_saved</span>&nbsp;<img class="product"#}
+{#                                                                                                  id="gold_star"#}
+{#                                                                                                  src="{{ url_for('static',filename="image/gold_star.png"#}
+{#            )}}"#}
+{#            width="20" product_id={{product.id}} /></a>#}
+{#            {% else%}#}
+{#            <span class="star product" id="star_white{{product.id}}">Add_to_saved</span>&nbsp;<img class="product"#}
+{#                                                                                                   id="white_star"#}
+{#                                                                                                   src="{{ url_for('static',filename="image/white_star.png"#}
+{#            )}}"#}
+{#            width="20" product_id={{product.id}} /></a>#}
+{#            {% endif %}#}
+{#            {% else %}#}
+{#            <span>{{ product.like_count }}</span>&nbsp;<img class="anon_like" src="{{ url_for('static',filename=" image/white.png"#}
+{#            )}}"#}
+{#            width="20" /></a>#}
+{#            <span class="star product">aDD TO_saved</span>&nbsp;<img src="{{ url_for('static',filename=" image/white_star.png"#}
+{#            )}}"#}
+{#            width="20" /></a>#}
+{##}
+{#            {% endif %}#}
+{#        </div>#}
+{#        <div class="row">#}
+{#            {% if current_user.is_authenticated %}#}
+{##}
+{#            <div class="col-md-3">#}
+{#                <button type="button" id="button_comment1" class="btn btn-primary btn-block">Comment</button>#}
+{#            </div>#}
+{#            {% else %}#}
+{#            <div class="col-md-3">#}
+{#                <button type="button" id="anon_comment" class="btn btn-primary btn-block">Comment</button>#}
+{#            </div>#}
+{#            {%endif%}#}
+{#            <div class="col-md-3" id="all_comment">#}
+{#                <div class="btn-group">#}
+{#                    <button type="button" class="btn btn-default btn-lg dropdown-toggle" id="comment_but"#}
+{#                            data-toggle="dropdown">Sort <span class="caret"></span></button>#}
+{#                    <ul class="dropdown-menu" role="menu">#}
+{#                        <li><a href="#" onclick="product_comment( {{ product.id }}, 'data', event);">data</a></li>#}
+{#                        <li><a href="#" onclick="product_comment({{ product.id }}, 'rating', event);">rating</a></li>#}
+{##}
+{#                    </ul>#}
+{#                </div>#}
+{##}
+{#            </div>#}
+{##}
+{##}
+{#        </div>#}
+{#        <div id="hiden_form1">#}
+{#            <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form1"#}
+{#                  enctype=multipart/form-data class="form-horizontal comment_form">#}
+{#                {{ form.csrf_token }}#}
+{#                <div class="control-group">#}
+{#                    <div class="controls">#}
+{#                        {{form.hidden_tag()}}#}
+{#                        <p>#}
+{#                            {{ form.text.label }}:<br>#}
+{#                            {{form.text(class_="form-control my_textarea", rows="4")}} <br>#}
+{#                            {{form.file}}<br>#}
+{##}
+{#                            {% if form.errors %}#}
+{#                        <ul class=errors>#}
+{#                            {% for error in form.errors %}#}
+{#                            <li>{{ error }}</li>#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                        {% endif %}#}
+{#                        </p>#}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="control-group">#}
+{#                    <div class="controls">#}
+{#                        <button type="submit" class="btn btn-success">Add comment</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </form>#}
+{#        </div>#}
+{##}
+{#        <div class="messages-container">#}
+{#            <p>You have to <a href="/login">login</a></p>#}
+{#        </div>#}
+{##}
+{#        <div id="comment">#}
+{##}
+{#            {% include "product_comments.html" %}#}
+{#        </div>#}
+{#        {% if current_user.is_authenticated %}#}
+{#        <h1 id="button_comment2">Add comment</h1>#}
+{##}
+{#        <form action="{{ url_for('singleproduct', product_id=product.id  ) }}" method="post" id="form2"#}
+{#              enctype=multipart/form-data class="form-horizontal comment_form">#}
+{#            {{ form.csrf_token }}#}
+{#            <div class="control-group">#}
+{#                <div class="controls">#}
+{#                    {{form.hidden_tag()}}#}
+{#                    <p>#}
+{#                        {{ form.text.label }}:<br>#}
+{#                        {{form.text(class_="form-control my_textarea", rows="4" )}}#}
+{#                        {{form.file}}<br>#}
+{##}
+{#                        {% if form.errors %}#}
+{#                    <ul class=errors>#}
+{#                        {% for error in form.errors %}#}
+{#                        <li>{{ error }}</li>#}
+{#                        {% endfor %}#}
+{#                    </ul>#}
+{#                    {% endif %}#}
+{#                    </p>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="control-group">#}
+{#                <div class="controls">#}
+{#                    <button type="submit" class="btn btn-success">Add comment</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </form>#}
+{#        {% else %}#}
+{#        <p>You have to <a href="/login">login</a> to add comment</p>#}
+{#        {% endif %}#}
+{#    </div>#}
+{##}
+{##}
+{#</div>#}
+{#<div class="col-md-3" id="many_post">#}
+{#    <h2>Popular posts</h2>#}
+{##}
+{#</div>#}
+{#</div>#}
+{##}
+{#<script>#}
+{# $('.popup-gallery').magnificPopup({#}
+{# delegate: 'a',#}
+{# type: 'image',#}
+{# tLoading: 'Загрузка изображения #%curr%...',#}
+{# gallery: {#}
+{#     enabled: true,#}
+{#     navigateByImgClick: true,#}
+{#     preload: [0, 1] // Will preload 0 - before current, and 1 after the current image#}
+{# }#}
+{# });#}
+{#</script>#}
+{#{% endblock %}#}
+{##}

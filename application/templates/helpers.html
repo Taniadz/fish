@@ -86,14 +86,15 @@
                         <div class="comment-edit">
                             {% if current_user == comment.com_author %}
 
-                                <div class=" post_com_edit" id="edit{{ comment.id }}">
+                                <div class="dropdown post_com_edit" id="edit{{ comment.id }}">
 
-                                    <h4 type="button"  class="dropdown-toggle " data-toggle="dropdown">
+                                    <h4  class="dropdown-toggle " data-toggle="dropdown">
                                         <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
                                         edit
                                     </h4>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">edit</a></li>
+                                        <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
                                         <li><a href="#"
                                                onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a></li>
 

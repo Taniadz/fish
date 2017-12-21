@@ -1,81 +1,22 @@
 
-// toggle function for add to favourite one post / delete from favourite one post
-
-
-jQuery.fn.clickToggle = function (a, b) {
-    function cb() {
-        [b, a][this._tog ^= 1].call(this);
+function ToggleProductFavour(){
+    if ($(this).hasClass("fa-star")){
+        $.post( $SCRIPT_ROOT + '/delete_fav_product', {product_id: this.id});
+        alert(this.id);
+        $(this).removeClass("fa-star");
+        $(this).addClass("fa-star-o");
+    }else{
+        alert("else");
+        $.post( $SCRIPT_ROOT + '/add_fav_product', {product_id: this.id});
+        $(this).removeClass("fa-star-o");
+        $(this).addClass("fa-star");
     }
-
-    return this.on("click", cb);
-};
-$(document).ready(function () {
-
-
-    $("img#gold_star.product").clickToggle(function () {
-        var product_id = $(this).attr("product_id");
-
-        $(this).attr("src", '/static/image/white_star.png');
-
-        $.ajax({
-            type: 'GET',
-            url: $SCRIPT_ROOT + '/delete_fav_product',
-            data: "product_id=" + product_id,
-            success: function (data) {
-
-                $('.product#star_gold' + product_id).text("Add to saved");
-            }
-        });
-
-    }, function () {
-        var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/gold_star.png');
-
-        $.ajax({
-            type: 'GET',
-            url: $SCRIPT_ROOT + '/add_fav_product',
-            data: "product_id=" + product_id,
-            success: function (data) {
-                $('.product#star_gold' + product_id).text("Delete_from_saved");
-            }
-        });
-    });
-
-    $("img#white_star.product").clickToggle(function () {
-        var product_id = $(this).attr("product_id");
-
-        $(this).attr("src", '/static/image/gold_star.png');
-
-        $.ajax({
-            type: 'GET',
-            url: $SCRIPT_ROOT + '/add_fav_product',
-            data: "product_id=" + product_id,
-
-            success: function (data) {
-                $('.product#star_white' + product_id).text("Delete from saved");
-            }
-        });
-
-    }, function () {
-        var product_id = $(this).attr("product_id");
-        $(this).attr("src", '/static/image/white_star.png');
-
-        $.ajax({
-            type: 'GET',
-            url: $SCRIPT_ROOT + '/delete_fav_product',
-            data: "product_id=" + product_id,
-            success: function (data) {
-                $('.product#star_white' + product_id).text("Add to saved");
-            }
-        });
-    });
-});
-
+}
 // delete product and redirect
 function delete_product(product_id, e) {
 
     alert(product_id);
-    e.preventDefault()
+    e.preventDefault();
     if (confirm('Are you sure you want to save this thing into the database?')) {
         $.post("{{ url_for('delete_product')}}", {id: product_id}, function (data) {
             window.location.href = "{{ url_for('popular_product') }}";
@@ -115,17 +56,20 @@ function product_comment(product_id, sort, event) {
 
 };
 
+function ShowCommentForm() {
+    $("#hiden_form1.product-form").slideToggle(400);
+    $("textarea.my_textarea").val("Type your comment");
+    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
+
+}
 
 // show comment from field under the product
 $(document).ready(function () {
-    $('#button_comment1').click(function () {
-        $("#hiden_form1").slideToggle(500);
-    });
-    $("textarea.my_textarea").val("Type your comment");
+    $('.product-form #button_comment1').on("click", ShowCommentForm);
 
-    $("textarea.my_textarea").focus(function () {
-        $("textarea.my_textarea").val("");
-    });
+    $(".ct-product i.favourite, .ct-product i.not-favourite").on('click', ToggleProductFavour);
+
+
 
 
 // send comment by ajax from form field under the product

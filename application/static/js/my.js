@@ -24,7 +24,7 @@ function ToggleLikeUnlike(){
     alert(div_class);
     if (div_class == "unliked") {
         alert("unliked");
-        $(this).attr("src", '/static/image/like_smile.png');
+        $(this).attr("src", '/static/image/reaction-like.png');
         $.ajax({
             type: 'POST',
             url: "/" + url,
@@ -39,7 +39,7 @@ function ToggleLikeUnlike(){
         alert("liked");
         var url = $(this).attr("url");
         var id = $(this).attr("obj_id");
-            $(this).attr("src", '/static/image/gray.png');
+            $(this).attr("src", '/static/image/not-reaction.png');
             $.ajax({
                 type: 'POST',
                 url: "/un" + url,
