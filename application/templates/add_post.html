@@ -1,39 +1,74 @@
 {% extends "base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
 
 {% block body %}
-<h1>Add post</h1>
+<section class="ct-u-paddingBo40">
+<div class="container">
+    <div class="ct-sectionHeader ct-u-paddingBoth20">
+        <h2 class="ct-u-size34">add product</h2>
+    </div>
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
+
 <form action="" method="post" class="form-horizontal" enctype=multipart/form-data>
+    <div class="form-group">
+
+        {{ form.hidden_tag() }}
+
+        {{ render_field_with_errors(form.title, class="form-control") }}
+        {{ render_field_with_errors(form.body, class="form-control") }}
+        <div  id ="hide" class="form-group big-form-file">
+                {{form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected")}}
+
+                                <label for="file"class="hand-cursor">
+                                <span class="photo_text hidden-xs ct-u-size24"><i class="fa fa-camera ct-u-size30" aria-hidden="true"></i> Select image</span>
+
+                                </label>
+
+
+
+        </div>
+
+
+
+
+    </div>
     <div class="control-group">
         <div class="controls">
-                    {{ form.csrf_token }}
-
-                <p>
-                {{ form.title.label }}:<br>
-                {{form.title(size=80)}}<br>
-                {{ form.body.label }}:<br>
-
-                {{form.body(size=80)}}<br>
-                {{ form.file.label }}<br>
-                {{form.file}}<br>
-                {% if form.errors %}
-                        <ul class=errors>
-                     {% for field, errors in form.errors.items(): %}
-                        {% for error in errors %}
-                      <li>Error in the field {{field}}:{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-              </p>
-
+          <button type="submit" class="btn btn-motive btn-form">Publish</button>
         </div>
     </div>
 
-    <div class="control-group">
-        <div class="controls">
-          <button type="submit" class="btn btn-success">Publish</button>
-        </div>
-    </div>
+
   </form>
+        </div>
+    </div>
+</div>
+</section>
+               <script>
+                jQuery(window).on("load",function () {
+                var inputs = document.querySelectorAll( '.inputfile' );
+Array.prototype.forEach.call( inputs, function( input )
+{
+	var label	 = input.nextElementSibling,
+		labelVal = label.innerHTML;
 
+	input.addEventListener( 'change', function( e )
+	{
+		var fileName = '';
+		if( this.files && this.files.length > 1 ) {
+            fileName = this.files.length + " files selected";
+
+		}
+		else
+			fileName = e.target.value.split( '\\' ).pop();
+
+		if( fileName )
+			label.querySelector( 'span' ).innerHTML = fileName
+		else
+			label.innerHTML = labelVal;
+	});
+});
+});
+            </script>
 {% endblock %}

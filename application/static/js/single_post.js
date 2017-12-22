@@ -20,7 +20,6 @@ function TogglePostfavour(){
 
 // sort comment by data or rating (work only for comment with parent id = 0)
 function post_comment(post_id, sort, event) {
-    alert(1111111);
     $.ajax({
         type: "POST",
         url:  $SCRIPT_ROOT + '/post_contain_comment',
@@ -39,36 +38,18 @@ function post_comment(post_id, sort, event) {
 
 function ShowCommentForm() {
     $("#hiden_form1.post-form").slideToggle(400);
-    $("textarea.my_textarea").val("Type your comment");
-    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
+    $("form#form1.comment_form textarea").val("Type your comment");
+    $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
+
 
 }
 // show comment from field under the post
 $(document).ready(function() {
-$("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
 
-$('.post-form #button_comment1').on("click", ShowCommentForm);
+    $('#button_comment1.post-form').on("click", ShowCommentForm);
 });
-$(document).ready(function() {
-    $("#form1.comment_form, #form2.comment_form").submit(function (event) {
-        var formData = new FormData($(this)[0]);
-           $.ajax({
-                type: "POST",
-                url: $(this).attr('action'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    $("#comments").html(data.comments);
-                    $('textarea#text').val("");
-                },
-                error: function (xhr, str) {
-                    alert('Mistake ' + xhr.responseCode);
-                }
-            });
-    event.preventDefault();
-    });
-});
+
 
 // delete post and redirect
 function delete_post(post_id, e) {

@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% from 'helpers.html' import posts_macro with context %}
+{% from 'helpers.html' import products_macro with context %}
+
+
 {% block navbar %}
     <nav class="navbar ct-navbar yamm ct-navbar--fadeIn ct-navbar-onepage navbar-transparent" role="navigation">
         <div class="container">
@@ -91,34 +96,68 @@
         </div>
 
     </section>
-    <div class="container ct-u-positionRelative">
-        <div class="ct-u-positionRelative">
-            <div class="ct-pageSectionHeader ct-u-paddingTop30 ct-u-borderBottomGrayLighter">
-                Why choose Pets at Home
-                <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">
-                    <span>Categores</span>
-                </h4>
-                <div class="ct-u-paddingBottom40">
-                    <p class="text-justify">
-                        Keeping tropical fish is a fascinating, rewarding and extremely colourful
-                    hobby. Whether you're a novice or an expert, you'll find all the
-                    tanks you need here to start a new aquarium or take your current one to new heights.
-                    </p>
 
 
-                </div>
-
-
+    <section class="ct-u-paddingBoth30">
+        <div class="container">
+            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                 <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+                    <li role="presentation" class=""><div class="ct-tabBorder"><a href="#" role="tab" data-toggle="tab">Latest posts </a></div><div class="mini-triangle"></div></li>
+                </ul>
             </div>
 
+            <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20 ">
+                        {% for post in posts.items %}
+                            <div class="col-sm-4 ct-js-blogMasonry-item" >
+
+                                {{ posts_macro(post, dict_like_post, list_of_favourite_post) }}
+                            </div>
+                        {% endfor %}
+            </div>
         </div>
 
+    </section>
+
+
+    <section class="ct-u-motiveLight2--bg ct-u-paddingBoth30">
+        <div class="container">
+            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                 <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+                    <li role="presentation" class=""><div class="ct-tabBorder"><a href="#" role="tab" data-toggle="tab">Popular product </a></div><div class="mini-triangle"></div></li>
+                </ul>
+            </div>
+
+            <div id="product_container" class="row ct-u-paddingTop20">
+        <div class="ct-product">
+            {% for product in products.items %}
+                <div class="col-sm-4 col-xs-12 ct-u-paddingTop40">
+
+                {{ products_macro(product, dict_like_product, list_of_favourite_product) }}
+                </div>
+            {% endfor %}
+         </div>
+
     </div>
+        </div>
+
+    </section>
 
 <script>
 $(document).ready(function() {
    var $bodyel = jQuery("body");
    $bodyel.addClass("cssAnimate ct-js-navbarMakeSmaller ct-navbar-isTransparent-toDefault");
 });
+
+jQuery(window).on("load",function () {
+
+
+        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
+            $('.ct-js-blogMasonry').masonry({
+                itemSelector: '.ct-js-blogMasonry-item',
+                masonry: {
+                }
+            });
+        }
+     });
 </script>
 {% endblock %}

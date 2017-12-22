@@ -316,7 +316,7 @@ span {
     text-align: center;
     margin: 0;
     padding: 0;
-    letter-spacing: -2px;
+
 
 }
 
@@ -1538,15 +1538,45 @@ display:inline-block;
 margin:20px;
 padding: 4px 32px;
 background-color: #FFFFFF;
-border:solid 1px #666F77;
-border-radius: 6px;
 color:#666F77;
+    cursor: pointer;
 }
 #hide input[type=file]:active + label {
 background-image: none;
 background-color:#2D6C7A;
 color:#FFFFFF;
 }
+.inputfile + label {
+	cursor: pointer; /* "hand" cursor */
+}
+
+/*.inputfile {*/
+	/*width: 0.1px;*/
+	/*height: 0.1px;*/
+	/*opacity: 0;*/
+	/*overflow: hidden;*/
+	/*position: absolute;*/
+	/*z-index: -1;*/
+/*}*/
+
+
+/*.inputfile + label {*/
+    /*font-size: 1.25em;*/
+    /*font-weight: 700;*/
+    /*color: white;*/
+    /*background-color: black;*/
+    /*display: inline-block;*/
+/*}*/
+
+/*.inputfile:focus + label,*/
+/*.inputfile + label:hover {*/
+    /*background-color: red;*/
+/*}*/
+
+/*.inputfile:focus + label {*/
+	/*outline: 1px dotted #000;*/
+	/*outline: -webkit-focus-ring-color auto 5px;*/
+/*}*/
 
 .form-left{
     float: left;
@@ -1590,13 +1620,10 @@ color:#FFFFFF;
 
 
 /*single post-----------------------------------------------------*/
-.edit-post-block, .edit-product-block{
-    float:left;
-    margin-left: 5%;
-}
 
-.post-title, .product-title{
-    float: left;
+
+.edit-product-block .dropdown-menu, .edit-post-block dropdown-menu{
+    left: 45%;
 }
 
 
@@ -2754,6 +2781,24 @@ ul ul ul ul ul li span {
 
 /*/user*-----------------------------------------------------------------------*!*/
 
+@media (max-width: 767px){
+
+.avatar-edit{
+    display: block !important;
+}
+}
+
+#active-container .ct-articleBox{
+        border-bottom: 2px solid #e4e4e4;
+
+}
+#active-container .under-box{
+    background-color: #e4e4e4;
+}
+#active-container .reaction-counter{
+    background-color: #e4e4e4 !important;
+
+}
 #user_about span{
     color: #4c505e;
     font-weight: 500;
@@ -3261,7 +3306,7 @@ img:hover + .avatar-edit{
 
 }
 
-#product_container img.smile{
+.ct-product img.smile{
     width: 20px !important;
 
  }
@@ -3301,4 +3346,30 @@ img:hover + .avatar-edit{
 
 .favourite-button.grid{
     font-size: 20px;
+}
+
+
+
+/*single product*/
+
+/*my forms---------------------------------------------------------------------------------------*/
+.btn-form{
+    margin-left: 35%;
+    width: 30%;
+    font-size: 24px;
+}
+
+@media (max-width: 767px){
+.btn-form {
+    font-size: 14px;
+}
+}
+
+
+
+
+/*homepage--------------------------------------------*/
+
+.ct-u-motiveLight2--bg {
+    background-color: #f8f8f8;
 }

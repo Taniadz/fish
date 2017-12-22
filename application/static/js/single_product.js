@@ -54,26 +54,27 @@ function product_comment(product_id, sort, event) {
     });
     event.preventDefault();
 
-};
+}
 
-function ShowCommentForm() {
+function ShowProdCommentForm() {
     $("#hiden_form1.product-form").slideToggle(400);
-    $("textarea.my_textarea").val("Type your comment");
-    $("textarea.my_textarea").focus(function(){$("textarea.my_textarea").val("");});
+    $("form#form1.comment_form textarea").val("Type your comment");
+    $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
 
 }
 
 // show comment from field under the product
 $(document).ready(function () {
-    $('.product-form #button_comment1').on("click", ShowCommentForm);
+    $('.product-form#button_comment1').on("click", ShowProdCommentForm);
 
-    $(".ct-product i.favourite, .ct-product i.not-favourite").on('click', ToggleProductFavour);
+    $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
 
 
 
 
 // send comment by ajax from form field under the product
 $("#form1.comment_form").submit(function (event) {
+    event.preventDefault();
     $("#hiden_form1").slideToggle();
     var formData = new FormData($(this)[0]);
 
@@ -84,7 +85,7 @@ $("#form1.comment_form").submit(function (event) {
         processData: false,
         contentType: false,
         success: function (data) {
-            $("#comment").html(data.comments);
+            $("#comments").html(data.comments);
             $('textarea#text').val("");
 
         },

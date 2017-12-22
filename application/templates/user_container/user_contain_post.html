@@ -34,16 +34,37 @@
 
 
 
-
+<div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
     {% for post in posts %}
+         <div class="col-sm-6 col-md-4 ct-js-blogMasonry-item" >
+
         {{ posts_macro(post, dict_like, list_of_favourite) }}
+         </div>
+
     {% endfor %}
+
+    </div>
 {% else %}
     <p>You have not post yet</p>
     <p>Could you write something?</p>
     <a href="{{ url_for('add_post') }}">Add_post</a>
 {% endif %}
+
+
+
 <script>
+    jQuery(window).on("load",function () {
+
+
+        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
+            $('.ct-js-blogMasonry').masonry({
+                itemSelector: '.ct-js-blogMasonry-item',
+                masonry: {
+                }
+            });
+        }
+
+});
     $(document).ready(function() {
 
 

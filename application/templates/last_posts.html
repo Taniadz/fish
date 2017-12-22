@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'helpers.html' import posts_macro with context %}
 {% block body %}
     <section class="ct-blogGrid ct-u-paddingBottom50">
         <div class="ct-pageSectionHeader ct-u-paddingBoth50">
@@ -10,53 +11,7 @@
                         {% for post in posts.items %}
                             <div class="col-sm-4 ct-js-blogMasonry-item" >
 
-                                <article class="ct-articleBox">
-
-                                    <a href="{{ url_for('singlepost', postid=post.id) }}"><h5>{{ post.title }}</h5></a>
-                                    <p class="ct-u-motiveLight">
-                                        By
-                                        <a href="#">{{ post.author.username }}</a>
-                                        on
-                                        {{ post.published_at|datetime }}
-
-                                    </p>
-                                    <p>
-                                        {% if post.image %}
-                                                                                    <img  src="{{ url_for('static',filename="media/" + post.image) }}"/><br>
-
-                                            {{ post.body|truncate(70, True) }}
-
-                                        {% else %}
-                                        {{ post.body|truncate(150, True) }}
-                                        {% endif %}
-                                    </p>
-                                <div class="under-box">
-                                     <div class="reaction-counter grid">
-
-                                        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
-                                        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
-                                        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
-                                        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
-
-                                    </div>
-                                    <div class="favourite-button grid">
-                                        <ul class="list-unstyled">
-                                            <li>
-
-
-                                                {% if if_favorite %}
-                                                    <i class="fa fa-star favourite" id="{{post.id}}" aria-hidden="true"></i>
-                                                {% else%}
-                                                    <i class="fa fa-star-o not-favourite" id="{{post.id}}" aria-hidden="true"></i>
-                                                {% endif %}
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-
-
-                                </article>
+                                {{ posts_macro(post, dict_like, list_of_favourite) }}
                             </div>
                         {% endfor %}
                     </div>

@@ -1,6 +1,5 @@
 
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}" acync></script>
 
 {% from 'helpers.html' import post_comment_macro with context %}
     {%- for key, value in comment_tree.items() recursive -%}
@@ -25,7 +24,7 @@
 
 <script>
     $(document).ready(function() {
-$(".discussion").click(function (event){
+$(".discussion.post-form").click(function (event){
     event.preventDefault();
     event.stopImmediatePropagation();
 

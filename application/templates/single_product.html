@@ -4,13 +4,11 @@
     <section class="ct-u-paddingBottom10">
         <div class="container">
 
-            <div class="row">
-                <div class="col-xs-12 col-sm-8">
-                <div class="ct-pageSectionHeader ct-u-paddingBoth20">
-                    <div class="product-title">
+        <div class="ct-pageSectionHeader ct-u-paddingBoth30">
+
                     <h3 class="text-uppercase ct-u-size30 text-center">{{ product.title }}</h3>
-                     </div>
-                        <div class="edit-product-block dropdown ct-u-paddingBoth20 ct-u-size22">
+
+                        <div class="edit-product-block text-center dropdown ct-u-paddingTop5 ct-u-size22">
 
                             <i class="fa fa-pencil-square-o  dropdown-toggle" aria-hidden="true"  data-toggle="dropdown">edit</i>
                             <ul class="dropdown-menu" role="menu">
@@ -23,7 +21,11 @@
 
                         </div>
 
-                </div>
+        </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-8">
+
                     <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter ct-clear-both">
 
                         <div class="popup-gallery">
@@ -93,7 +95,7 @@
                                 <li><h4>like</h4></li>
                             </ul>
                         </div>
-                        <div id="button_comment1" class="comment-button">
+                        <div id="button_comment1" class="comment-button product-form">
                             <ul>
                                 <li>
                                     <i class="fa fa-comments-o" aria-hidden="true"></i>
@@ -101,15 +103,15 @@
                                 <li><h4  title="buzz hover text">comment</h4 ></li>
                             </ul>
                         </div>
-                        <div class="favourite-button ct-product">
+                        <div class="favourite-button">
                             <ul>
                                 <li>
 
 
                                     {% if if_favorite %}
-                                        <i class="fa fa-star favourite" id="{{product.id}}" aria-hidden="true"></i>
+                                        <i class="fa fa-star favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
                                     {% else%}
-                                        <i class="fa fa-star-o not-favourite" id="{{product.id}}" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o not-favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
                                     {% endif %}
                                 </li>
                                 <li><h4>Add to fav</h4></li>
@@ -249,8 +251,8 @@
                 </ul>
                 <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Latest Comments</h4>
                 <ul class="ct-simpleList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
-                    {% for comment in product.comments  %}
-                    <li><i class="fa fa-chevron-right"></i>{{ product.com_author.username }} on <a href="#"><span>{{ comment.product.title }}</span></a></li>
+                    {% for comment in comments  %}
+                    <li><i class="fa fa-chevron-right"></i>{{ comment.com_author.username }} on <a href="#"><span>{{ comment.product.title }}</span></a></li>
                     {% endfor %}
                 </ul>
                 </div>

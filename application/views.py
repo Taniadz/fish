@@ -31,8 +31,27 @@ def page_not_found(e):
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     user = User.query.filter(User.id==1).first()
-    posts =get_ordered_list(Post, Post.published_at.desc(), user_id=current_user.id)
-    return render_template('home.html', user=current_user, posts=posts)
+    posts = get_posts_ordering(Post.published_at.desc()).paginate(1, POSTS_PER_PAGE, False)
+    products = get_products_ordering(Product.like_count.desc()).paginate(1, POSTS_PER_PAGE, False)
+    dict_like_post = {}  # empty for not authenticated users
+    list_of_favourite_post = []
+    dict_like_product = {}  # empty for not authenticated users
+    list_of_favourite_product = []
+
+    if current_user.is_authenticated:
+        product_likes = current_user.product_react
+        list_of_favourite_product = create_list_of_favourite(list_of_favourite_product, products.items, current_user.favourite_product)
+        dict_like_product = product_dict_like(dict_like_product, products.items, product_likes)
+
+        posts_likes=current_user.post_react
+        list_of_favourite_post = create_list_of_favourite(list_of_favourite_post, posts.items,
+                                                             current_user.favourite_post)
+        dict_like_post = post_dict_like(dict_like_post, posts.items, posts_likes)
+
+
+    return render_template('home.html', user=current_user, posts=posts, products=products,
+                           dict_like_post=dict_like_post, dict_like_product=dict_like_product,
+                           list_of_favourite_post=list_of_favourite_post, list_of_favourite_product=list_of_favourite_product)
 
 
 @app.route('/popular_product', methods=['GET', 'POST'])
@@ -265,6 +284,7 @@ def singleproduct(product_id=None):
                                comment_tree=get_comment_dict(comments),
                                form=form)
     if request.method == 'POST' and form.validate_on_submit():
+        print(11111)
 
         filename = create_filename(form.file.data)
         parent = request.args.get('parent')
@@ -403,8 +423,9 @@ def comment_form():
 @app.route('/product_comment_form', methods=['POST'])
 def product_comment_form():
     form = CommentForm(request.form)
+    print(request.form.get('product_id'),request.form.get('parent_id'))
     data = {'com_form': render_template('product_comment_form.html',
-                                        product_id=request.form.get('product_id', 0),
+                                        product_id=request.form.get('product_id'),
                                         parent_id=request.form.get('parent_id'), form=form)}
     return jsonify(data)
 

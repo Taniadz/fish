@@ -29,10 +29,14 @@
         </ul>
     </div>
 
-    {% for product in products %}
-            {{ products_macro(product, dict_like, list_of_favourite, 5) }}
+        <div class="ct-product animated fadeIn">
+            {% for product in products %}
+                <div class="col-sm-6 col-md-4 col-xs-12 ct-u-paddingTop20">
 
-    {% endfor %}
+                {{ products_macro(product, dict_like, list_of_favourite) }}
+                </div>
+            {% endfor %}
+         </div>
 
 
 {% else %}
