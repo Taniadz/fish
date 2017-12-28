@@ -32,7 +32,7 @@
     {% for comment in comments %}
         {% if not comment.deleted %}
 
-            <div class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">
+            <div class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10 col-xs-12">
             Comment for post
             <a href="{{ url_for('singlepost', postid = comment.post_id ) }}">{{ comment.post.title }}</a>
             {{ post_comment_macro(comment, dict_like) }}

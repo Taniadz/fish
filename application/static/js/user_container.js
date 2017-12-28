@@ -46,7 +46,6 @@ function UpdateProductContainer() {
         data: "user_id=" + user + "&sort=" + sort,
         success: function (data) {
             alert(data.product_container);
-
             $("#active-container").html(data.product_container);
             $("li#product_block").removeClass("active");
             $("li#product_block[sort=" + sort + "]").addClass("active");
@@ -60,7 +59,6 @@ function UpdateProductContainer() {
 }
 
 function UpdateCommentContainer() {
-    alert(1111);
     AddClassActive("#comment_block");
     var sort = $(this).attr('id');
     var contain = $(this).attr('rel_obj');
@@ -71,7 +69,6 @@ function UpdateCommentContainer() {
         url: $SCRIPT_ROOT + '/user_contain_comment',
         data: "user_id=" + user + "&sort=" + sort + "&contain=" + contain,
         success: function (data) {
-            alert("succes");
             alert(data.com_container);
             $("#active-container").html(data.com_container);
             $("li.comment_block").removeClass("active");

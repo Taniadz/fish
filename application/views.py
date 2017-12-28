@@ -1,5 +1,5 @@
 
-from flask import render_template,  flash, redirect, url_for, request, g
+from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
 from application import app, security, celery
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
@@ -14,6 +14,11 @@ from flask_security import login_required
 POSTS_PER_PAGE = 5
 from .helpers import *
 from PIL import Image, ImageDraw
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
 
 
 def url_for_other_page(page):
@@ -105,13 +110,13 @@ def last_posts(page=1):
 
     # empty for not authenticated users
     list_of_favourite = create_list_of_favourite_posts(posts.items, current_user)
-
     # functions return dict with key - object id and value - type of reaction
     dict_like = post_dict_react(posts.items, current_user)
     return render_template('last_posts.html',
                            dict_like=dict_like, posts = posts,
                            list_of_favourite=list_of_favourite,
-                           page=page)
+                           page=page,
+                           sort = request.args.get("sort"))
 
 
 @app.route('/user/<username>')
@@ -419,7 +424,7 @@ def user_contain_comment():
             comments = get_ordered_list(Comment, Comment.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
             comments = get_ordered_list(Comment, Comment.like_count.desc(), user_id=request.form.get('user_id'))
-            dict_like = post_comment_dict_react(comments, current_user)
+        dict_like = post_comment_dict_react(comments, current_user)
         data = {'com_container': render_template('/user_container/user_contain_comment.html',
                 dict_like=dict_like, comments=comments,
                 user_id=request.form.get('user_id')
@@ -430,7 +435,7 @@ def user_contain_comment():
         else:
             comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), user_id=request.form.get('user_id'))
 
-            dict_like = prod_comment_dict_react(comments, current_user)
+        dict_like = prod_comment_dict_react(comments, current_user)
         data = {'com_container': render_template('/user_container/user_contain_prod_comment.html',
                 dict_like=dict_like, comments=comments,
                 user_id=request.form.get('user_id')

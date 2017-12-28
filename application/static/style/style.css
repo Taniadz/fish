@@ -1027,7 +1027,7 @@ body.ct-navbar--is-small .navbar .navbar-brand, body.ct-navbar--fixedTop--is-sma
 }
 .ct-articleBox {
   padding-bottom: 20px;
-  padding-left: 3px;
+  padding-left: 10px;
   border-bottom: 1px solid #eeeeee;
   border-left: 1px solid #eeeeee;
 
@@ -2807,8 +2807,15 @@ ul ul ul ul ul li span {
 }
 .child-active{
     background-color: #f3f3f3;
+    padding-left: 5px;
+    padding-right: 5px;
 
 
+}
+
+.max_avatar, #user_about{
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .panel-title.active:after {
@@ -3513,4 +3520,10 @@ img:hover + .avatar-edit{
 .ct-pagination a:focus,
 .ct-pagination a:active {
   color: #1f8bf3;
+}
+
+
+.tab-width{
+    width: 70%;
+    margin-left: 15%;
 }

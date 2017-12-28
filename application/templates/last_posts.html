@@ -8,7 +8,52 @@
 
             <div class="container">
                 <div class="row">
-                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
+
+                <div class="ct-tabHeader ct-tabHeader--motive " role="tabpanel">
+                        <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
+
+                        {%  if sort == "rating" %}
+                            <li role="presentation" class="">
+                                <div class="ct-tabBorder">
+                                    <a href="{{url_for('last_posts', sort = 'data')}}">Latest posts</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+                             <li role="presentation" class="active">
+                                <div class="ct-tabBorder">
+                                    <a href="{{url_for('last_posts', sort = 'rating')}}">most popular posts</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+                         {% else %}
+                            <li role="presentation" class="active">
+                                <div class="ct-tabBorder">
+                                    <a href="{{url_for('last_posts', sort = 'data')}}">Latest posts</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+                             <li role="presentation" class="">
+                                <div class="ct-tabBorder">
+                                    <a href="{{url_for('last_posts', sort = 'rating')}}">most popular posts</a>
+                                </div>
+                                <div class="mini-triangle">
+
+                                </div>
+                            </li>
+                         {% endif %}
+
+                        </ul>
+                    </div>
+
+
+
+                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBoth20">
                         {% for post in posts.items %}
                             <div class="col-sm-4 ct-js-blogMasonry-item" >
 
