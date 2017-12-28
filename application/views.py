@@ -38,6 +38,7 @@ def save_profile(backend, user, response, *args, **kwargs):
 
 @app.before_request
 def global_user():
+    print(UPLOAD_FOLDER)
     g.user = current_user
 
 @app.errorhandler(404)
