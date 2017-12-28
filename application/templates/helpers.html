@@ -4,11 +4,12 @@
 {% macro post_comment_macro(comment, dict_like) -%}
     <div id="comment{{ comment.id }}">
         <div class="left-image">
-        {% if current_user.avatar.min %}
-             <img class="img-inherited" src="{{ url_for('static',filename="media/" + comment.com_author.avatar_min) }}"/>
-        {% else %}
-             <img src="{{ url_for('static',filename="media/" + "min_icon-user-default.png") }}" width="40px"/>
-        {% endif %}
+            {% if comment.com_author.avatar_min %}
+                 <img class="img-inherited" src="{{ url_for('static',filename="media/" + comment.com_author.avatar_min) }}"/>
+            {% else %}
+                 <img src="{{ url_for('static',filename="media/" + "min_icon-user-default.png") }}" width="40px"/>
+            {% endif %}
+
         </div>
         <div class="description">
 
@@ -152,11 +153,11 @@
 {% macro product_comment_macro(comment, dict_like) -%}
       <div id="comment{{ comment.id }}">
         <div class="left-image">
-        {% if current_user.avatar.min %}
-             <img class="img-inherited" src="{{ url_for('static',filename="media/" + comment.com_author.avatar_min) }}"/>
-        {% else %}
-             <img src="{{ url_for('static',filename="media/" + "min_icon-user-default.png") }}" width="40px"/>
-        {% endif %}
+            {% if comment.com_author.avatar_min %}
+                 <img class="img-inherited" src="{{ url_for('static',filename="media/" + comment.com_author.avatar_min) }}"/>
+            {% else %}
+                 <img src="{{ url_for('static',filename="media/" + "min_icon-user-default.png") }}" width="40px"/>
+            {% endif %}
         </div>
         <div class="description">
 
@@ -486,18 +487,30 @@
                                     <div class="favourite-button grid">
                                         <ul class="list-unstyled">
                                             <li>
-
-
+                                    {% if current_user.is_authenticated %}
                                                 {% if post in list_of_favourite  %}
                                                     <i class="fa fa-star favourite post-fav" id="{{post.id}}" aria-hidden="true"></i>
                                                 {% else%}
                                                     <i class="fa fa-star-o not-favourite post-fav" id="{{post.id}}" aria-hidden="true"></i>
                                                 {% endif %}
+                                    {% else %}
+
+                                        <i class="fa fa-star favourite-not-login" id="{{post.id}}" aria-hidden="true"></i>
+
+
+
+
+                                    {% endif %}
                                             </li>
 
                                         </ul>
                                     </div>
                                 </div>
+
+
+
+
+
 
 
                                 </article>
@@ -520,11 +533,17 @@
 
 
                         <div class="ct-shopIcon">
-                            {% if product in list_of_favourite %}
+                            {% if current_user.is_authenticated %}
+
+                                {% if product in list_of_favourite %}
                                         <i class="fa fa-star favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
-                                    {% else%}
+                                {% else%}
                                         <i class="fa fa-star-o not-favourite product-fav" id="{{product.id}}" aria-hidden="true"></i>
-                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                        <i class="fa fa-star favourite-not-login" aria-hidden="true"></i>
+
+                            {% endif %}
                         </div>
                         <div class="image-container">
                             {% if product.image %}

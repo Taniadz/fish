@@ -2,7 +2,7 @@
 import os
 import babel
 
-from flask import Flask
+from flask import Flask, g
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore
@@ -11,6 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 from celery import Celery
 from . import config
 from .config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI
+from social_flask.routes import social_auth
+from social_flask_sqlalchemy.models import init_social
+from social_flask.utils import psa
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(basedir, 'static/media')
@@ -18,9 +21,13 @@ ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
 app = Flask(__name__)
+app.register_blueprint(social_auth)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
+
+
+
 
 app.config.from_object(config)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -48,10 +55,7 @@ app.config['SECURITY_REGISTERABLE'] = True
 app.config['SECURITY_REGISTER_URL'] = '/create_account'
 app.config['SECURITY_PASSWORD_SALT'] = 'ddddsdv123'
 
-app.config['SOCIAL_FACEBOOK'] = {
-    'consumer_key': '1631777696846006',
-    'consumer_secret': '988af003ce0c2f1b35140a80cd146cdb'
-}
+
 app.config['SECURITY_POST_LOGIN'] = '/login'
 
 login_manager = LoginManager()
@@ -90,3 +94,10 @@ celery = make_celery(app)
 
 import application.views
 import application.models
+
+
+
+init_social(app, user_datastore)
+
+
+

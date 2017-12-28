@@ -136,7 +136,12 @@ $(document).ready(function () {
         }
 
 
-    });
 
+    });
+$(".favourite-not-login").on("click", function () {
+
+         $(".alert.alert-danger.favourite-alert").show();
+
+     })
 
 });

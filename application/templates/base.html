@@ -51,9 +51,9 @@
                 <ul class="ct-menuMobile-navbar">
 
 
-                    <li> <a href="">home</a></li>
-                    <li> <a href="">CATALOG</a></li>
-                    <li> <a href="">BLOG</a></li>
+                    <li> <a href="{{ url_for('index') }}">HOME</a></li>
+                    <li> <a href="{{ url_for('popular_product') }}">CATALOG</a></li>
+                    <li> <a href="{{ url_for('last_posts') }}">BLOG</a></li>
                 </ul>
 
         </div>
@@ -92,9 +92,9 @@
                             </a>
                         </div>
                         <ul class="nav navbar-nav">
-                            <li> <a href="">Home</a></li>
-                            <li> <a href="">Catalog</a></li>
-                            <li> <a href="">Blog</a></li>
+                            <li> <a href="{{ url_for('index') }}">Home</a></li>
+                            <li> <a href="{{ url_for('popular_product') }}">Catalog</a></li>
+                            <li> <a href="{{ url_for('last_posts') }}">Blog</a></li>
                         </ul>
                         <ul class="nav navbar-nav yamm ct-navbar--right">
                             {% if current_user.is_authenticated %}
@@ -128,12 +128,60 @@
             </nav>
             {% endblock %}
             <main>
+
                 {% block body %}
                 {% endblock %}
 
 			</main>
 			<footer>
-				...
+				<div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to adding products or posts to your favourites
+                                            </p>
+
+
+            </div>
+
+                <div class="alert alert-danger alert-dismissable vote-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to vote
+                                            </p>
+
+
+            </div>
+
+
+                <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to vote
+                                            </p>
+
+
+            </div>
 			</footer>
 		</div>
 	</body>

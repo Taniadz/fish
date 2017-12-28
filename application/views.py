@@ -1,5 +1,5 @@
 
-from flask import render_template,  flash, redirect, url_for, request
+from flask import render_template,  flash, redirect, url_for, request, g
 from application import app, security, celery
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
@@ -11,10 +11,29 @@ from werkzeug.datastructures import CombinedMultiDict, FileStorage
 
 from flask_security import login_required
 
-POSTS_PER_PAGE = 6
+POSTS_PER_PAGE = 5
 from .helpers import *
 from PIL import Image, ImageDraw
 
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
+def save_profile(backend, user, response, *args, **kwargs):
+    if backend.name == 'facebook':
+        profile = user.get_profile()
+        if profile is None:
+            print(22222)
+            return "hi"
+    print(1111)
+
+
+@app.before_request
+def global_user():
+    g.user = current_user
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -30,46 +49,30 @@ def page_not_found(e):
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    user = User.query.filter(User.id==1).first()
     posts = get_posts_ordering(Post.published_at.desc()).paginate(1, POSTS_PER_PAGE, False)
     products = get_products_ordering(Product.like_count.desc()).paginate(1, POSTS_PER_PAGE, False)
-    dict_like_post = {}  # empty for not authenticated users
-    list_of_favourite_post = []
-    dict_like_product = {}  # empty for not authenticated users
-    list_of_favourite_product = []
-
-    if current_user.is_authenticated:
-        product_likes = current_user.product_react
-        list_of_favourite_product = create_list_of_favourite(list_of_favourite_product, products.items, current_user.favourite_product)
-        dict_like_product = product_dict_like(dict_like_product, products.items, product_likes)
-
-        posts_likes=current_user.post_react
-        list_of_favourite_post = create_list_of_favourite(list_of_favourite_post, posts.items,
-                                                             current_user.favourite_post)
-        dict_like_post = post_dict_like(dict_like_post, posts.items, posts_likes)
-
-
-    return render_template('home.html', user=current_user, posts=posts, products=products,
+    list_of_favourite_product = create_list_of_favourite_products(products.items, current_user)
+    dict_like_product = product_dict_react(products.items, current_user)
+    list_of_favourite_post = create_list_of_favourite_posts(posts.items, current_user)
+    dict_like_post = post_dict_react(posts.items, current_user)
+    return render_template('home.html', user=current_user,
+                           posts=posts,
+                           products=products,
                            dict_like_post=dict_like_post, dict_like_product=dict_like_product,
-                           list_of_favourite_post=list_of_favourite_post, list_of_favourite_product=list_of_favourite_product)
+                           list_of_favourite_post=list_of_favourite_post,
+                           list_of_favourite_product=list_of_favourite_product)
 
 
 @app.route('/popular_product', methods=['GET', 'POST'])
 @app.route('/popular_product/<int:page>', methods=['GET', 'POST'])
-def popular_product(page = 1):
-    
+def popular_product(page=1):
     if request.args.get("sort") == "rating":
         products = get_products_ordering(Product.like_count.desc()).paginate(page, POSTS_PER_PAGE, False)
     else:
         products = get_products_ordering(Product.published_at.desc()).paginate(page, POSTS_PER_PAGE, False)
-
-    dict_like = {}  # empty for not authenticated users
-    list_of_favourite=[]
-    if current_user.is_authenticated:
-        likes = current_user.product_react
-
-        list_of_favourite = create_list_of_favourite(list_of_favourite, products.items, current_user.favourite_product)
-        dict_like=product_dict_like(dict_like, products.items, likes)
+    list_of_favourite = create_list_of_favourite_products(products.items, current_user)
+    dict_like=product_dict_react(products.items, current_user)
+    print(dict_like)
     return render_template('popular_product.html',
         dict_like = dict_like,
         products = products,
@@ -101,18 +104,14 @@ def last_posts(page=1):
         posts = get_posts_ordering(Post.like_count.desc()).paginate(page, POSTS_PER_PAGE, False)
 
     # empty for not authenticated users
-    list_of_favourite = []
-    dict_like = {}
+    list_of_favourite = create_list_of_favourite_posts(posts.items, current_user)
 
-    if current_user.is_authenticated:
-        posts_liked = current_user.post_react  # all posts, reacted by current user
-        list_of_favourite = create_list_of_favourite(list_of_favourite, posts.items, current_user.favourite_post)
-
-        # functions return dict with key - object id and value - type of reaction
-        dict_like = post_dict_like(dict_like, posts.items, posts_liked)
+    # functions return dict with key - object id and value - type of reaction
+    dict_like = post_dict_react(posts.items, current_user)
     return render_template('last_posts.html',
                            dict_like=dict_like, posts = posts,
-                           list_of_favourite=list_of_favourite)
+                           list_of_favourite=list_of_favourite,
+                           page=page)
 
 
 @app.route('/user/<username>')
@@ -123,18 +122,15 @@ def user(username):
         return redirect(url_for('index'))
     posts = get_ordered_list(Post, Post.published_at.desc(),
                              user_id=user.id)
-    # empty for not authenticated users
-    list_of_favourite = []
-    dict_like = {}
 
-    if current_user.is_authenticated and current_user.username == username:
-        # show posts, written by profile owner(default), others container rendered by ajax
-        # with def user_contain_* functions. This part is showed by included user_contain_post.html
-        list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
-        liked_posts = current_user.post_react
 
-        # functions return dict with key - object id and value - type of reaction
-        dict_like = post_dict_like(dict_like, posts, liked_posts)
+
+    # show posts, written by profile owner(default), others container rendered by ajax
+    # with def user_contain_* functions. This part is showed by included user_contain_post.html
+    list_of_favourite = create_list_of_favourite_posts(posts, user)
+
+    # functions return dict with key - object id and value - type of reaction
+    dict_like = post_dict_react(posts, user)
     return render_template('user.html',
                            list_of_favourite=list_of_favourite, dict_like=dict_like,
                            user=user, user_id=user.id, posts=posts)
@@ -214,25 +210,19 @@ def user_edit(username):
 @app.route('/post/<int:postid>', methods=['GET', 'POST'])
 def singlepost(postid=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
-    dict_like = {}  # dict of comment like, where value - type of like; empty for not_authenticated
-
-    if current_user.is_authenticated:
-        liked_comment = current_user.post_com_react  # all comments, liked by current user
-
     if request.method == 'GET':
         posts=get_posts_ordering(Post.published_at.desc(), 10)  # posts for side box
         post = get_or_abort(Post, id=postid).first()
-
         editable = check_post_editable(post)  # check if user can edit post
         comments = get_all_obj(Comment, post_id=post.id)
         if_favorite = check_if_favourite(current_user, post)  # check if post added to favourite by user, False for not login too
+        dict_like = post_comment_dict_react(comments, current_user)
 
         if current_user.is_authenticated:
             post_liked = get_one_obj(PostReaction, user_id=current_user.id,
-                                     post_id=postid)  # check if the post liked by user
-            dict_like = comment_dict_like(dict_like, comments, liked_comment)
+                                   post_id=postid)  # check if the post liked by user
         else:
-            post_liked = False
+            post_liked = False    # for not authenticated users
         return render_template("single_post.html", editable=editable,
                                posts=posts, post=post,  form=form,
                                comments=comments, if_favorite=if_favorite,
@@ -247,8 +237,8 @@ def singlepost(postid=None):
         create_obj(Comment, text=form.text.data, user_id=current_user.id,
                    post_id=postid, image=filename, parent=parent)
         comments = get_ordered_list(Comment, Comment.timestamp, post_id=postid)
-        data = {'comments': render_template('comments.html', dict_like=comment_dict_like(dict_like, comments,
-                                            liked_comment), comments=comments,
+        data = {'comments': render_template('comments.html', dict_like=post_comment_dict_react(comments,
+                                            current_user), comments=comments,
                                             comment_tree=get_comment_dict(comments),  form=form)}
         return jsonify(data)
 
@@ -259,21 +249,15 @@ def singlepost(postid=None):
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def singleproduct(product_id=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
-    dict_like = {}  # dict of comment like, where value - type of like; empty for not_authenticated
-
-    if current_user.is_authenticated:
-        liked_comment = current_user.prod_com_react  # all comments, liked by current user
     if request.method == 'GET':
         products=get_products_ordering(Product.published_at.desc(), 10)  # products for side box
-
         product = get_one_obj(Product, id=product_id)
         comments = get_all_obj(CommentProduct, product_id=product_id)
         if_favorite = check_if_favourite(current_user, product)  # check if post added to favourite by user, False for not login too
-
+        dict_like = prod_comment_dict_react(comments, current_user)
         if current_user.is_authenticated:
             product_liked = get_one_obj(ProductReaction, user_id=current_user.id,
-                                   product_id=product.id)  # check if the product liked by user
-            dict_like = comment_dict_like(dict_like, comments, liked_comment)
+                                product_id=product.id)  # check if the product liked by user
         else:
             product_liked = False
         return render_template("single_product.html",
@@ -284,8 +268,6 @@ def singleproduct(product_id=None):
                                comment_tree=get_comment_dict(comments),
                                form=form)
     if request.method == 'POST' and form.validate_on_submit():
-        print(11111)
-
         filename = create_filename(form.file.data)
         parent = request.args.get('parent')
         if request.args.get('parent') is None:
@@ -293,12 +275,10 @@ def singleproduct(product_id=None):
         comment = create_obj(CommentProduct, text=form.text.data,
                              user_id=current_user.id, product_id=product_id,
                              image=filename, parent=parent)
-
         comments = get_all_obj(CommentProduct, product_id=product_id)
-
-        dict_like = comment_dict_like(dict_like, comments, liked_comment)
-        data = {'comments' : render_template('product_comments.html', dict_like=dict_like,
-                                            comments=comments,
+        data = {'comments' : render_template('product_comments.html',
+                                             dict_like=prod_comment_dict_react(comments, current_user),
+                                             comments=comments,
                                              comment_tree=get_comment_dict(comments), form=form)}
         return jsonify(data)
 
@@ -434,40 +414,26 @@ def product_comment_form():
 # These are posts, product, comments and favourites written(added) by user
 @app.route('/user_contain_comment', methods=['POST'])
 def user_contain_comment():
-    dict_like = {}
     if request.form.get('contain') == "comment":
         if request.form.get('sort') == "date":
-            print(1)
             comments = get_ordered_list(Comment, Comment.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
-            print(2)
             comments = get_ordered_list(Comment, Comment.like_count.desc(), user_id=request.form.get('user_id'))
-            if current_user.is_authenticated:
-                likes = current_user.post_com_react
-                dict_like={}
-                dict_like = comment_dict_like(dict_like, comments, likes)
-
+            dict_like = post_comment_dict_react(comments, current_user)
         data = {'com_container': render_template('/user_container/user_contain_comment.html',
-                                            dict_like=dict_like,
-                                             comments=comments,
-                                            user_id=request.form.get('user_id')
-                                             )}
+                dict_like=dict_like, comments=comments,
+                user_id=request.form.get('user_id')
+                )}
     else:
         if request.form.get('sort') == "date":
-            print(3)
             comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), user_id=request.form.get('user_id'))
         else:
-            print(4)
             comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), user_id=request.form.get('user_id'))
 
-        if current_user.is_authenticated:
-            likes = current_user.prod_com_react
-            dict_like={}
-            dict_like = comment_dict_like(dict_like, comments, likes)
+            dict_like = prod_comment_dict_react(comments, current_user)
         data = {'com_container': render_template('/user_container/user_contain_prod_comment.html',
-                                                 dict_like=dict_like,
-                                                 comments=comments,
-                                                 user_id=request.form.get('user_id')
+                dict_like=dict_like, comments=comments,
+                user_id=request.form.get('user_id')
         )}
     return jsonify(data)
 
@@ -481,16 +447,12 @@ def user_contain_product():
     else:
         products = get_ordered_list(Product, Product.like_count.desc(),
                                     user_id=request.form.get('user_id'))
-    likes = current_user.product_react
-    list_of_favourite = []
-    list_of_favourite = create_list_of_favourite(list_of_favourite, products, current_user.favourite_product)
-    dict_like={}
-    dict_like = product_dict_like(dict_like, products, likes)
+    list_of_favourite = create_list_of_favourite_products(products, current_user)
+    dict_like = product_dict_react(products, current_user)
     data = {'product_container': render_template('/user_container/user_contain_product.html',
-                                              list_of_favourite=list_of_favourite,
-                                              dict_like=dict_like,
-                                                products=products,
-                                              user_id=request.form.get('user_id')
+            list_of_favourite=list_of_favourite,
+            dict_like=dict_like, products=products,
+            user_id=request.form.get('user_id')
         )}
     return jsonify(data)
 
@@ -503,17 +465,13 @@ def user_contain_post():
     else:
         posts = get_ordered_list(Post, Post.like_count.desc(),
                                     user_id=request.form.get('user_id'))
-    list_of_favourite = []
-    list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
 
-    likes = current_user.post_react
-    dict_like = {}
-    dict_like = post_dict_like(dict_like, posts, likes)
+    list_of_favourite = create_list_of_favourite_posts(posts, current_user)
+    dict_like = post_dict_react(posts, current_user)
     data = {'post_container': render_template('/user_container/user_contain_post.html',
-                                              list_of_favourite=list_of_favourite,
-                                              dict_like=dict_like,
-                                              posts=posts,
-                                              user_id=request.form.get('user_id')
+            list_of_favourite=list_of_favourite,
+            dict_like=dict_like, posts=posts,
+            user_id=request.form.get('user_id')
     )}
     return jsonify(data)
 
@@ -524,18 +482,14 @@ def user_contain_favourite():
     if request.form.get('contain') == "product":
         if request.form.get('sort') == "date":
             products=get_favourite(id, Product, Product.published_at.desc())
-
-
         else:
             products = get_favourite(id, Product, Product.like_count.desc())
-        likes = current_user.product_react
-        dict_like = {}
-        dict_like = product_dict_like(dict_like, products, likes)
-        list_of_favourite=[]
-        list_of_favourite = create_list_of_favourite(list_of_favourite, products, current_user.favourite_product)
+
+        dict_like = product_dict_react(products, current_user)
+        list_of_favourite = create_list_of_favourite_products(products, current_user)
 
         data = {'favourite_container': render_template('/user_container/user_contain_prod_saved.html',
-                                                   dict_like=dict_like,
+                dict_like=dict_like,
                                                    products=products,
                                                    list_of_favourite=list_of_favourite,
                                                    user_id=request.form.get('user_id')
@@ -545,12 +499,9 @@ def user_contain_favourite():
             posts = get_favourite(id, Post, Post.published_at.desc() )
         else:
             posts = get_favourite(id, Post, Post.like_count.desc())
-        likes = current_user.post_react
 
-        dict_like = {}
-        dict_like = post_dict_like(dict_like, posts, likes)
-        list_of_favourite = []
-        list_of_favourite = create_list_of_favourite(list_of_favourite, posts, current_user.favourite_post)
+        dict_like = post_dict_react(posts, current_user)
+        list_of_favourite = create_list_of_favourite_posts(posts, current_user)
 
         data = {'favourite_container': render_template('/user_container/user_contain_post_saved.html',
                                                    dict_like=dict_like,
@@ -563,8 +514,9 @@ def user_contain_favourite():
 
 @app.route('/add_fav_product', methods=['POST'])
 def add_fav_product():
-    product = get_or_abort(Product, id=request.form.get("product_id")).first()
     print(request.form.get("product_id"))
+    product = get_or_abort(Product, id=request.form.get("product_id")).first()
+
     add_prod_fav(current_user, product)
     return jsonify(request.form.get("product_id"))
 
@@ -599,16 +551,10 @@ def post_contain_comment():
         comments = get_ordered_list(Comment, Comment.timestamp.desc(), post_id=request.form.get('post_id'))
     elif request.form.get('sort') == "rating":
         comments = get_ordered_list(Comment, Comment.like_count.desc(), post_id=request.form.get('post_id'))
-    print(request.form.get('sort'))
-    print(request.form.get('post_id'))
-    print(comments)
-
-    likes = current_user.post_com_react
-    dict_like = {}
-    dict_like = comment_dict_like(dict_like, comments, likes)
+    dict_like = post_comment_dict_react(comments, current_user)
     comment_tree = get_comment_dict(comments, 'sort')
     data = {'comments': render_template('comments.html',
-                                        dict_like=dict_like,
+            dict_like=dict_like,
                                         postid=request.form.get('post_id'),
                                         comments=comments,
                                         comment_tree=comment_tree,
@@ -625,9 +571,7 @@ def product_contain_comment():
     elif request.form.get('sort') == "rating":
         comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), product_id=request.form.get('product_id'))
 
-    likes = current_user.prod_com_react
-    dict_like = {}
-    dict_like = comment_dict_like(dict_like, comments, likes)
+    dict_like = product_dict_react(comments, current_user)
 
     comment_tree = get_comment_dict(comments, 'sort')
 

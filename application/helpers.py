@@ -139,30 +139,46 @@ def create_filename(data, default=None):
 
 
 # functions return dict with key - object id and value - type of reaction
-def post_dict_like(dict_like, model, likes):
-    for m in model:
-        for l in likes:
-            if m.id == l.post_id:
-                dict_like[m.id] = l.type
+def post_dict_react(posts, user):
+    dict_like={}
+    if user.is_authenticated:
+        for p in posts:
+            for react in user.post_react:
+                if p.id == react.post_id:
+                    dict_like[p.id] = react.type
     return(dict_like)
 
 
-def product_dict_like(dict_like, model, likes):
-    for m in model:
-        for l in likes:
-            if m.id == l.product_id:
-                dict_like[m.id] = l.type
+def product_dict_react(products, user):
+    dict_like={}
+
+    if user.is_authenticated:
+        for p in products:
+            print(p.id, "product")
+            for react in user.product_react:
+
+                if p.id == react.product_id:
+                    dict_like[p.id] = react.type
     return(dict_like)
 
 
-def comment_dict_like(dict_like, model, likes):
-    for m in model:
-        for l in likes:
-            if m.id == l.comment_id:
-                dict_like[m.id] = l.type
+def post_comment_dict_react(comments, user):
+    dict_like={}
+    if user.is_authenticated:
+        for c in comments:
+            for react in user.post_com_react:
+                if c.id == react.comment_id:
+                    dict_like[c.id] = react.type
     return(dict_like)
 
-
+def prod_comment_dict_react(comments, user):
+    dict_like={}
+    if user.is_authenticated:
+        for c in comments:
+            for react in user.prod_com_react:
+                if c.id == react.comment_id:
+                    dict_like[c.id] = react.type
+    return(dict_like)
 
 def get_posts_ordering(order, limit=None):
     posts = Post.query.order_by(order).limit(limit)
@@ -206,19 +222,22 @@ def update_rows(obj, **kwargs):
     return
 
 
-def create_list_of_favourite(saved_list, obj, added_obj):
-    for o in obj:
-        if o in added_obj:
-           saved_list.append(o)
+def create_list_of_favourite_posts(posts, user):
+    saved_list = []
+    if user.is_authenticated:
+        for p in posts:
+            if p in user.favourite_post:
+                saved_list.append(p)
     return saved_list
 
+def create_list_of_favourite_products(products, user):
+    saved_list = []
+    if user.is_authenticated:
+        for p in products:
+            if p in user.favourite_product:
+                saved_list.append(p)
+    return saved_list
 
-def create_dict_like(dict_like, model, likes):
-    for m in model:
-        for l in likes:
-            if m.id == l.post_id:
-                dict_like[m.id] = 1
-    return(dict_like)
 
 
 def add_post_fav(user, post):
@@ -234,9 +253,10 @@ def add_prod_fav(user, product):
 
 
 def delete_prod_fav(user, product):
-    user.favourite_product.remove(product)
-    db.session.add(user)
-    db.session.commit()
+    if product in user.favourite_product:
+        user.favourite_product.remove(product)
+        db.session.add(user)
+        db.session.commit()
 
 
 def delete_post_fav(user, post):
