@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% include "security/_messages.html" %}
+{% block body %}
+ <section class="ct-u-paddingBottom80">
+<div class="container">
+    <div class="ct-sectionHeader ct-u-paddingBottom20">
+        <h2>register</h2>
+    </div>
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10">
+
+<form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
+  {{ register_user_form.hidden_tag() }}
+<div class="form-group">
+
+
+
+  {{ render_field_with_errors(register_user_form.username,  class="form-control") }}
+  {{ render_field_with_errors(register_user_form.email,  class="form-control") }}
+  {{ render_field_with_errors(register_user_form.password,  class="form-control") }}
+
+  {% if register_user_form.password_confirm %}
+    {{ render_field_with_errors(register_user_form.password_confirm,  class="form-control") }}
+  {% endif %}
+  {{ render_field(register_user_form.submit,  class="btn btn-motive btn-form", value="register") }}
+</div>
+</form>
+
+
+ </div>
+</div>
+</div>
+
+
+
+
+
+</section>
+{% endblock %}
+
+
+
+
+
+
+

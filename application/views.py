@@ -1,17 +1,17 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
-from application import app, security, celery
+from application import celery
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
-from .models import  PostComReaction, ProdComReaction, ProductReaction, Product, Post, ProductImage
+from .models import PostComReaction, ProdComReaction, ProductReaction, ProductImage
 from flask_login import current_user
 from flask_json import jsonify
-from werkzeug.datastructures import CombinedMultiDict, FileStorage
+from werkzeug.datastructures import CombinedMultiDict
 
 
 from flask_security import login_required
 
-POSTS_PER_PAGE = 5
+POSTS_PER_PAGE = 6
 from .helpers import *
 from PIL import Image, ImageDraw
 
@@ -31,14 +31,11 @@ def save_profile(backend, user, response, *args, **kwargs):
     if backend.name == 'facebook':
         profile = user.get_profile()
         if profile is None:
-            print(22222)
             return "hi"
-    print(1111)
 
 
 @app.before_request
 def global_user():
-    print(UPLOAD_FOLDER)
     g.user = current_user
 
 @app.errorhandler(404)
@@ -217,8 +214,11 @@ def user_edit(username):
 def singlepost(postid=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        posts=get_posts_ordering(Post.published_at.desc(), 10)  # posts for side box
         post = get_or_abort(Post, id=postid).first()
+        if post.deleted:
+            return render_template("deleted_object.html", object=post)
+
+        posts = get_posts_ordering(Post.published_at.desc(), 10)  # posts for side box
         editable = check_post_editable(post)  # check if user can edit post
         comments = get_all_obj(Comment, post_id=post.id)
         if_favorite = check_if_favourite(current_user, post)  # check if post added to favourite by user, False for not login too
@@ -256,8 +256,11 @@ def singlepost(postid=None):
 def singleproduct(product_id=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        products=get_products_ordering(Product.published_at.desc(), 10)  # products for side box
         product = get_one_obj(Product, id=product_id)
+
+        if product.deleted:
+            return render_template("deleted_object.html", object=product)
+        products=get_products_ordering(Product.published_at.desc(), 10)  # products for side box
         comments = get_all_obj(CommentProduct, product_id=product_id)
         if_favorite = check_if_favourite(current_user, product)  # check if post added to favourite by user, False for not login too
         dict_like = prod_comment_dict_react(comments, current_user)
@@ -270,9 +273,8 @@ def singleproduct(product_id=None):
                                if_favorite=if_favorite, product_liked=product_liked,
                                dict_like=dict_like, products=products,
                                product=product, comments=comments,
-                               product_id=product_id,
-                               comment_tree=get_comment_dict(comments),
-                               form=form)
+                               product_id=product_id, form=form,
+                               comment_tree=get_comment_dict(comments))
     if request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
         parent = request.args.get('parent')
@@ -676,6 +678,7 @@ def delete_prod_comment():
 @app.route('/delete_product', methods=['POST'])
 def delete_product():
     product = get_or_abort(Product, id=request.form.get("id"))
+    print("we are just delete this product")
     update_rows(product, deleted=True)
     return redirect(url_for('popular_product'))
 

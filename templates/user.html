@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
+
+
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+
+                    <h3 class="text-uppercase ct-u-size30 text-center">{{ user.username }}</h3>
+
+            </div>
+
+            <div class="row">
+            <div class="max_avatar col-sm-4 col-xs-12">
+                {% if user.avatar %}
+                    <img src="{{ url_for('uploaded_file',filename= user.avatar) }}" width="60"/>
+                {% else %}
+                    <img src="{{ url_for('uploaded_file',filename="icon-user-default.png") }}" width="60"/>
+                {% endif %}
+                <div class="avatar-edit">
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">
+                        <i class="fa fa-camera" aria-hidden="true"></i> edit your avatar
+                    </a>
+                </div>
+            </div>
+
+
+
+        <div class="col-xs-12 col-sm-8" id=user_about>
+            {% if user.last_seen %}
+                <p><i>Last seen on: {{ user.last_seen }}</i></p>
+            {% endif %}
+            <p class="ct-u-paddingBottom5">
+                <span>Registered on</span>
+                {{ user.registered_on }}
+            </p>
+            {% if user.about_me %}
+                <p>{{ user.about_me }}</p>
+            {% else %}
+                {% if current_user == user %}
+                    <p>Could you tell something about you?</p>
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a>
+                {% endif %}
+            {% endif %}
+        </div>
+        </div>
+
+
+    {% if current_user == user %}
+        <section class="ct-u-paddingBoth20">
+        <div class="row">
+
+        <div class="user-activities panel-group">
+            <div class="col-xs-12 col-sm-6 col-md-3">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title active">
+                              <h4 class="active user_but" id="post_block"  sort="date" user="{{ user.id }}">
+                                  <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                                  Post
+                            </h4>
+
+                          </div>
+                        </div>
+                    </div>
+
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                                <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
+                                        data-toggle="dropdown">
+                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                                    comment
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">for post</a></li>
+                                    <li id="date" class ="comment_block" rel_obj="prod_comment" user="{{ user.id }}"><a href="#">for product</a></li>
+                                </ul>
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                <h4  class="user_but" id="product_block" sort="date" user="{{ user.id }}">
+                    <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                    product
+                </h4>
+                          </div>
+                        </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                    <h4 type="button" id="favourite_block" class="dropdown-toggle user_but"
+                            data-toggle="dropdown">
+                        <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                        saved </h4>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">posts</a></li>
+                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">products</a></li>
+
+                    </ul>
+                </div>
+                        </div>
+            </div>
+            </div>
+
+
+            </div>
+        </div>
+            <div class="row ct-u-paddingTop10 child-active">
+                <div id="active-container">
+                    {% include '/user_container/user_contain_post.html' %}
+                </div>
+            </div>
+
+
+    {% endif %}
+        </section>
+    </div>
+    </div>
+
+<script>
+$(document).ready(function() {
+
+     $("li.comment_block, li.comment_block, li.comment, a.prod_comment").on("click", UpdateCommentContainer);
+     $("#product_block, li#product_block").on("click", UpdateProductContainer);
+     $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
+
+
+
+ });
+</script>
+{% endblock %}

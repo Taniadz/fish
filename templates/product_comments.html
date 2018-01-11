@@ -1,0 +1,57 @@
+
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
+
+{% from 'helpers.html' import product_comment_macro with context %}
+    {%- for key, value in comment_tree.items() recursive -%}
+
+        {% if key %}
+            <ul class="ct-mediaList list-unstyled">
+            {% for comment in comments %}
+                {% if comment.id == key %}
+                        {% if comment.deleted %}
+                            comment has been deleted
+
+                        {%else%}
+                            <li class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">{{ product_comment_macro(comment, dict_like) }}</li>
+
+
+                        {% endif %}
+                {% endif %}
+            {% endfor %}
+                <ul class="ct-mediaList list-unstyled">{{ loop(value.items()) }}</ul>
+             </ul>
+        {% endif %}
+    {%- endfor -%}
+
+
+
+
+<script>
+$(document).ready(function() {
+
+// if user not the comments'author, user can discuss other comment
+// data send by ajax on server where render template with updated comment part
+$(".discussion.product-form.comment-login").click(function (event){
+    var id = $(this).attr('id');
+    $(".answer#answer" + id).slideToggle();
+    var user = $(this).attr('user');
+    var product = $(this).attr('product_id');
+    $.ajax({
+        type: "POST",
+        url: '/product_comment_form',
+        data: "parent_id=" + id + "&product_id=" + product,
+        success: function (data) {
+             $(".answer#answer" + id).html(data.com_form);
+
+            $("textarea#text").val(user + ", ");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+});
+});
+
+</script>

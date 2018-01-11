@@ -1,0 +1,14 @@
+
+[Unit]
+Description=uWSGI instance to serve flask-uwsgi project
+After=network.target
+
+[Service]
+User=tania
+Group=www-data
+WorkingDirectory=/home/tania/PycharmProjects/fish
+Environment="PATH=/home/tania/env/fish3/bin"
+ExecStart=/home/tania/env/fish3/bin/uwsgi --ini uwsgi.ini
+
+[Install]
+WantedBy=multi-user.target

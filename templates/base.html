@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if title %}
+            <title>{{ title }} - microblog</title>
+        {% else %}
+            <title>microblog</title>
+        {% endif %}
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/snap.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/magnific-popup.css') }}">
+
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
+
+        <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
+
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/snap.js") }}"></script>
+            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
+                    <script type="text/javascript" src="{{ url_for ('static', filename= "js/masonry.pkgd.js") }}" acync></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/bootbox.min.js") }}"></script>
+
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    $(document).ready(function(){
+
+  $('.flexslider').flexslider({
+    animation: "slide"
+  });
+});
+</script>
+
+
+
+
+	</head>
+	<body class="">
+    <!-- :mobile Menu: -->
+   <div class="ct-menuMobile">
+                <ul class="ct-menuMobile-navbar">
+
+
+                    <li> <a href="{{ url_for('index') }}">HOME</a></li>
+                    <li> <a href="{{ url_for('popular_product') }}">CATALOG</a></li>
+                    <li> <a href="{{ url_for('last_posts') }}">BLOG</a></li>
+                </ul>
+
+        </div>
+
+        <div class="ct-navbarMobile">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+            </a>
+
+            <button type="button"  id = "listener" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+
+
+            </button>
+
+        </div>
+
+        <div class="ct-navbarMobile ct-navbarMobile--header">
+            <a href="{{ url_for('user', username = current_user.username) }}">username</a>
+
+
+        </div>
+		<div id="ct-js-wrapper" class="ct-pageWrapper">
+
+            {% block navbar %}
+			<nav class="navbar ct-navbar navbar-default yamm ct-navbar--fadeIn" role="navigation">
+                <div class="container">
+                    <div class="ct-navbarContainer">
+                        <div class="navbar-header">
+
+                            <a class="navbar-brand" href="{{ url_for('index') }}">
+                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" width="49px">
+                            </a>
+                        </div>
+                        <ul class="nav navbar-nav">
+                            <li> <a href="{{ url_for('index') }}">Home</a></li>
+                            <li> <a href="{{ url_for('popular_product') }}">Catalog</a></li>
+                            <li> <a href="{{ url_for('last_posts') }}">Blog</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav yamm ct-navbar--right">
+                            {% if current_user.is_authenticated %}
+                                <li>
+                                    <a id="navbar-avatar" href="{{ url_for('user', username = current_user.username) }}">
+                                        {% if current_user.avatar_min %}
+                                            <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}" />
+                                        {% else %}
+                                            <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}" />
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('security.logout') }}">Logout</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ url_for('security.login') }}">Login</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('security.register') }}">Register</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            {% endblock %}
+            <main>
+
+                {% block body %}
+                {% endblock %}
+
+			</main>
+
+
+        		<div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to adding products or posts to your favourites
+                                            </p>
+
+
+            </div>
+
+                <div class="alert alert-danger alert-dismissable like-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to vote
+                                            </p>
+
+
+            </div>
+
+
+                <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to add comments
+                                            </p>
+
+
+            </div>
+			<footer>
+                <section class="ct-footer-list ct-u-paddingBoth50">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 col-xs-12">
+                <div class="ct-list ct-list--dark">
+                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Information</h5>
+                    <ul class="ct-u-paddingTop10">
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Specials</span></a></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>New products</span></a></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Best Sellers</span></a></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Most Top Rated</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-sm-4 col-xs-12">
+                <div class="ct-list ct-list--dark">
+                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Follow Us</h5>
+                    <ul class="ct-u-paddingTop10">
+                        <li><a href="https://www.facebook.com/createITpl"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-facebook"></i></div></div><span>Facebook</span></a></li>
+                        <li><a href="https://twitter.com/createitpl"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-twitter"></i></div></div><span>Twitter</span></a></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-rss"></i></div></div><span>RSS</span></a></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-linkedin"></i></div></div><span>Linkedin</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-4 col-xs-12">
+                <div class="ct-list ct-list--dark">
+                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Contact Us</h5>
+                    <ul class="ct-u-paddingTop10">
+                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-home"></i></div></div><span>Street Name, 1234, Somewhere, Nowhere</span></li>
+                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-phone"></i></div></div><span>(012) 345-6789</span></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div></div><span>info @ support.com</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+			</footer>
+		</div>
+	</body>
+        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
+
+
+
+</html>
+
+

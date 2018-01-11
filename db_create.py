@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-from migrate.versioning import api
-from application.config import SQLALCHEMY_DATABASE_URI
-from application.config import SQLALCHEMY_MIGRATE_REPO
-from application import db
 import os.path
+
+from migrate.versioning import api
+
+from application import db
+from config import SQLALCHEMY_DATABASE_URI
+from config import SQLALCHEMY_MIGRATE_REPO
+
 db.create_all()
 
 if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
