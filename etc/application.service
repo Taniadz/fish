@@ -7,7 +7,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/app
-Environment="PATH=/home/ubuntu/venv/aqua-venv/bin"
+Environment="PATH=/home/ubuntu/venv/aqua_venv/bin"
 ExecStart=/home/ubuntu/venv/aqua_venv/bin/uwsgi --ini uwsgi.ini
 
 [Install]

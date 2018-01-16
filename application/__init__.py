@@ -78,7 +78,7 @@ import application.models
 
 
 
-init_social(app, user_datastore)
+init_social(app, db.session)
 
 
 
