@@ -1,6 +1,6 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
-from application import celery
+from application import celery, UPLOAD_FOLDER
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
 from .models import PostComReaction, ProdComReaction, ProductReaction, ProductImage

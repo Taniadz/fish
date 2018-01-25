@@ -4,10 +4,11 @@
 		<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
         {% if title %}
-            <title>{{ title }} - microblog</title>
+            <title>{{ title }} - Aqua</title>
         {% else %}
-            <title>microblog</title>
+            <title>Aqua</title>
         {% endif %}
+        <link rel="icon" type="image/ico" href="{{ url_for('static',filename="image/my_favicon.ico") }}" />
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
@@ -61,7 +62,7 @@
 
         <div class="ct-navbarMobile">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img id="ct-js-logo" src="http://fishtank.html.themeplayers.net/FISHtank/assets/images/demo-content/FISHtank/logo.png" alt="FISHtank">
+                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" alt="FISHtank", width=49px/>
             </a>
 
             <button type="button"  id = "listener" class="navbar-toggle">
@@ -76,7 +77,21 @@
         </div>
 
         <div class="ct-navbarMobile ct-navbarMobile--header">
-            <a href="{{ url_for('user', username = current_user.username) }}">username</a>
+            {% if current_user.is_authenticated %}
+
+                {% if current_user.avatar_min %}
+                    <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}"  width=49px />
+                {% else %}
+                    <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}"  width=49px />
+                {% endif %}
+                <a href="{{ url_for('user', username = current_user.username) }}">{{current_user.username}}</a>
+                <a class="left" href="{{ url_for('security.logout') }}">logout</a>
+            {% else %}
+                 <a class="not-auth" href="{{ url_for('security.login') }}">Login</a>
+
+            <a href="{{ url_for('security.register') }}">Register</a>
+
+            {% endif %}
 
 
         </div>

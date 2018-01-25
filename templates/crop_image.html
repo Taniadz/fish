@@ -26,15 +26,15 @@
 
 
   <div class="container">
-    <h1>my crop for little avatar</h1>
-    <h3>Image</h3>
+<div class="ct-sectionHeader ct-u-paddingBoth20">
+        <h2 class="ct-u-size34">Crop yor avatar</h2>
+    </div>
     <div>
-        <img id="image" src="{{ url_for('static',filename="uploads/" + user.avatar) }}" alt="Picture">
+        <img id="image" src="{{ url_for('uploaded_file',filename= user.avatar) }}" alt="Picture">
 
 
     </div>
-    <h3>Result</h3>
-    <button type="button" id="button">Crop</button>
+    <button type="button" id="button" class="btn btn-motive btn-form" >Crop</button>
     <div id="result"></div>
   </div>
 

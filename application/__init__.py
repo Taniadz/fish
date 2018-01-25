@@ -13,6 +13,12 @@ from social_flask_sqlalchemy.models import init_social
 import config
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
 
+from social.apps.flask_app.template_filters import backends
+
+from flask import g
+
+
+
 ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
@@ -42,8 +48,8 @@ app.jinja_env.filters['datetime'] = format_datetime
 
 
 mail = Mail(app)
-
-
+#
+#
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = '/login'
@@ -79,6 +85,17 @@ import application.models
 
 
 init_social(app, db.session)
+
+
+def inject_user():
+    try:
+        return {'user': g.user}
+    except AttributeError:
+        return {'user': None}
+
+
+app.context_processor(inject_user)
+app.context_processor(backends)
 
 
 

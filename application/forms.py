@@ -1,24 +1,33 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField, PasswordField, HiddenField,  TextAreaField, validators
 from wtforms.widgets import TextArea
-from wtforms.validators import Required, Length
+from wtforms.validators import Required, Length, DataRequired
 from flask_uploads import UploadSet, IMAGES
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_security.forms import RegisterForm
-
+from .models import User
+from .utils.validators import Unique
 
 
 images = UploadSet('images', IMAGES)
 
 
 class ExtendedRegisterForm(RegisterForm):
-    username = StringField('First Name', [validators.Required()])
+    username = StringField('First Name', validators=[DataRequired(),
+        Unique(
+            User,
+            User.username,
+            message='There is already an account with that username.')]
+    )
 
 
 
 
 class UserEditForm(FlaskForm):
-    username = StringField('username', [validators.Length(min=4, max=25)] )
+    class Meta:
+        model = User
+
+    username = StringField('username', validators = [Length(min=4, max=25), Unique] )
     about_me = StringField('about_me', widget=TextArea(), validators = [Length(min = 0, max = 1000)])
     file = FileField('image')
 

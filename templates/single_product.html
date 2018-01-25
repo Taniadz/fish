@@ -42,7 +42,7 @@
 
                         <p class="ct-u-motiveLight">
                             By
-                            <a href="#">{{ product.product_author.username }}</a>
+                            <a href="{{ url_for('user', username =product.product_author.username ) }}">{{ product.product_author.username }}</a>
                             on
                             {{ product.published_at|datetime }}
 

@@ -264,7 +264,7 @@ span {
 }
 
 .ct-navbarMobile--header{
-    z-index: 1000;
+    z-index: 999;
     font-size: 18px;
     line-height: 70px;
     position: absolute;
@@ -275,8 +275,18 @@ span {
 
 .ct-navbarMobile--header a {
     color: #ffffff;
-    padding-left: 10%;
+    padding-left: 2%;
     padding-right: -5%;
+}
+.ct-navbarMobile--header a.not-auth {
+
+    padding-left: 60%;
+    padding-right: 5%;
+}
+.ct-navbarMobile--header img {
+
+    margin-left: 5%;
+
 }
 .snapjs-right .ct-navbarMobile {
     right: 266px;
@@ -845,16 +855,24 @@ body.ct-navbar--is-small .navbar .navbar-brand, body.ct-navbar--fixedTop--is-sma
 /*posts grid.....................................................................................*/
 
 .ct-articleBox a:hover{
-        text-decoration: none;
+    text-decoration: none;
     color: #1f8bf3;
 
 
 }
 .ct-articleBox h5:hover{
-        color: #1f8bf3;
-
+    color: #1f8bf3;
 
 }
+.ct-product a:hover{
+    text-decoration: none;
+    color: #1f8bf3;
+}
+
+.ct-product h5:hover{
+    color: #1f8bf3;
+}
+
 
 .ct-u-borderBottomGrayLighter {
     border-bottom: 1px solid #eeeeee;
@@ -3411,6 +3429,10 @@ img:hover + .avatar-edit{
 
 
 /*homepage--------------------------------------------*/
+.ct-navbarMobile--header a.left{
+    margin-left: 40%;
+}
+
 
 .ct-u-motiveLight2--bg {
     background-color: #f8f8f8;

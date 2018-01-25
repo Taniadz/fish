@@ -1,7 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
-print(UPLOAD_FOLDER)
+
 TEMPLATE_DIR = os.path.join(basedir, 'templates')
 STATIC_DIR= os.path.join(basedir, "static")
 
@@ -47,11 +47,19 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 
 
 # flask-security settings
+SECURITY_CONFIRMABLE = False
+SECURITY_EMAIL_SENDER = 'no-reply@example.com'
+
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
 SECURITY_PASSWORD_SALT = 'ddddsdv123'
-SECURITY_POST_LOGIN = '/login'
+SECURITY_POST_LOGIN = '/'
 
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'mail.aqua.fish@gmail.com'
+MAIL_PASSWORD = 'mail_aqua_fish23101994'
 
 # celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
