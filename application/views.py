@@ -120,6 +120,7 @@ def last_posts(page=1):
 @app.route('/user/<username>')
 def user(username):
     user = get_or_abort(User, username=username).first()
+    print(user.social_auth_usersocialauth)
     if user is None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
@@ -215,6 +216,7 @@ def singlepost(postid=None):
     form = CommentForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
         post = get_or_abort(Post, id=postid).first()
+
         if post.deleted:
             return render_template("deleted_object.html", object=post)
 
