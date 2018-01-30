@@ -9,7 +9,7 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
-from extentions import db, login_manager, bcrypt
+from .extentions import db, login_manager, bcrypt
 #
 #
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
@@ -21,19 +21,9 @@ from flask import g
 
 
 ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-def create_app():
-    """The application factory.
-    Explained here: http://flask.pocoo.org/docs/patterns/appfactories/
-    :param config_object: The configuration object to use.
-    """
-    app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
-    app.config.from_object(config)
-    register_extensions(app)
-    register_blueprints(app)
-    register_before_requests(app)
-    register_context_processors(app)
-    register_teardown_appcontext(app)
-    return app
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+app.config.from_object(config)
+
 
 
 def register_extensions(app):
@@ -47,12 +37,9 @@ def register_extensions(app):
     app.app_context().push()
 
 
-
-
 def register_blueprints(app):
     """Register own and 3rd party blueprints."""
     app.register_blueprint(social_auth)
-
 
 
 
@@ -88,8 +75,7 @@ def register_teardown_appcontext(app):
 
 
 
-app = create_app()
-app.app_context().push()
+
 
 
 
@@ -130,6 +116,15 @@ def make_celery(app):
     return celery
 
 celery = make_celery(app)
+
+
+
+
+register_extensions(app)
+register_blueprints(app)
+register_before_requests(app)
+register_context_processors(app)
+register_teardown_appcontext(app)
 
 
 import application.views

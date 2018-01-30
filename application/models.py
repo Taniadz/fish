@@ -1,7 +1,5 @@
-from application import db
+from .extentions import db, login_manager
 from datetime import datetime
-from application import login_manager
-
 
 from flask_security import UserMixin, RoleMixin
 

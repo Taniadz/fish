@@ -16,7 +16,7 @@ SECRET_KEY = 'you-will-never-guess'
 # settings for python social auth---------------------------------------------------
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = ('social.backends.google.GoogleOAuth2', \
                                                     'social.backends.facebook.FacebookOAuth2')
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = "http://myapp.com/"
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "https://aqua.name"
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_USER_MODEL = 'application.models.User'
 

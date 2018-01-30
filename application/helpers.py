@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 
 
-from application import UPLOAD_FOLDER, db, app
+from application  import UPLOAD_FOLDER, app, db
 from .models import User, Post, Comment, CommentProduct, Product, PostReaction
 
 

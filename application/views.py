@@ -52,6 +52,7 @@ def page_not_found(e):
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+
     posts = get_posts_ordering(Post.published_at.desc()).paginate(1, POSTS_PER_PAGE, False)
     products = get_products_ordering(Product.like_count.desc()).paginate(1, POSTS_PER_PAGE, False)
     list_of_favourite_product = create_list_of_favourite_products(products.items, current_user)
@@ -120,7 +121,6 @@ def last_posts(page=1):
 @app.route('/user/<username>')
 def user(username):
     user = get_or_abort(User, username=username).first()
-    print(user.social_auth_usersocialauth)
     if user is None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
