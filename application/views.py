@@ -3,12 +3,11 @@ from flask import render_template,  flash, redirect, url_for, request, g, send_f
 from application import celery, UPLOAD_FOLDER
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
-from .models import PostComReaction, ProdComReaction, ProductReaction, ProductImage
+from .models import PostComReaction, ProdComReaction, ProductReaction, ProductImage, User
 from flask_login import current_user
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
-
-
+from urllib.request import urlopen
 from flask_security import login_required
 
 POSTS_PER_PAGE = 6
@@ -30,9 +29,17 @@ app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 def save_profile(backend, user, response, *args, **kwargs):
     if backend.name == 'facebook':
         profile = user.get_profile()
-        if profile is None:
-            return "hi"
 
+        profile.username = response.get('name')
+        url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
+        filename = str( response['id']) + "avatar"
+        avatar = urlopen(url).read()
+
+        fout = open(UPLOAD_FOLDER +"/" + filename , "wb")  # filepath is where to save the image
+        fout.write(avatar)
+        fout.close()
+        profile.avatar = filename
+        profile.save()
 
 @app.before_request
 def global_user():
@@ -121,13 +128,9 @@ def last_posts(page=1):
 @app.route('/user/<username>')
 def user(username):
     user = get_or_abort(User, username=username).first()
-    if user is None:
-        flash('User ' + username + ' not found.')
-        return redirect(url_for('index'))
+    # print(user.roles)
     posts = get_ordered_list(Post, Post.published_at.desc(),
                              user_id=user.id)
-
-
 
     # show posts, written by profile owner(default), others container rendered by ajax
     # with def user_contain_* functions. This part is showed by included user_contain_post.html
