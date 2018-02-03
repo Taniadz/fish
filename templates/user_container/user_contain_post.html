@@ -1,6 +1,6 @@
 {% from 'helpers.html' import posts_macro with context %}
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>-->
+<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>-->
 
 {% if posts|length >= 1 %}
     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
@@ -65,11 +65,13 @@
         }
 
 });
-    $(document).ready(function() {
+$(document).ready(function() {
 
-
-    $("#post_block, li#post_block").on("click", UpdatePostContainer);
-
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+    $("li#post_block").on("click", UpdatePostContainer);
 
 
 });

@@ -35,7 +35,7 @@
                                 {% if dict_like[comment.id] %}
                                     {% if dict_like[comment.id] == "like" %}
                                         <img class="liked"
-                                             src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
+                                             src="{{ url_for('static',filename="image/button-liked.png" ) }}"
                                              obj_id={{ comment.id }} url = "like_comment" />
 
                                     {% elif dict_like[comment.id] == "unlike" %}
@@ -56,7 +56,7 @@
                                 {% else %}
                                     <img class="unliked"
                                          src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                         url="like_comment" obj_id={{ comment.id }}/>
+                                         url="like_comment" obj_id={{ comment.id }} />
 
                                 {% endif %}
                             {% else %}
@@ -184,7 +184,7 @@
 
                                         {% if dict_like[comment.id] == "like" %}
                                             <img class="liked"
-                                                 src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
+                                                 src="{{ url_for('static',filename="image/button-liked.png" ) }}"
                                                  obj_id={{ comment.id }} url = "like_prodcomment" />
 
                                         {% elif dict_like[comment.id] == "unlike" %}
@@ -205,7 +205,7 @@
                                     {% else %}
                                         <img class="unliked"
                                              src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                             url="like_prodcomment" obj_id={{ comment.id }}/>
+                                             url="like_prodcomment" obj_id={{ comment.id }} />
 
                                     {% endif %}
                                 {% else %}

@@ -32,7 +32,7 @@
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootbox.min.js") }}"></script>
-
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
 <script>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     $(document).ready(function(){
@@ -53,9 +53,14 @@
                 <ul class="ct-menuMobile-navbar">
 
 
-                    <li> <a href="{{ url_for('index') }}">HOME</a></li>
-                    <li> <a href="{{ url_for('popular_product') }}">CATALOG</a></li>
-                    <li> <a href="{{ url_for('last_posts') }}">BLOG</a></li>
+                    <li> <a href="{{ url_for('index') }}"><i class="fa fa-home"></i> HOME</a></li>
+                    <li> <a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> CATALOG</a></li>
+                    <li> <a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> BLOG</a></li>
+
+                    {% if current_user.is_authenticated %}
+                        <li> <a href="{{ url_for('add_post') }}"><i class="fa fa-pencil-square"></i> ADD NEW POST</a></li>
+                        <li> <a href="{{ url_for('add_product') }}"><i class="fa fa-pencil-square"></i> ADD NEW PRODUCT</a></li>
+                    {% endif %}
                 </ul>
 
         </div>

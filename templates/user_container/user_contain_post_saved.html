@@ -1,12 +1,10 @@
 {% from 'helpers.html' import posts_macro with context %}
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 {% if posts|length >= 1 %}
 
     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
         <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
-            <li role="presentation" class="active">
+            <li role="presentation" class="active favourite_block">
                 <div class="ct-tabBorder">
 
                     <a href="" id="date" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">date</a>
@@ -15,7 +13,7 @@
 
                 </div>
             </li>
-            <li role="presentation" class="active">
+            <li role="presentation" class="favourite_block">
                 <div class="ct-tabBorder">
 
 
@@ -59,9 +57,11 @@
 
 });
     $(document).ready(function() {
-
-
-    $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+    $(".ct-tabBorder .post").on("click", UpdateFavouriteContainer);
 
 
 

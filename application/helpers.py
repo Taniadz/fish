@@ -13,37 +13,46 @@ from .models import User, Post, Comment, CommentProduct, Product, PostReaction
 
 
 
-def create_dict(d, child, parent=0,):
+def create_dict(d, child, parent=0):
     if parent == 0:
-         d[child] = OrderedDict()
-         return
+        print("par 0")
+        d[child] = OrderedDict()
+        return
 
     if type(d)==type(OrderedDict()):
-        for k in d:
-            if k == parent:
-                d[parent][child] = OrderedDict()
+        print(1)
 
+        for k in d:
+            print(2)
+            if k == parent:
+                print(3)
+                d[parent][child] = OrderedDict()
                 return
             create_dict(d[k], child, parent)
 
 
-def get_comment_dict(comments, sort=None):
-
+def get_comment_dict(comments, model=None, sort=None, **kwargs):
     comment_dict = OrderedDict()
-    if sort == None:
 
+    # create dict without sorting
+    if sort == None:
         for comment in comments:
             create_dict(comment_dict, comment.id, comment.parent)
         return comment_dict
 
     else:
-        for comment in comments:
+        if sort == "date":
+            comments_ordering = get_ordered_list(model, model.timestamp.desc(), **kwargs)
+        else:
+            comments_ordering = get_ordered_list(model, model.like_count.desc(), **kwargs)
+
+        for comment in comments_ordering:
             if comment.parent == 0:
                 create_dict(comment_dict, comment.id, comment.parent)
-
         for comment in comments:
             if comment.parent != 0:
                 create_dict(comment_dict, comment.id, comment.parent)
+        print(comment_dict)
         return comment_dict
 
 

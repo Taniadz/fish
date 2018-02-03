@@ -43,13 +43,6 @@ function ShowCommentForm() {
 
 
 }
-// show comment from field under the post
-$(document).ready(function() {
-    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
-
-    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
-});
-
 
 // delete post and redirect
 function delete_post(post_id, e) {
@@ -67,10 +60,16 @@ function delete_post(post_id, e) {
 else
     {
         console.log("no changes")
-
     }
 }
     })
 }
+
+// show comment from field under the post
+$(document).ready(function() {
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+
+    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
+});
 
 

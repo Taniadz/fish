@@ -63,7 +63,8 @@ function product_comment(product_id, sort, event) {
         url: $SCRIPT_ROOT + '/product_contain_comment',
         data: "product_id=" + product_id + "&sort=" + sort,
         success: function (data) {
-            $("#comment").html(data.comments);
+            alert("returned");
+            $("#comments").html(data.comments);
         },
         error: function (xhr, str) {
             alert('Mistake ' + xhr.responseCode);

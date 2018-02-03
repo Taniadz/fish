@@ -1,6 +1,6 @@
 {% from 'helpers.html' import post_comment_macro with context %}
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
+<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>-->
+        <!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>-->
 
 {% if comments|length >= 1 %}
     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
@@ -47,9 +47,19 @@
 </div>
 
 <script>
+
+
 $(document).ready(function() {
 
-     $("li.comment_block, li.comment_block").on("click", UpdateCommentContainer);
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $(".discussion.post-form.comment-login").on("click", RenderPostCommentForm);
+    $(".ct-tabHeader li.comment_block").on("click", UpdateCommentContainer);
 
- });
+
+
+
+});
+
 </script>

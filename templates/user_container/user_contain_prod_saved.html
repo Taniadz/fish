@@ -1,12 +1,10 @@
 {% from 'helpers.html' import products_macro with context %}
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 {% if products|length >= 1 %}
 
      <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
         <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
-            <li role="presentation" class="active">
+            <li role="presentation" class="active favourite_block">
                 <div class="ct-tabBorder">
 
                     <a href="" id="date" class="product"  user="{{ user_id }}" role="tab" data-toggle="tab">latest</a>
@@ -15,7 +13,7 @@
 
                 </div>
             </li>
-            <li role="presentation" class="">
+            <li role="presentation" class="favourite_block">
                 <div class="ct-tabBorder">
 
 
@@ -48,9 +46,12 @@
 
 <script>
     $(document).ready(function() {
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
 
-
-    $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
+    $(".ct-tabBorder .product").on("click", UpdateFavouriteContainer);
 
 
 

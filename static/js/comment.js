@@ -31,11 +31,59 @@ function edit_comment(event, id, url) {
             alert('Mistake ' + xhr.responseCode);
         }
     });
-};
-
-
-// if user not the comments'author, user can discuss other comment
-// data send by ajax on server where render template with updated comment part
+}
 
 
 
+    function RenderProductCommentForm(event) {
+        event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+        var id = $(this).attr('id');
+        $(".answer#answer" + id).slideToggle();
+        var user = $(this).attr('user');
+        var product = $(this).attr('product_id');
+        $.ajax({
+            type: "POST",
+            url: '/product_comment_form',
+            data: "parent_id=" + id + "&product_id=" + product,
+            success: function (data) {
+                $(".answer#answer" + id).html(data.com_form);
+                $("textarea#text").val(user + ", ");
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+    }
+
+    function RenderPostCommentForm(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        var id = $(this).attr('id');
+        $(".answer#answer" + id).slideToggle();
+        var user = $(this).attr('user');
+        var post = $(this).attr('post_id');
+        $.ajax({
+            type: "POST",
+            url: '/comment_form',
+            data: "parent_id=" + id + "&post_id=" + post,
+            success: function (data) {
+                $(".answer#answer" + id).html(data.com_form);
+                $("textarea#text").val(user + ", ");
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        event.preventDefault();
+    }
+
+// $(document).ready(function() {
+// // data send by ajax on server where render template with updated comment part
+//
+// $(".discussion.post-form.comment-login").on("click", RenderPostCommentForm);
+// $(".discussion.product-form.comment-login").on("click", RenderProductCommentForm);
+// });

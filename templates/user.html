@@ -3,14 +3,16 @@
 {% block body %}
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
 
+<div class="container">
+    <div class="row ">
 
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+    <div class="ct-pageSectionHeader ct-u-paddingBoth20">
 
-                    <h3 class="text-uppercase ct-u-size30 text-center">{{ user.username }}</h3>
+                    <h3 class="text-uppercase ct-u-size40 text-center">{{ user.username }}</h3>
 
             </div>
+        <div class="col-sm-9">
+
 
             <div class="row">
             <div class="max_avatar col-sm-4 col-xs-12">
@@ -132,15 +134,74 @@
     {% endif %}
         </section>
     </div>
-    </div>
 
+                    <div class="col-xs-12 col-sm-3 sidebar">
+                    <div class="ct-inputSearch ct-u-marginBottom40">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <div class="panel-title">
+                                    <a class="collapsed" href="{{url_for('add_post')}}">
+                                        new post
+                                       <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                    </a>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <div class="panel-title">
+                                <a class="collapsed" href="{{url_for('add_product')}}">
+                                    new product
+                                   <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
+                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+
+                        {% for post in posts %}
+                            <li>
+                            <a href="{{url_for('singlepost', postid=post.id)}}">
+                            {% if post.image %}
+
+                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename= post.image )}}" style="height:50px">
+
+                            {% else %}
+                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename="carusel4.jpg" )}}" style="height:50px">
+
+                            {% endif %}
+                            <div class="description side">
+                                <p class="ct-fw-600 ct-u-size18">{{post.title|truncate(50, True) }}</p>
+
+
+                                 <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>
+
+
+                            </div>
+                            </a>
+                             </li>
+                             {% endfor%}
+
+
+
+                </ul>
+
+                </div>
+
+    </div>
+</div>
 <script>
 $(document).ready(function() {
 
-     $("li.comment_block, li.comment_block, li.comment, a.prod_comment").on("click", UpdateCommentContainer);
-     $("#product_block, li#product_block").on("click", UpdateProductContainer);
-     $(".user-activities li.post, .user-activities li.product, a.post, a.product").on("click", UpdateFavouriteContainer);
-
+     $(".dropdown-menu li.comment_block").on("click", UpdateCommentContainer);
+     $("#product_block").on("click", UpdateProductContainer);
+     $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
+     $("#post_block").on("click", UpdatePostContainer);
 
 
  });

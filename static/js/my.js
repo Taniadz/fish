@@ -17,14 +17,16 @@ function UpdateCount(data, url, id){
 
     // like/unlike in one click without using reaction
 function ToggleLikeUnlike(){
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
     var url = $(this).attr("url");
     var id = $(this).attr("obj_id");
     var div_class = $(this).attr("class");
     alert(div_class);
-    if (div_class == "unliked") {
+    if ($(this).hasClass("unliked")) {
         alert("unliked");
-        $(this).attr("src", '/static/image/reaction-like.png');
+        $(this).attr("src", '/static/image/button-liked.png');
         $.ajax({
             type: 'POST',
             url: "/" + url,
@@ -34,8 +36,9 @@ function ToggleLikeUnlike(){
             }
         });
         $(this).attr("class", "liked");
+         event.preventDefault();
     }
-    else if (div_class == "liked") {
+    else if ($(this).hasClass("liked")) {
         alert("liked");
         var url = $(this).attr("url");
         var id = $(this).attr("obj_id");
@@ -49,17 +52,14 @@ function ToggleLikeUnlike(){
                 }
             });
             $(this).attr("class", "unliked");
+             event.preventDefault();
         }
     }
 
-$(document).ready(function() {
-
-    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
-    $('.smile').on("click", AddReaction);
-    ShowReactionDiv();
-});
 
 function AddReaction() {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     var type=$(this).attr("type");
     var id = $(this).attr("obj_id");
     var url = $(this).attr("url");
@@ -78,11 +78,12 @@ function AddReaction() {
              UpdateCount(data, url, id);
          }
     });
+     event.preventDefault();
 }
 
 //show pop-up div with reaction
 function ShowReactionDiv() {
-    $("img.liked, img.unliked, .popup-div, img.unliked-comment, img.liked-comment").mouseenter(function() {
+    $("img.liked, img.unliked, .popup-div").mouseenter(function() {
         var id = $(this).attr("obj_id");
         var url = $(this).attr("url");
         var $div2 = $(".popup-div[obj_id=" + id+"][url=" + url +"]");
@@ -93,5 +94,16 @@ function ShowReactionDiv() {
         }, 3000);
     });
 }
+
+
+// $(document).ready(function() {
+//
+//     $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+//     $('.smile').on("click", AddReaction);
+//     ShowReactionDiv();
+//
+// });
+
+
 
 

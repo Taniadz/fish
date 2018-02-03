@@ -48,10 +48,10 @@
                     </div>
                     <div class="reaction-counter">
 
-                        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" width=20/>
-                        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" width=20/>
-                        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" width=20/>
-                        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" width=20/>
+                        <span id="like_count_like_post_{{post.id}}">{{ post.like_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" )}}" />
+                        <span id="unlike_count_like_post_{{post.id}}">{{ post.unlike_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}" />
+                        <span id="funny_count_like_post_{{post.id}}">{{ post.funny_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" )}}" />
+                        <span id="angry_count_like_post_{{post.id}}">{{ post.angry_count }} </span><img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" )}}" />
 
                     </div>
 
@@ -66,7 +66,7 @@
                                         {% if post_liked %}
 
                                             {% if post_liked.type == "like"%}
-                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/reaction-like.png" )}}"
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/button-liked.png" )}}"
                                                     obj_id={{post.id}} url = "like_post" />
 
                                             {% elif post_liked.type == "unlike"%}
@@ -179,7 +179,7 @@
 
 
 
-                                <li role="presentation" class="active">
+                                <li role="presentation" class="">
                                     <div class="ct-tabBorder">
                                         <a href="" onclick="post_comment({{ post.id }}, 'data', event);" role="tab" data-toggle="tab">Latest</a>
                                     </div>
@@ -187,7 +187,7 @@
 
                                     </div>
                                 </li>
-                                 <li role="presentation" class="active">
+                                 <li role="presentation" class="">
                                     <div class="ct-tabBorder">
                                         <a href="" onclick="post_comment({{ post.id }}, 'rating', event);" role="tab" data-toggle="tab">Popular</a>
                                     </div>
@@ -233,7 +233,7 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                   <div class="panel-title">
-                                    <a class="collapsed" href="#">
+                                    <a class="collapsed" href="{{url_for('add_post')}}">
                                         new post
                                        <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                     </a>
@@ -243,7 +243,7 @@
                             <div class="panel panel-default">
                             <div class="panel-heading">
                               <div class="panel-title">
-                                <a class="collapsed" href="#">
+                                <a class="collapsed" href="{{url_for('add_product')}}">
                                     new product
                                    <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                 </a>
@@ -293,6 +293,8 @@
             </div>
         </div>
     </section>
+
+
 
 {% endblock %}
 

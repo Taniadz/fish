@@ -57,7 +57,6 @@ $(document).ready(function () {
 
      $(window).scroll(function(){
         var scroll = $(window).scrollTop();
-        console.log(scroll);
         if (scroll > 600) {
             jQuery('.ct-js-btnScrollUp').addClass('is-active');
         } else {
@@ -71,8 +70,11 @@ $(document).ready(function () {
             if (scroll >= 100) {
                 $(".ct-navbar--fixedTop .navbar").css("box-shadow","0 0 15px -6px #4c505e");
 
+
+
                 if($bodyel.hasClass("ct-js-navbarMakeSmaller")){
                     $bodyel.addClass("ct-navbar--fixedTop--is-small");
+
 
 
 
@@ -94,6 +96,7 @@ $(document).ready(function () {
                     $(".ct-navbar--fixedTop .navbar").css("box-shadow","none");
 
 
+
                 }
                 if ($bodyel.hasClass("ct-navbar-isTransparent-toDefault") || $bodyel.hasClass("ct-navbar-isTransparent-toInverse")){
                     $navbarel.removeClass("navbar-default");
@@ -110,34 +113,36 @@ $(document).ready(function () {
             if (scroll >= 100) {
                 $bodyel.addClass("hide-topbar");
 
+
                 if (!($bodyel.is(".revert-to-transparent"))) {
                     $bodyel.addClass("navbar-with-shadow");
                 }
             } else {
                 $bodyel.removeClass("hide-topbar navbar-with-shadow");
+
             }
         }
 
     });
-     $(document).ready(function () {
-
-        // Flexslider height ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        var $mediaSection = $(".ct-mediaSection");
-        if($mediaSection.length > 0)
-        {
-            $mediaSection.each(function()
-            {
-                if( $(this).attr("data-height") == "100%")
-                {
-                    $(this).find(".flexslider").css("height",  $deviceheight + "px");
-                }
-            });
-        }
-
-
-
-    });
+    //  $(document).ready(function () {
+    //
+    //     // Flexslider height ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //
+    //     var $mediaSection = $(".ct-mediaSection");
+    //     if($mediaSection.length > 0)
+    //     {
+    //         $mediaSection.each(function()
+    //         {
+    //             if( $(this).attr("data-height") == "100%")
+    //             {
+    //                 $(this).find(".flexslider").css("height",  $deviceheight + "px");
+    //             }
+    //         });
+    //     }
+    //
+    //
+    //
+    // });
     $(".favourite-not-login").on("click", function () {
 
          $(".alert.alert-danger.favourite-alert").show();

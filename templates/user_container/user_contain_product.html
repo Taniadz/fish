@@ -1,6 +1,4 @@
 {% from 'helpers.html' import products_macro with context %}
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
 
 
 {% if products|length >= 1 %}
@@ -47,8 +45,11 @@
 <script>
     $(document).ready(function() {
 
-
-    $("#product_block, li#product_block").on("click", UpdateProductContainer);
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
+    $("li#product_block").on("click", UpdateProductContainer);
 
 
 

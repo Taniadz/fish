@@ -19,27 +19,32 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
+#
+# def url_for_other_page(page):
+#     args = request.view_args.copy()
+#     args['page'] = page
+#     return url_for(request.endpoint, **args)
+# app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
-def url_for_other_page(page):
-    args = request.view_args.copy()
-    args['page'] = page
-    return url_for(request.endpoint, **args)
-app.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
+
 
 def save_profile(backend, user, response, *args, **kwargs):
-    if backend.name == 'facebook':
-        profile = user.get_profile()
-
-        profile.username = response.get('name')
+   print(user, user.id)
+   print(response)
+   if backend.name == 'facebook':
+        user = get_or_abort(User, id=user.id)
+        print(user, "user2s")
         url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
-        filename = str( response['id']) + "avatar"
+        filename = str( response['id']) + "avatar.png"
         avatar = urlopen(url).read()
 
         fout = open(UPLOAD_FOLDER +"/" + filename , "wb")  # filepath is where to save the image
         fout.write(avatar)
         fout.close()
-        profile.avatar = filename
-        profile.save()
+        update_rows(user, username = response.get('name'), avatar = filename )
+
+
 
 @app.before_request
 def global_user():
@@ -508,7 +513,7 @@ def user_contain_favourite():
                                                    user_id=request.form.get('user_id')
                                                    )}
     if request.form.get('contain') == "post":
-        if request.form.get('sort') == "data":
+        if request.form.get('sort') == "date":
             posts = get_favourite(id, Post, Post.published_at.desc() )
         else:
             posts = get_favourite(id, Post, Post.like_count.desc())
@@ -521,7 +526,10 @@ def user_contain_favourite():
                                                    list_of_favourite=list_of_favourite,
                                                    posts=posts,
                                                    user_id=request.form.get('user_id')
-                                                       )}
+
+                                                    )}
+    print(request.form.get('contain'))
+    print(request.form.get('sort'))
     return jsonify(data)
 
 
@@ -560,12 +568,9 @@ def delete_fav_product():
 @app.route('/post_contain_comment', methods=['POST'])
 def post_contain_comment():
     form = CommentForm(request.form)
-    if request.form.get('sort') == "data":
-        comments = get_ordered_list(Comment, Comment.timestamp.desc(), post_id=request.form.get('post_id'))
-    elif request.form.get('sort') == "rating":
-        comments = get_ordered_list(Comment, Comment.like_count.desc(), post_id=request.form.get('post_id'))
+    comments = get_all_obj(Comment,  post_id=request.form.get('post_id'))
     dict_like = post_comment_dict_react(comments, current_user)
-    comment_tree = get_comment_dict(comments, 'sort')
+    comment_tree = get_comment_dict(comments, Comment, request.form.get('sort'), post_id=request.form.get('post_id'))
     data = {'comments': render_template('comments.html',
             dict_like=dict_like,
                                         postid=request.form.get('post_id'),
@@ -579,16 +584,10 @@ def post_contain_comment():
 @app.route('/product_contain_comment', methods=['POST'])
 def product_contain_comment():
     form = CommentForm(request.form)
-    if request.form.get('sort') == "data":
-        comments = get_ordered_list(CommentProduct, CommentProduct.timestamp.desc(), product_id=request.form.get('product_id'))
-    elif request.form.get('sort') == "rating":
-        comments = get_ordered_list(CommentProduct, CommentProduct.like_count.desc(), product_id=request.form.get('product_id'))
-
-    dict_like = product_dict_react(comments, current_user)
-
-    comment_tree = get_comment_dict(comments, 'sort')
-
-    data = {'comments': render_template('comments.html',
+    comments = get_all_obj(CommentProduct, product_id=request.form.get('product_id'))
+    dict_like = prod_comment_dict_react(comments, current_user)
+    comment_tree = get_comment_dict(comments, CommentProduct, request.form.get('sort'), product_id=request.form.get('product_id'))
+    data = {'comments': render_template('product_comments.html',
                                         dict_like=dict_like,
                                         product_id=request.form.get('product_id'),
                                         comments=comments,
