@@ -21,26 +21,22 @@
     }
   </style>
 
-
-
-
-
   <div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+    <div class="ct-sectionHeader ct-u-paddingBoth20">
+        <h2 class="ct-u-size34">Crop yor avatar</h2>
+     </div>
+     <div>
+         <img id="image" src="{{ url_for('uploaded_file',filename= user.avatar) }}" alt="Picture">
 
-       <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <div class="ct-sectionHeader ct-u-paddingBoth20">
-                    <h2 class="ct-u-size34">Crop yor avatar</h2>
-                </div>
-                <div>
-                <img src="{{ url_for('uploaded_file',filename=user.avatar) }}" />
 
-                </div>
-                <button type="button" id="button" class="btn btn-motive btn-form" >Crop</button>
-                <div id="result"></div>
-              </div>
-       </div>
-       </div>
+     </div>
+     <button type="button" id="button" class="btn btn-motive btn-form" >Crop</button>
+     <div id="result"></div>
+   </div>
+  </div>
+  </div>
 <script>
     (function () {
       function getRoundedCanvas(sourceCanvas) {
@@ -59,14 +55,14 @@
         return canvas;
       }
       window.addEventListener('DOMContentLoaded', function () {
-        var image = document.getElementById('image');
-        var button = document.getElementById('button');
-        var result = document.getElementById('result');
+        var image = $('#image');
+        var button = $('#button');
+        var result = $('#result');
         var croppable = false;
-        var cropper = new Cropper(image, {
+        var cropper = image.cropper( {
           aspectRatio: 1,
           viewMode: 1,
-          ready: function () {
+          crop: function () {
             croppable = true;
           }
         });
@@ -85,10 +81,11 @@
           roundedCanvas = getRoundedCanvas(croppedCanvas);
 
           var image_data = cropper.getData();
+          alert(1)
 
-          $.post( "/crop_image", image_data ,function( data ){
+          $.post( $SCRIPT_ROOT + "/crop_image", image_data ,function( data ){
              var username = "{{ user.username }}";
-             window.location.href="/user/" + username;
+             window.location.href=$SCRIPT_ROOT + "/user/" + username;
              });
         };
       });

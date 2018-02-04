@@ -1770,6 +1770,13 @@ span.fa.fa-camera, span.photo_text.hidden-xs{
     color: #1f8bf3;
 }
 
+@media (max-width: 767px) {
+
+    .form-group.big-form-file .hidden-xs { display: inline !important;
+    }
+}
+
+
 ul ul{
   margin-left:25px;
 
