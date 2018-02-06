@@ -17,8 +17,8 @@ function UpdateCount(data, url, id){
 
     // like/unlike in one click without using reaction
 function ToggleLikeUnlike(){
-    event.preventDefault();
-    event.stopImmediatePropagation();
+
+
 
     var url = $(this).attr("url");
     var id = $(this).attr("obj_id");
@@ -57,7 +57,7 @@ function ToggleLikeUnlike(){
     }
 
 
-function AddReaction() {
+function AddReaction(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
     var type=$(this).attr("type");

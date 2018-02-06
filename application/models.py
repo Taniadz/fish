@@ -1,11 +1,11 @@
-from .extentions import db, login_manager
+from .extentions import db
 from datetime import datetime
 
 from flask_security import UserMixin, RoleMixin
 
-@login_manager.user_loader
-def get_user(ident):
-    return User.query.get(int(ident))
+# @login_manager.user_loader
+# def get_user(ident):
+#     return User.query.get(int(ident))
 
 
 favourite_product = db.Table('favourite_product',

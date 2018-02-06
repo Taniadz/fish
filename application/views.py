@@ -1,14 +1,14 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
-from application import celery, UPLOAD_FOLDER
+from application import celery, UPLOAD_FOLDER, security
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm
 from werkzeug import secure_filename
 from .models import PostComReaction, ProdComReaction, ProductReaction, ProductImage, User
-from flask_login import current_user
+# from flask_login import current_user
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
-from flask_security import login_required
+from flask_security import login_required, current_user
 
 POSTS_PER_PAGE = 6
 from .helpers import *
@@ -18,6 +18,9 @@ from PIL import Image, ImageDraw
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+
+
 
 #
 # def url_for_other_page(page):
@@ -187,6 +190,7 @@ def crop_image():
     user = get_or_abort(User, username=username)
     if request.method == 'POST':
         data_image = request.form.to_dict()
+        print(data_image)
         result = async_crop.delay(data_image, username)  # give it celery
         return redirect(url_for('user', username=username))
     else:

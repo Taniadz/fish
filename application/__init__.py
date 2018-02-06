@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-import flask_login
+# from flask_login import current_user
 import babel
 from celery import Celery
 from flask import Flask
-from flask_login import LoginManager
 from flask_mail import Mail
-from flask_security import Security, SQLAlchemyUserDatastore
+from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
-from .extentions import db, login_manager, bcrypt
+from .extentions import db
 #
 #
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
@@ -17,6 +16,7 @@ import config
 from social.apps.flask_app.template_filters import backends
 
 from flask import g
+
 
 
 
@@ -28,9 +28,8 @@ app.config.from_object(config)
 
 def register_extensions(app):
     """Register Flask extensions."""
-    bcrypt.init_app(app)
-    login_manager.init_app(app)
-    login_manager.login_view = '/login'
+    # bcrypt.init_app(app)
+
     with app.app_context():
         db.init_app(app)
         init_social(app, db.session)
@@ -46,7 +45,7 @@ def register_blueprints(app):
 def register_before_requests(app):
     """Register before_request functions."""
     def global_user():
-        g.user = flask_login.current_user
+        g.user = current_user
     app.before_request(global_user)
 
 

@@ -38,57 +38,55 @@
   </div>
   </div>
 <script>
-    (function () {
-      function getRoundedCanvas(sourceCanvas) {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var width = sourceCanvas.width;
-        var height = sourceCanvas.height;
-        canvas.width = width;
-        canvas.height = height;
-        context.imageSmoothingEnabled = true;
-        context.drawImage(sourceCanvas, 0, 0, width, height);
-        context.globalCompositeOperation = 'destination-in';
-        context.beginPath();
-        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
-        context.fill();
-        return canvas;
-      }
-      window.addEventListener('DOMContentLoaded', function () {
-        var image = $('#image');
-        var button = $('#button');
-        var result = $('#result');
-        var croppable = false;
-        var cropper = image.cropper( {
-          aspectRatio: 1,
-          viewMode: 1,
-          crop: function () {
-            croppable = true;
-          }
-        });
-        button.onclick = function () {
-
-          var croppedCanvas;
-          var roundedCanvas;
-          var roundedImage;
-          if (!croppable) {
-            return;
-          }
-
-          // Crop
-          croppedCanvas = cropper.getCroppedCanvas();
-          // Round
-          roundedCanvas = getRoundedCanvas(croppedCanvas);
-
-          var image_data = cropper.getData();
-          alert(1)
+  function getRoundedCanvas(sourceCanvas) {
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      var width = sourceCanvas.width;
+      var height = sourceCanvas.height;
+      canvas.width = width;
+      canvas.height = height;
+      context.beginPath();
+      context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI);
+      context.strokeStyle = 'rgba(0,0,0,0)';
+      context.stroke();
+      context.clip();
+      context.drawImage(sourceCanvas, 0, 0, width, height);
+      return canvas;
+    }
+    $(function () {
+      var $image = $('#image');
+      var $button = $('#button');
+      var $result = $('#result');
+      var croppable = false;
+      $image.cropper({
+        aspectRatio: 1,
+        viewMode: 1,
+        ready: function () {
+          croppable = true;
+        }
+      });
+      $button.on('click', function () {
+        var croppedCanvas;
+        var roundedCanvas;
+        if (!croppable) {
+          return;
+        }
+        // Crop
+        croppedCanvas = $image.cropper('getCroppedCanvas');
+        // Round
+        roundedCanvas = getRoundedCanvas(croppedCanvas);
+        // Get data and send
+          var image_data = $image.cropper('getData');
+          alert(1);
 
           $.post( $SCRIPT_ROOT + "/crop_image", image_data ,function( data ){
              var username = "{{ user.username }}";
              window.location.href=$SCRIPT_ROOT + "/user/" + username;
              });
-        };
       });
-    })();
+    });
+
+
+
 </script>
 {% endblock %}
