@@ -1,4 +1,5 @@
-from .extentions import db
+# from .extentions import db
+from application import db
 from datetime import datetime
 
 from flask_security import UserMixin, RoleMixin

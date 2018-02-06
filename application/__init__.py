@@ -23,8 +23,9 @@ from flask import g
 ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.config.from_object(config)
+db = SQLAlchemy(app)
 
-
+init_social(app, db.session)
 
 def register_extensions(app):
     """Register Flask extensions."""
@@ -119,7 +120,7 @@ celery = make_celery(app)
 
 
 
-register_extensions(app)
+# register_extensions(app)
 register_blueprints(app)
 register_before_requests(app)
 register_context_processors(app)

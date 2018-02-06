@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 
-
+# from .extentions import db
 from application  import UPLOAD_FOLDER, app, db
 from .models import User, Post, Comment, CommentProduct, Product, PostReaction
 

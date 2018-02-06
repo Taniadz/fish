@@ -2,14 +2,14 @@
 // toggle function for add to favourite one post / delete from favourite one post
 
 function TogglePostfavour(){
-    alert("post");
+
     if ($(this).hasClass("fa-star")){
         $.post( $SCRIPT_ROOT + '/delete_fav_post', {post_id: this.id});
         alert(this.id);
         $(this).removeClass("fa-star");
         $(this).addClass("fa-star-o");
     }else{
-        alert("else");
+
         $.post( $SCRIPT_ROOT + '/add_fav_post', {post_id: this.id});
         $(this).removeClass("fa-star-o");
         $(this).addClass("fa-star");
@@ -66,10 +66,10 @@ else
 }
 
 // show comment from field under the post
-$(document).ready(function() {
-    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
-
-    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
-});
+// $(document).ready(function() {
+//     $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+//
+//     $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
+// });
 
 
