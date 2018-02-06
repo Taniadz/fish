@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from 'helpers.html' import popup_div_macro with context %}
+{% from 'helpers.html' import post_comment_macro with context %}
 {% block body %}
     <section class="ct-u-paddingBottom10">
         <div class="container">
@@ -203,7 +204,25 @@
                                 <div class="ct-u-paddingBoth30" id="comments">
 
 
-                                     {% include "comments.html" %}
+                                     {%- for key, value in comment_tree.items() recursive -%}
+
+                                        {% if key %}
+                                            <ul class="ct-mediaList list-unstyled">
+                                            {% for comment in comments %}
+                                                {% if comment.id == key %}
+                                                        {% if comment.deleted %}
+                                                            comment has been deleted
+                                                        {%else%}
+                                                            <li class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">{{ post_comment_macro(comment, dict_like) }}</li>
+
+
+                                                        {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                                <ul class="ct-mediaList list-unstyled">{{ loop(value.items()) }}</ul>
+                                             </ul>
+                                        {% endif %}
+                                    {%- endfor -%}
 
 
 
@@ -295,6 +314,17 @@
     </section>
 
 
+<script>
+$(document).ready(function() {
 
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+    $('.smile').on("click", AddReaction);
+    ShowReactionDiv();
+    $(".discussion.post-form.comment-login").on("click", RenderPostCommentForm);
+
+
+});
+
+</script>
 {% endblock %}
 

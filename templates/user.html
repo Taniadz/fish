@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'helpers.html' import posts_macro with context %}
 
 {% block body %}
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
@@ -125,7 +126,54 @@
             <div class="row ct-u-paddingTop10 child-active">
                 <div class="col-md-12">
                     <div id="active-container">
-                        {% include '/user_container/user_contain_post.html' %}
+{#                        {% include '/user_container/user_contain_post.html' %}#}
+                        {% if posts|length >= 1 %}
+                            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                                <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">
+                                    <li id="post_block" sort="date" user ="{{ user_id }}" role="presentation" class="active">
+                                        <div class="ct-tabBorder">
+
+
+                                            <a href="#"  role="tab" data-toggle="tab">latest</a>
+                                        </div>
+                                        <div class="mini-triangle">
+
+                                        </div>
+                                    </li>
+                                    <li role="presentation"  id="post_block" sort="vote" user ="{{ user_id }}">
+                                        <div class="ct-tabBorder">
+
+
+                                            <a href="#" role="tab" data-toggle="tab">popular</a>
+                                        </div>
+                                        <div class="mini-triangle">
+
+                                        </div>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+
+
+
+
+
+                                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
+                                        {% for post in posts %}
+                                             <div class="col-sm-6 col-md-4 ct-js-blogMasonry-item" >
+
+                                            {{ posts_macro(post, dict_like, list_of_favourite) }}
+                                             </div>
+
+                                        {% endfor %}
+
+                                        </div>
+                                    {% else %}
+                                        <p>You have not post yet</p>
+                                        <p>Could you write something?</p>
+                                        <a href="{{ url_for('add_post') }}">Add_post</a>
+                                    {% endif %}
                     </div>
                 </div>
             </div>
@@ -202,8 +250,26 @@ $(document).ready(function() {
      $("#product_block").on("click", UpdateProductContainer);
      $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
      $("#post_block").on("click", UpdatePostContainer);
+    {# $("img.unliked, img.liked").on("click", ToggleLikeUnlike);#}
+    {#$('.smile').on("click", AddReaction);#}
+    {#ShowReactionDiv();#}
+    {#$("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);#}
+    $("li#post_block").on("click", UpdatePostContainer);
 
 
  });
+
+   jQuery(window).on("load",function () {
+
+
+        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
+            $('.ct-js-blogMasonry').masonry({
+                itemSelector: '.ct-js-blogMasonry-item',
+                masonry: {
+                }
+            });
+        }
+
+});
 </script>
 {% endblock %}
