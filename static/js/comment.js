@@ -1,9 +1,19 @@
 function delete_comment(e, id, url) {
 
-    e.preventDefault()
-    if (confirm('Are you sure you want to save this thing into the database?')) {
-
-        $.post( url, {id:id},function( data ) {
+    bootbox.confirm({
+    title: "Delete Comment?",
+    message: "Do you want to activate the Deathstar now? This cannot be undone.",
+    buttons: {
+        cancel: {
+            label: '<i class="fa fa-times"></i> Cancel'
+        },
+        confirm: {
+            label: '<i class="fa fa-check"></i> Confirm'
+        }
+    },
+    callback: function (result) {
+        if (result){
+           $.post( url, {id:id},function( data ) {
             $("#comment" + id).html(data.deleted);
              $("#edit" + id).text(data.nodelet);
 
@@ -11,8 +21,9 @@ function delete_comment(e, id, url) {
         });
 } else {
     // Do nothing!
+    }
 }
-
+});
 }
 
 function edit_comment(event, id, url) {
@@ -87,3 +98,4 @@ function edit_comment(event, id, url) {
 // $(".discussion.post-form.comment-login").on("click", RenderPostCommentForm);
 // $(".discussion.product-form.comment-login").on("click", RenderProductCommentForm);
 // });
+

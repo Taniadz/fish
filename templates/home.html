@@ -54,6 +54,8 @@
     </nav>{% endblock %}
 {% block body %}
     <div class="section"></div>
+
+    {{ datetime }}
     <section class="ct-mediaSection">
         <div class="flexslider ct-flexslider--fw ct-flexslider--controls3 ct-flexslider--mainSlider ct-u-marginBoth0 ct-js-flexslider"
              data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="100%"
@@ -101,11 +103,13 @@
             </div>
 
             <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20 ">
-                        {% for post in posts.items %}
-                            <div class="col-sm-4 ct-js-blogMasonry-item" >
+                        {% for post in posts%}
+                            {% if not post.deleted %}
+                                <div class="col-sm-6 ct-js-blogMasonry-item" >
 
-                                {{ posts_macro(post, dict_like_post, list_of_favourite_post) }}
-                            </div>
+                                    {{ posts_macro(post, posts_relationship) }}
+                                </div>
+                            {% endif %}
                         {% endfor %}
             </div>
         </div>
@@ -123,11 +127,14 @@
 
             <div id="product_container" class="row ct-u-paddingTop20">
         <div class="ct-product">
-            {% for product in products.items %}
-                <div class="col-sm-4 col-xs-12 ct-u-paddingTop40">
+            {% for product in products %}
+                {% if not product.deleted %}
+                    <div class="col-sm-4 col-xs-12 ct-u-paddingTop40">
 
-                {{ products_macro(product, dict_like_product, list_of_favourite_product) }}
-                </div>
+                    {{ products_macro(product, products_relationship) }}
+
+                    </div>
+                {% endif %}
             {% endfor %}
          </div>
 
@@ -135,7 +142,6 @@
         </div>
 
     </section>
-    <h2><a href="{{ url_for("social.auth", backend="facebook") }}">Facebook</a></h2>
 
 <script>
 $(document).ready(function() {

@@ -4,7 +4,7 @@
 
      <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
         <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
-            <li role="presentation" class="active favourite_block">
+            <li role="presentation" class="active favourite_block" id="date" >
                 <div class="ct-tabBorder">
 
                     <a href="" id="date" class="product"  user="{{ user_id }}" role="tab" data-toggle="tab">latest</a>
@@ -13,7 +13,7 @@
 
                 </div>
             </li>
-            <li role="presentation" class="favourite_block">
+            <li role="presentation" class="favourite_block" id="vote">
                 <div class="ct-tabBorder">
 
 
@@ -29,9 +29,9 @@
 
         <div class="ct-product animated fadeIn">
             {% for product in products %}
-                <div class="col-sm-6 col-md-4 col-xs-12 ct-u-paddingTop20">
+                <div class="col-sm-6 col-md-6 col-xs-12 ct-u-paddingTop20">
 
-                {{ products_macro(product, dict_like, list_of_favourite) }}
+                {{ products_macro(product, products_relationships) }}
                 </div>
             {% endfor %}
          </div>

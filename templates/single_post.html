@@ -10,7 +10,8 @@
                     <h3 class="text-uppercase ct-u-size30 text-center">{{ post.title }}</h3>
 
 
-                    {% if current_user == post.author and editable %}
+
+                    {% if current_user.id == post.user_id and editable %}
 
                         <div class="edit-post-block dropdown ct-u-paddingTop5 text-center ct-u-size22">
 
@@ -38,7 +39,7 @@
                         {% endif %}
                         <p class="ct-u-motiveLight">
                             By
-                            <a href="{{ url_for('user', username =post.author.username ) }}">{{ post.author.username }}</a>
+                            <a href="{{ url_for('user', username =post_author.username ) }}">{{ post_author.username }}</a>
                             on
                             {{ post.published_at|datetime }}
 
@@ -213,7 +214,7 @@
                                                         {% if comment.deleted %}
                                                             comment has been deleted
                                                         {%else%}
-                                                            <li class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">{{ post_comment_macro(comment, dict_like) }}</li>
+                                                            <li class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">{{ post_comment_macro(comment, comments_relationships) }}</li>
 
 
                                                         {% endif %}

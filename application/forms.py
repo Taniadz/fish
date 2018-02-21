@@ -51,6 +51,7 @@ class ProductCommentForm(FlaskForm):
     text = StringField('Text', [validators.Length(min = 1, max=800)], widget=TextArea())
     parent = HiddenField()
     product_id = HiddenField()
+    file = FileField('image')
 
 
 

@@ -18,10 +18,9 @@ function UpdateCount(data, url, id){
     // like/unlike in one click without using reaction
 function ToggleLikeUnlike(){
 
-
-
     var url = $(this).attr("url");
-    var id = $(this).attr("obj_id");
+    var ids = $(this).attr("obj_id");
+    var id = ids.replace(/[^A-Za-z0-9]/g, '');
     var div_class = $(this).attr("class");
     alert(div_class);
     if ($(this).hasClass("unliked")) {
@@ -61,12 +60,14 @@ function AddReaction(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
     var type=$(this).attr("type");
-    var id = $(this).attr("obj_id");
+    var ids = $(this).attr("obj_id");
+    var id = ids.replace(/[^A-Za-z0-9]/g, '');
+    console.log(id, 1);
     var url = $(this).attr("url");
     var prev_src = $(this).attr("src");
     //add to like under pop-up div class "liked" and clicked reaction's src
-    $("img.liked[obj_id=" + id+"][url=" + url +"]").attr("src",prev_src );
-    $("img.unliked[obj_id=" + id+"][url=" + url +"]").attr("src",prev_src );
+    $("img.liked[obj_id=" + id +"][url=" + url +"]").attr("src",prev_src );
+    $("img.unliked[obj_id=" + id +"][url=" + url +"]").attr("src",prev_src );
     $("img.unliked[obj_id=" + id+"][url=" + url +"]").attr("class","liked" );
 
     $(".popup-div").fadeOut();
@@ -84,7 +85,9 @@ function AddReaction(event) {
 //show pop-up div with reaction
 function ShowReactionDiv() {
     $("img.liked, img.unliked, .popup-div").mouseenter(function() {
-        var id = $(this).attr("obj_id");
+        var ids = $(this).attr("obj_id");
+
+        var id = ids.replace(/[^A-Za-z0-9]/g, '');
         var url = $(this).attr("url");
         var $div2 = $(".popup-div[obj_id=" + id+"][url=" + url +"]");
         if ($div2.is(":visible")) { return; }

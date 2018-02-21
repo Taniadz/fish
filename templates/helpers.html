@@ -1,131 +1,136 @@
 {#all comment to post on page "single_post"#}
-{% macro post_comment_macro(comment, dict_like) -%}
+{% macro post_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
-    {% if comment.deleted %}
-        <p>Comment has  been deleted</p>
-    {% else %}
+        {% if comment.deleted %}
+            <p>Comment has been deleted</p>
+        {% else %}
 
 
-        <div class="left-image">
-            {% if comment.com_author.avatar_min %}
-                <img class="img-inherited"
-                     src="{{ url_for('uploaded_file',filename= comment.com_author.avatar_min) }}"/>
-            {% else %}
-                <img src="{{ url_for('uploaded_file',filename= "min_icon-user-default.png") }}" width="40px"/>
-            {% endif %}
-        </div>
-        <div class="description">
-
-            <p class="ct-u-paddingBottom5">
-                <span>{{ comment.com_author.username }} </span>
-                - {{ comment.timestamp|datetime }}
-            </p>
-            <p>
-                {% if comment.image %}
-                    <img class="img-inherited" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
+            <div class="left-image">
+                {% if comments_relationships[comment.id]["author"].avatar_min %}
+                    <img class="img-inherited"
+                         src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
+                {% else %}
+                    <img src="{{ url_for('uploaded_file',filename= "min_icon-user-default.png") }}" width="40px"/>
                 {% endif %}
-                {{ comment.text }}
-            </p>
-            <div class="under-box comment-under-box">
-                {{ popup_div_macro(comment.id, "like_comment ") }}
-                <div class="reaction-button">
-                    <ul class="like-left like-inline">
-                        <li>
-                            {% if current_user.is_authenticated %}
-                                {% if dict_like[comment.id] %}
-                                    {% if dict_like[comment.id] == "like" %}
-                                        <img class="liked"
-                                             src="{{ url_for('static',filename="image/button-liked.png" ) }}"
-                                             obj_id={{ comment.id }} url = "like_comment" />
+            </div>
+            <div class="description">
 
-                                    {% elif dict_like[comment.id] == "unlike" %}
-                                        <img class="liked"
-                                             src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-                                             obj_id={{ comment.id }} url = "like_comment"  />
+                <p class="ct-u-paddingBottom5">
+                    <span>{{ comments_relationships[comment.id]["author"].username }} </span>
+                    - {{ comment.timestamp|datetime }}
+                </p>
+                <p>
+                    {% if comment.image %}
+                        <img class="img-inherited" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
+                    {% endif %}
+                    {{ comment.text }}
+                </p>
+                <div class="under-box comment-under-box">
+                    {{ popup_div_macro(comment.id   , "like_comment ") }}
+                    <div class="reaction-button">
+                        <ul class="like-left like-inline">
+                            <li>
+                                {% if current_user.is_authenticated %}
+                                    {% if comments_relationships[comment.id]["reactions"] %}
+                                        {% if comments_relationships[comment.id]["reactions"] == "like" %}
+                                            <img class="liked"
+                                                 src="{{ url_for('static',filename="image/button-liked.png" ) }}"
+                                                 obj_id={{ comment.id }} url = "like_comment" />
 
-                                    {% elif dict_like[comment.id] == "funny" %}
-                                        <img class="liked"
-                                             src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
-                                             obj_id={{ comment.id }} url = "like_comment" />
+                                        {% elif comments_relationships[comment.id]["reactions"] == "unlike" %}
+                                            <img class="liked"
+                                                 src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
+                                                 obj_id={{ comment.id }} url = "like_comment"  />
 
-                                    {% elif dict_like[comment.id] == "angry" %}
-                                        <img class="liked"
-                                             src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
-                                             obj_id={{ comment.id }} url = "like_comment"  />
+                                        {% elif comments_relationships[comment.id]["reactions"] == "funny" %}
+                                            <img class="liked"
+                                                 src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
+                                                 obj_id={{ comment.id }} url = "like_comment" />
+
+                                        {% elif comments_relationships[comment.id]["reactions"] == "angry" %}
+                                            <img class="liked"
+                                                 src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
+                                                 obj_id={{ comment.id }} url = "like_comment"  />
+                                        {% endif %}
+                                    {% else %}
+                                        <img class="unliked"
+                                             src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
+                                             url="like_comment" obj_id={{ comment.id }}/>
+
                                     {% endif %}
                                 {% else %}
-                                    <img class="unliked"
-                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                         url="like_comment" obj_id={{ comment.id }} />
+                                    <img class="like-not-login"
+                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
 
                                 {% endif %}
-                            {% else %}
-                                <img class="like-not-login"
-                                     src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
+                            </li>
+                            <li><h4>like</h4></li>
+                        </ul>
+                    </div>
+                    <div id="button_comment1" class="comment-button">
+                        <ul>
+                            <li>
+                                <i class="fa fa-comments-o" aria-hidden="true"></i>
+                            </li>
+                            <li>
+                                {% if current_user.is_authenticated %}
 
-                            {% endif %}
-                        </li>
-                        <li><h4>like</h4></li>
-                    </ul>
+                                    <h4 class="discussion post-form comment-login" id="{{ comment.id }}"
+                                        user="{{ comments_relationships[comment.id]["author"].username }}"
+                                        post_id="{{ comment.post_id }}">discussion</h4>
+                                {% else %}
+                                    <h4 class="discussion post-form comment-not-login">discussion</h4>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="comment-edit">
+                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
+
+                            <div class="dropdown post_com_edit" id="edit{{ comment.id }}">
+
+                                <h4 class="dropdown-toggle " data-toggle="dropdown">
+                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                                    edit
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#"
+                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
+                                    <li><a href="#"
+                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="comment-counter reaction-counter">
+                        <ul>
+                            <li>
+                                <span id="like_count_like_comment_{{ comment.id }}">{{ comment.like_count }} </span>
+                                <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
+                                     width=20/>
+                                <span id="unlike_count_like_comment_{{ comment.id }}">{{ comment.unlike_count }} </span>
+                                <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
+                                     width=20/>
+                                <span id="funny_count_like_comment_{{ comment.id }}">{{ comment.funny_count }} </span>
+                                <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
+                                     width=20/>
+                                <span id="angry_count_like_comment_{{ comment.id }}">{{ comment.angry_count }} </span>
+                                <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
+                                     width=20/>
+
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div id="button_comment1" class="comment-button">
-                    <ul>
-                        <li>
-                            <i class="fa fa-comments-o" aria-hidden="true"></i>
-                        </li>
-                        <li>
-                            {% if current_user.is_authenticated %}
+                <div class=answer id="answer{{ comment.id }}">
 
-                                <h4 class="discussion post-form comment-login" id="{{ comment.id }}"
-                                    user="{{ comment.com_author.username }}"
-                                    post_id="{{ comment.post_id }}">discussion</h4>
-                            {% else %}
-                                <h4 class="discussion post-form comment-not-login">discussion</h4>
-                            {% endif %}
-                        </li>
-                    </ul>
-                </div>
-                <div class="comment-edit">
-                    {% if current_user == comment.com_author %}
-
-                        <div class="dropdown post_com_edit" id="edit{{ comment.id }}">
-
-                            <h4 class="dropdown-toggle " data-toggle="dropdown">
-                                <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                edit
-                            </h4>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
-                                <li><a href="#"
-                                       onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="comment-counter reaction-counter">
-                    <ul>
-                        <li>
-                            <span id="like_count_like_comment_{{ comment.id }}">{{ comment.like_count }} </span>
-                            <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}" width=20/>
-                            <span id="unlike_count_like_comment_{{ comment.id }}">{{ comment.unlike_count }} </span>
-                            <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}" width=20/>
-                            <span id="funny_count_like_comment_{{ comment.id }}">{{ comment.funny_count }} </span>
-                            <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}" width=20/>
-                            <span id="angry_count_like_comment_{{ comment.id }}">{{ comment.angry_count }} </span>
-                            <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"width=20/>
-
-                        </li>
-                    </ul>
                 </div>
             </div>
-            <div class=answer id="answer{{ comment.id }}">
-
-            </div>
-        </div>
-    {% endif %}
+        {% endif %}
 
     </div>
 {%- endmacro %}
@@ -139,34 +144,26 @@
 
 
 
-
-
-
-
-
-
-
-
-
 {#all comment to product on page "single_product"#}
-{% macro product_comment_macro(comment, dict_like) -%}
+{% macro product_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
         {% if comment.deleted %}
             <p> Comment hase been deleted </p>
 
         {% else %}
             <div class="left-image">
-                {% if comment.com_author.avatar_min %}
+                {% if  comments_relationships[comment.id]["author"].avatar_min %}
                     <img class="img-inherited"
-                         src="{{ url_for('uploaded_file',filename=comment.com_author.avatar_min) }}"/>
+                         src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
                 {% else %}
                     <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}" width="40px"/>
                 {% endif %}
             </div>
             <div class="description">
                 <p class="ct-u-paddingBottom5">
-                    <span>{{ comment.com_author.username }} </span>
+                    <span>{{ comments_relationships[comment.id]["author"].username }} </span>
                     - {{ comment.timestamp|datetime }}
+                    {{ comment.id }}
                 </p>
                 <p>
                     {% if comment.image %}
@@ -180,24 +177,24 @@
                         <ul class="like-left like-inline">
                             <li>
                                 {% if current_user.is_authenticated %}
-                                    {% if dict_like[comment.id] %}
+                                    {% if comments_relationships[comment.id]["reactions"] %}
 
-                                        {% if dict_like[comment.id] == "like" %}
+                                        {% if comments_relationships[comment.id]["reactions"] == "like" %}
                                             <img class="liked"
                                                  src="{{ url_for('static',filename="image/button-liked.png" ) }}"
                                                  obj_id={{ comment.id }} url = "like_prodcomment" />
 
-                                        {% elif dict_like[comment.id] == "unlike" %}
+                                        {% elif comments_relationships[comment.id]["reactions"] == "unlike" %}
                                             <img class="liked"
                                                  src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
                                                  obj_id={{ comment.id }} url = "like_prodcomment"  />
 
-                                        {% elif dict_like[comment.id] == "funny" %}
+                                        {% elif comments_relationships[comment.id]["reactions"] == "funny" %}
                                             <img class="liked"
                                                  src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
                                                  obj_id={{ comment.id }} url = "like_prodcomment" />
 
-                                        {% elif dict_like[comment.id] == "angry" %}
+                                        {% elif comments_relationships[comment.id]["reactions"] == "angry" %}
                                             <img class="liked"
                                                  src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
                                                  obj_id={{ comment.id }} url = "like_prodcomment"  />
@@ -205,7 +202,7 @@
                                     {% else %}
                                         <img class="unliked"
                                              src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                             url="like_prodcomment" obj_id={{ comment.id }} />
+                                             url="like_prodcomment" obj_id={{ comment.id }}/>
 
                                     {% endif %}
                                 {% else %}
@@ -226,7 +223,7 @@
 
                                 <li>
                                     <h4 class="discussion product-form comment-login" id="{{ comment.id }}"
-                                        user="{{ comment.com_author.username }}"
+                                        user="{{ comments_relationships[comment.id]["author"].username }}"
                                         product_id="{{ comment.product_id }}">discussion</h4>
                                 </li>
                             {% else %}
@@ -238,7 +235,7 @@
                     </div>
 
                     <div class="comment-edit">
-                        {% if current_user == comment.com_author %}
+                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
 
                             <div class="dropdown prod_com_edit" id="edit{{ comment.id }}">
 
@@ -247,7 +244,8 @@
                                     edit
                                 </h4>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#" onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
+                                    <li><a href="#"
+                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
                                     <li><a href="#"
                                            onclick="delete_comment(event, {{ comment.id }}, '/delete_prod_comment');">delete</a>
@@ -281,7 +279,7 @@
                 </div>
             </div>
 
-    {% endif %}
+        {% endif %}
     </div>
 
 
@@ -307,33 +305,29 @@
 {% macro comment_edit(url, comment) -%}
     <form action="{{ url_for( url, comment_id=comment.id ) }}" method="post"
           enctype="multipart/form-data" class="edit_comment">
-                                {{form.hidden_tag()}}
-    <div class="form-group col-xs-9 col-sm-9">
-                            {{form.text(class_="form-control", rows=2)}}
+        {{ form.hidden_tag() }}
+        <div class="form-group col-xs-9 col-sm-9">
+            {{ form.text(class_="form-control", rows=2) }}
 
-                        </div>
-                        <div id ="hide" class="form-group col-xs-3 col-sm-2">
-                            <label class="hand-cursor">
-                               {{form.file}}
-                                <span class="fa fa-camera"></span>
-                                <span class="photo_text hidden-xs">Image</span>
-                            </label>
-                            <button type="submit" class="btn btn-motive">comment</button>
-
-
-
-                        </div>
-
-                         {% if form.errors %}
-                                        <ul class=errors>
-                                         {% for error in form.errors %}
-                                          <li>{{ error }}</li>
-                                        {% endfor %}
-                                        </ul>
-                                    {% endif %}
+        </div>
+        <div id="hide" class="form-group col-xs-3 col-sm-2">
+            <label class="hand-cursor">
+                {{ form.file }}
+                <span class="fa fa-camera"></span>
+                <span class="photo_text hidden-xs">Image</span>
+            </label>
+            <button type="submit" class="btn btn-motive">comment</button>
 
 
+        </div>
 
+        {% if form.errors %}
+            <ul class=errors>
+                {% for error in form.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
 
     </form>
@@ -345,12 +339,13 @@
 
 
 
-{% macro posts_macro(post, dict, list_of_favourite) -%}
+{% macro posts_macro(post, posts_relationships) -%}
     <article class="ct-articleBox">
-        <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size24">{{ post.title }}</h5></a>
+        <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size34">{{ post.title }}</h5></a>
         <p class="ct-u-motiveLight">
             By
-            <a href="{{ url_for('user', username=post.author.username) }}">{{ post.author.username }}</a> on
+            <a href="{{ url_for('user', username=posts_relationships[post.id]["author"].username) }}">{{ posts_relationships[post.id]["author"].username }}</a>
+            on
             {{ post.published_at|datetime }}
 
         </p>
@@ -358,13 +353,52 @@
             {% if post.image %}
                 <img src="{{ url_for('uploaded_file',filename=post.image) }}"/><br>
 
-                {{ post.body|truncate(70, True) }}
+                {{ post.body|truncate(170, True) }}
 
             {% else %}
-                {{ post.body|truncate(150, True) }}
+                {{ post.body|truncate(350, True) }}
             {% endif %}
         </p>
         <div class="under-box">
+
+        {{ popup_div_macro(post.id, "like_post ") }}
+                        <div class="reaction-button">
+                            <ul class="like-left like-inline">
+                                <li>
+                                    {% if current_user.is_authenticated %}
+
+                                        {% if posts_relationships[post.id]["reactions"] %}
+
+                                            {% if posts_relationships[post.id]["reactions"] == "like"%}
+                                                <img class="liked img-rounded" src="{{ url_for('static',filename="image/button-liked.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post" />
+
+                                            {% elif posts_relationships[post.id]["reactions"] == "unlike"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-unlike.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post"  />
+
+                                            {% elif posts_relationships[post.id]["reactions"]== "funny"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-funny.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post" />
+
+                                            {% elif posts_relationships[post.id]["reactions"] == "angry"%}
+                                                <img class="liked" src="{{ url_for('static',filename="image/reaction-angry.png" )}}"
+                                                    obj_id={{post.id}} url = "like_post"  />
+                                            {% endif %}
+                                        {% else %}
+                                            <img class="unliked"  src="{{ url_for('static',filename="image/not-reaction.png" )}}"
+                                                                     url = "like_post" obj_id={{post.id}} />
+
+                                        {% endif%}
+                                     {% else %}
+                                        <img class="like-not-login"  src="{{ url_for('static',filename="image/not-reaction.png" )}}"/>
+
+                                    {% endif %}
+                                </li>
+                                <li><h4>like</h4></li>
+                            </ul>
+                        </div>
+
             <div class="reaction-counter grid">
 
                 <span id="like_count_like_post_{{ post.id }}">{{ post.like_count }} </span><img
@@ -385,7 +419,7 @@
                 <ul class="list-unstyled">
                     <li>
                         {% if current_user.is_authenticated %}
-                            {% if post in list_of_favourite %}
+                            {% if posts_relationships[post.id]["if_favourite"] %}
                                 <i class="fa fa-star favourite post-fav" id="{{ post.id }}" aria-hidden="true"></i>
                             {% else %}
                                 <i class="fa fa-star-o not-favourite post-fav" id="{{ post.id }}"
@@ -418,17 +452,84 @@
 
 
 {#generate product_boxes#}
-{% macro products_macro(product, dict, list_of_favourite ) -%}
+{% macro products_macro(product, products_relationships ) -%}
+
     <div class="product-title">
         <a href="{{ url_for('singleproduct', product_id=product.id) }}">
             <h5 class="ct-imgWrapper-name opacity-title ct-u-size24 text-center">{{ product.title|truncate (50, False) }}</h5>
         </a>
     </div>
     <div class="ct-imgWrapper">
-        <div class="ct-shopIcon">
-            {% if current_user.is_authenticated %}
 
-                {% if product in list_of_favourite %}
+
+
+        <div class="image-container">
+            {% if products_relationships[product.id]["images"] %}
+                <a href="{{ url_for('singleproduct', product_id=product.id) }}">
+                    <img class="product-img" src="{{ url_for('uploaded_file',filename=products_relationships[product.id]["images"][0].filename) }}"/>
+                </a>/
+            {% else %}
+                <a href="{{ url_for('singleproduct', product_id=product.id) }}">
+
+                    <img class="product-img" src="{{ url_for('static',filename="image/default_product.jpg") }}"/>
+                </a>
+            {% endif %}
+        </div>
+        <div class="ct-imgWrapper-triangle"></div>
+        </div>
+        <div class="under-box">
+            {{ popup_div_macro(product.id, "like_product ") }}
+            <div class="ct-u-floatLeft">
+                <ul class="like-left like-inline list-unstyled">
+                    <li>
+                        {% if current_user.is_authenticated %}
+
+                            {% if products_relationships[product.id]["reactions"] %}
+
+                                {% if products_relationships[product.id]["reactions"] == "like" %}
+                                    <img class="liked img-rounded"
+                                         src="{{ url_for('static',filename="image/button-liked.png" ) }}"
+                                         obj_id={{ product.id }} url = "like_product" />
+
+                                {% elif products_relationships[product.id]["reactions"] == "unlike" %}
+                                    <img class="liked img-rounded"
+                                         src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
+                                         obj_id={{ product.id }} url = "like_product"  />
+
+                                {% elif products_relationships[product.id]["reactions"] == "funny" %}
+                                    <img class="liked img-rounded"
+                                         src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
+                                         obj_id={{ product.id }} url = "like_product" />
+
+                                {% elif products_relationships[product.id]["reactions"] == "angry" %}
+                                    <img class="liked img-rounded"
+                                         src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
+                                         obj_id={{ product.id }} url = "like_product"  />
+                                {% endif %}
+                            {% else %}
+                                <img class="unliked" src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
+                                     url="like_product" obj_id={{ product.id }}/>
+
+                            {% endif %}
+                        {% else %}
+                            <img class="like-not-login"
+                                 src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
+
+                        {% endif %}
+                    </li>
+
+                </ul>
+            </div>
+
+
+
+
+    {% if current_user.is_authenticated %}
+        <div class="favourite-button grid">
+                <ul class="list-unstyled">
+                    <li>
+
+                {% if products_relationships[product.id]["if_favourite"] %}
                     <i class="fa fa-star favourite product-fav" id="{{ product.id }}" aria-hidden="true"></i>
                 {% else %}
                     <i class="fa fa-star-o not-favourite product-fav" id="{{ product.id }}" aria-hidden="true"></i>
@@ -436,34 +537,29 @@
             {% else %}
                 <i class="fa fa-star favourite-not-login" aria-hidden="true"></i>
 
+
             {% endif %}
+                     </li>
+                </ul>
         </div>
-        <div class="image-container">
-            {% if product.image %}
-                <img class="product-img" src="{{ url_for('uploaded_file',filename=product.image[0].filename) }}"/>
-            {% else %}
-                <img class="product-img" src="{{ url_for('static',filename="image/default_product.jpg") }}"/>
-            {% endif %}
-        </div>
-        <div class="ct-imgWrapper-triangle"></div>
-        <div class="ct-starRating">
-            <span id="like_count_like_product_{{ product.id }}">{{ product.like_count }} </span>
-            <img class="smile"src="{{ url_for('static',filename="image/reaction-like.png" ) }}"/>
-            <span id="unlike_count_like_product_{{ product.id }}">{{ product.unlike_count }} </span>
-            <img class="smile"src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"/>
-            <span id="funny_count_like_product_{{ product.id }}">{{ product.funny_count }} </span>
-            <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"/>
-            <span id="angry_count_like_product_{{ product.id }}">{{ product.angry_count }} </span>
-            <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"/>
-        </div>
+
+    <div class="reaction-counter">
+        <span id="like_count_like_product_{{ product.id }}">{{ product.like_count }} </span>
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}"/>
+        <span id="unlike_count_like_product_{{ product.id }}">{{ product.unlike_count }} </span>
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"/>
+        <span id="funny_count_like_product_{{ product.id }}">{{ product.funny_count }} </span>
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"/>
+        <span id="angry_count_like_product_{{ product.id }}">{{ product.angry_count }} </span>
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"/>
     </div>
-    <p class="ct-u-paddingTop30"> {{ product.description | truncate(150, False) }}</p>
+    </div>
+
+
+    <p class="ct-u-paddingTop10"> {{ product.description | truncate(150, False) }}</p>
     <span class="ct-fw-600 ct-u-motiveDark ct-u-size30">{{ product.price }}</span>
-    <a class="ct-fakeButton text-uppercase pull-right ct-u-motiveDark--bg">In stock</a>
+
 {%- endmacro %}
-
-
-
 
 
 
@@ -500,4 +596,33 @@
         </ul>
     {% endif %}
     {{ field(**kwargs)|safe }}
+{% endmacro %}
+
+
+{% macro render_pagination(pagination, url, sort) %}
+
+            {% if pagination.has_prev %}
+
+            <li class="right"><a href="{{ url_for(url, page = pagination.page - 1) }}"><i class="fa fa-chevron-left"></i></a></li>
+        {% endif %}
+        {%- for page in pagination.iter_pages() %}
+
+            {% if page %}
+                {% if page != pagination.page %}
+                    <li><a href="{{ url_for(url, page=page, sort = sort) }}">{{ page }}
+                   </a></li>
+
+
+                {% else %}
+                    <li class="active"> <a href="#">{{ page }}</a></li>
+                {% endif %}
+            {% else %}
+                <span class=ellipsis>…</span>
+            {% endif %}
+        {%- endfor %}
+
+        {% if pagination.has_next %}
+            <li class="right"><a href="{{ url_for(url, page=pagination.page + 1, sort = sort) }}" ><i class="fa fa-chevron-right"></i></a></li>
+        {% endif %}
+
 {% endmacro %}

@@ -36,9 +36,9 @@
 
 <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
     {% for post in posts %}
-         <div class="col-sm-6 col-md-4 ct-js-blogMasonry-item" >
+         <div class="col-md-12 ct-js-blogMasonry-item" >
 
-        {{ posts_macro(post, dict_like, list_of_favourite) }}
+        {{ posts_macro(post, posts_relationships) }}
          </div>
 
     {% endfor %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from 'helpers.html' import posts_macro with context %}
+  {% from 'helpers.html' import render_pagination with context %}
 {% block body %}
     <section class="ct-blogGrid ct-u-paddingBottom20">
         <div class="ct-pageSectionHeader ct-u-paddingBottom20">
@@ -39,6 +40,13 @@
                                     <h4 class="ct-u-size30 active">latest posts</h4>
                                 </a>
                             </div>
+
+
+
+
+
+
+
                         {% endif %}
 
 
@@ -48,16 +56,82 @@
 
 
 
-                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBoth20">
-                        {% for post in posts.items %}
+                    <div class="ct-blog ct-u-paddingBoth20">
+                    <div class="col-sm-8" >
+                        {% for post in posts %}
                             {% if not post.deleted %}
 
-                            <div class="col-sm-4 ct-js-blogMasonry-item" >
 
-                                {{ posts_macro(post, dict_like, list_of_favourite) }}
-                            </div>
+
+                                {{ posts_macro(post, posts_relationships) }}
+
                             {% endif %}
                         {% endfor %}
+                </div>
+
+                        <div class="col-xs-12 col-sm-3 col-sm-offset-1 sidebar">
+                    <div class="ct-inputSearch ct-u-marginBottom40">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <div class="panel-title">
+                                    <a class="collapsed" href="{{url_for('add_post')}}">
+                                        new post
+                                       <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                    </a>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <div class="panel-title">
+                                <a class="collapsed" href="{{url_for('add_product')}}">
+                                    new product
+                                   <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+{#                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>#}
+{#                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">#}
+{##}
+{#                        {% for post in posts %}#}
+{#                            <li>#}
+{#                            <a href="{{url_for('singlepost', postid=post.id)}}">#}
+{#                            {% if post.image %}#}
+{##}
+{#                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename= post.image )}}" style="height:50px">#}
+{##}
+{#                            {% else %}#}
+{#                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename="carusel4.jpg" )}}" style="height:50px">#}
+{##}
+{#                            {% endif %}#}
+{#                            <div class="description side">#}
+{#                                <p class="ct-fw-600 ct-u-size18">{{post.title|truncate(50, True) }}</p>#}
+{##}
+{##}
+{#                                 <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>#}
+{##}
+{##}
+{#                            </div>#}
+{#                            </a>#}
+{#                             </li>#}
+{#                             {% endfor%}#}
+{##}
+{##}
+{##}
+{#                </ul>#}
+                <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Latest Comments</h4>
+                <ul class="ct-simpleList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+                    {% for comment in comments  %}
+                    <li><i class="fa fa-chevron-right"></i>{{ comments_rel[comment.id]["author"].username }} on <a href="#"><span>{{ comments_rel[comment.id]["post"].title }}</span></a></li>
+                    {% endfor %}
+                </ul>
+                </div>
+
                     </div>
 
                 </div>
@@ -65,72 +139,22 @@
 
 
 
-            <div class="ct-u-marginBoth20 ct-pagination">
-                <ul class="pagination pagination-lg">
-                    {% if posts.has_next and posts.has_prev %}
-                        <li class="right"><a href="{{ url_for('last_posts', page = posts.prev_num) }}"><i class="fa fa-chevron-left"></i></a></li>
-                        <li><a href="{{ url_for('last_posts', page = posts.prev_num) }}">{{ posts.prev_num }}</a></li>
-                        <li class="active"><a href="#">{{ page }}</a></li>
-
-                        <li><a href="{{ url_for('last_posts', page = posts.next_num) }}">{{ posts.next_num }}</a></li>
-
-                        <li class="right"><a href="{{ url_for('last_posts', page = posts.next_num) }}"><i class="fa fa-chevron-right"></i></a></li>
-
-                    {% elif posts.has_next %}
-                        <li class="left"><a href=""><i class="fa fa-chevron-left"></i></a></li>
-                        <li class="active"><a href="#">{{ page }}</a></li>
-                        <li><a href="{{ url_for('last_posts', page = posts.next_num) }}">{{ posts.next_num }}</a></li>
-
-                        <li class="right"><a href="{{ url_for('last_posts', page = posts.next_num) }}"><i class="fa fa-chevron-right"></i></a></li>
-
-
-                {% elif posts.has_prev %}
-                        <li class="right"><a href="{{ url_for('last_posts', page = posts.prev_num) }}"><i class="fa fa-chevron-left"></i></a></li>
-                        <li><a href="{{ url_for('last_posts', page = posts.prev_num) }}">{{ posts.prev_num }}</a></li>
-                        <li class="active"><a href="#">{{ page }}</a></li>
-                        <li class="left"><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-
-                    {% endif %}
-                </ul>
-            </div>
+                   <div class="ct-u-marginBoth20 ct-pagination">
+            <ul class="pagination pagination-lg ">
+                        {{  render_pagination(pagination, "last_posts", sort) }}
+            </ul>
+        </div>
             </div>
     </section>
+
 <script>
-jQuery(window).on("load",function () {
+    $(document).ready(function() {
 
-
-        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
-            $('.ct-js-blogMasonry').masonry({
-                itemSelector: '.ct-js-blogMasonry-item',
-                masonry: {
-                }
-            });
-        }
-     });
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+    });
 </script>
-{#{% from 'helpers.html' import posts_macro with context %}#}
-{#        <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>#}
-{##}
-{#<div class="row">#}
-{#      <div class="col-xs-12 col-sm-10 col-md-8">#}
-{#          Sort by#}
-{#  <a href="{{url_for('last_posts', sort = 'data')}}">data</a>#}
-{#  <a href="{{url_for('last_posts', sort = 'rating')}}">rating</a>#}
-{##}
-{#    {% for post in posts.items %}#}
-{#        {{ posts_macro(post, dict_like, list_of_favourite) }}#}
-{#    {% endfor %}#}
-{##}
-{# </div>#}
-{# </div>#}
-{##}
-{##}
-{##}
-{#    {% if posts.has_prev %}<a href="{{ url_for('last_posts', page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} |#}
-{#    {% if posts.has_next %}<a href="{{ url_for('last_posts', page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}#}
-{##}
-
-
 
 {% endblock %}
 

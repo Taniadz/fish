@@ -1,6 +1,5 @@
 {% from 'helpers.html' import post_comment_macro with context %}
-<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>-->
-        <!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>-->
+    {% from 'helpers.html' import render_pagination with context %}
 
 {% if comments|length >= 1 %}
     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
@@ -35,10 +34,12 @@
             <div class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10 col-xs-12">
             Comment for post
             <a href="{{ url_for('singlepost', postid = comment.post_id ) }}">{{ comment.post.title }}</a>
-            {{ post_comment_macro(comment, dict_like) }}
+            {{ post_comment_macro(comment, comments_relationships) }}
             </div>
         {% endif %}
     {% endfor %}
+
+
 {% else %}
     <p>You have not comments yet</p>
     <p>Could you read something?</p>

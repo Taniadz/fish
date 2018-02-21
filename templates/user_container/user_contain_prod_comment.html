@@ -32,7 +32,7 @@
     {% for comment in comments %}
         {% if comment.deleted == False %}
             Comment for product <a href="{{url_for('singleproduct', product_id = comment.product_id )}}">{{comment.product.title}}</a>
-            {{ product_comment_macro(comment, dict_like) }}
+            {{ product_comment_macro(comment, comments_relationships) }}
         {% endif %}
     {% endfor %}
 {% else %}

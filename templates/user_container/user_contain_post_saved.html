@@ -4,7 +4,7 @@
 
     <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
         <ul class="list-unstyled text-uppercase ct-fw-600" role="tablist">
-            <li role="presentation" class="active favourite_block">
+            <li role="presentation" class="active favourite_block" id="date">
                 <div class="ct-tabBorder">
 
                     <a href="" id="date" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">date</a>
@@ -13,7 +13,7 @@
 
                 </div>
             </li>
-            <li role="presentation" class="favourite_block">
+            <li role="presentation" class="favourite_block" id="vote">
                 <div class="ct-tabBorder">
 
 
@@ -30,9 +30,9 @@
 
    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
     {% for post in posts %}
-         <div class="col-sm-6 col-md-4 ct-js-blogMasonry-item" >
+         <div class="col-sm-12 ct-js-blogMasonry-item" >
 
-        {{ posts_macro(post, dict_like, list_of_favourite) }}
+        {{ posts_macro(post, posts_relationship) }}
          </div>
 
     {% endfor %}
@@ -44,20 +44,8 @@
 
 {% endif %}
 <script>
-    jQuery(window).on("load",function () {
-
-
-        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
-            $('.ct-js-blogMasonry').masonry({
-                itemSelector: '.ct-js-blogMasonry-item',
-                masonry: {
-                }
-            });
-        }
-
-});
-    $(document).ready(function() {
-        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+$(document).ready(function() {
+    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
     $('.smile').on("click", AddReaction);
     ShowReactionDiv();
     $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);

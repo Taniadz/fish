@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
 {% from 'helpers.html' import products_macro with context %}
+    {% from 'helpers.html' import render_pagination with context %}
+
 
     <section class=" ct-blogGrid ct-u-paddingBottom20">
 
@@ -52,11 +54,11 @@
 
 
         <div id="product_container">
-            <div class="ct-product animated fadeIn">
-                {% for product in products.items %}
+            <div class="ct-product">
+                {% for product in products %}
                     {% if not product.deleted %}
-                        <div class="col-sm-4 col-xs-12 ct-u-paddingTop20">
-                        {{ products_macro(product, dict_like, list_of_favourite) }}
+                        <div class="col-sm-4 col-xs-12 ct-u-paddingTop20 one-product">
+                        {{ products_macro(product, products_relationships) }}
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -64,38 +66,25 @@
 
         </div>
 
-        <div class="ct-u-marginBoth20 ct-pagination">
-                    <ul class="pagination pagination-lg">
-                        {% if products.has_next and products.has_prev %}
-                            <li class="right"><a href="{{ url_for('popular_product', page = products.prev_num) }}"><i class="fa fa-chevron-left"></i></a></li>
-                            <li><a href="{{ url_for('popular_product', page = products.prev_num) }}">{{ products.prev_num }}</a></li>
-                            <li class="active"><a href="#">{{ page }}</a></li>
 
-                            <li><a href="{{ url_for('popular_product', page = products.next_num) }}">{{ products.next_num }}</a></li>
-
-                            <li class="right"><a href="{{ url_for('popular_product', page = products.next_num) }}"><i class="fa fa-chevron-right"></i></a></li>
-
-                        {% elif products.has_next %}
-                            <li class="left"><a href=""><i class="fa fa-chevron-left"></i></a></li>
-                            <li class="active"><a href="#">{{ page }}</a></li>
-                            <li><a href="{{ url_for('popular_product', page = products.next_num) }}">{{ products.next_num }}</a></li>
-
-                            <li class="right"><a href="{{ url_for('popular_product', page = products.next_num) }}"><i class="fa fa-chevron-right"></i></a></li>
-
-
-                    {% elif products.has_prev %}
-                            <li class="right"><a href="{{ url_for('popular_product', page = products.prev_num) }}"><i class="fa fa-chevron-left"></i></a></li>
-                            <li><a href="{{ url_for('popular_product', page = posts.prev_num) }}">{{ products.prev_num }}</a></li>
-                            <li class="active"><a href="#">{{ page }}</a></li>
-                            <li class="left"><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-
-                        {% endif %}
-                    </ul>
-                </div>
     </div>
+
+    <div class="ct-u-marginBoth20 ct-pagination">
+            <ul class="pagination pagination-lg ">
+                        {{  render_pagination(pagination, "popular_product", sort) }}
+            </ul>
+        </div>
+
     </div>
     </section>
+<script>
+    $(document).ready(function() {
 
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+    });
+</script>
 {% endblock %}
 
 

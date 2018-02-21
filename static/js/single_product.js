@@ -14,15 +14,13 @@ function ToggleProductFavour(){
 }
 // delete product and redirect
 function delete_product(product_id, e) {
-
-
     bootbox.confirm({
         message: "Do you want to delete product?",
         callback: function (result) { /* result is a boolean; true = OK, false = Cancel*/
 
         if(result){
         $.post($SCRIPT_ROOT + '/delete_product', {id: product_id}, function (data) {
-            window.location.href =  $SCRIPT_ROOT + '/popular_products';
+            window.location.href =  $SCRIPT_ROOT + '/popular_product';
         });
 
     }

@@ -4,7 +4,7 @@
 <!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}" acync></script>-->
 
 {% from 'helpers.html' import product_comment_macro with context %}
-                    {{ product_comment_macro(comment, dict_like) }}
+                    {{ product_comment_macro(comment, comments_relationships) }}
 <script>
 $("form.edit_comment").submit(function(event) {
     var id = "{{comment.id}}";

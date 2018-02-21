@@ -1,25 +1,29 @@
 # from .extentions import db
 from application import db
 from datetime import datetime
-
 from flask_security import UserMixin, RoleMixin
 
-# @login_manager.user_loader
-# def get_user(ident):
-#     return User.query.get(int(ident))
 
 
-favourite_product = db.Table('favourite_product',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id')),
-    db.UniqueConstraint('user_id', 'product_id', name='UC_user_id_product_id'),
-)
 
-favourite_post = db.Table('favourite_post',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.UniqueConstraint('user_id', 'post_id', name='UC_user_id_post_id'),
-)
+
+
+class FavouriteProduct(db.Model):
+    __tablename__ = 'favourite_products'
+    user_id=db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'product_id', name='favourite_product_user'),
+    )
+
+class FavouritePost(db.Model):
+    __tablename__ ='favourite_posts'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'post_id', name='favourite_post_user'),
+    )
+
 
 
 class ProductImage(db.Model):
@@ -88,7 +92,8 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True)
+    username = db.Column(db.String(64),unique=True, index=True)
+
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
@@ -102,16 +107,11 @@ class User(db.Model, UserMixin):
     avatar_min = db.Column(db.String, nullable=True)
     about_me = db.Column(db.String(1000), nullable=True)
 
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
-    comments = db.relationship('Comment', backref='com_author', lazy='dynamic')
-    products = db.relationship('Product', backref='product_author', lazy='dynamic')
-    com_products = db.relationship('CommentProduct', backref='com_author', lazy='dynamic')
+    posts = db.relationship('Post')
+    comments = db.relationship('Comment', backref='com_author')
+    products = db.relationship('Product')
+    com_products = db.relationship('CommentProduct', backref='com_author')
 
-    favourite_product = db.relationship('Product', secondary=favourite_product, passive_deletes=True,
-                           backref='favourite')
-
-    favourite_post = db.relationship('Post', secondary=favourite_post, passive_deletes=True,
-                           backref='favourite')
 
     post_react = db.relationship('PostReaction', passive_deletes=True,
                                  backref='user_like')
@@ -167,6 +167,8 @@ class Post(db.Model):
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostReaction',
                             backref=db.backref('post',  passive_deletes=True))
+    favourites = db.relationship(FavouritePost,passive_deletes=True )
+
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -180,8 +182,10 @@ class Post(db.Model):
         self.published_at = datetime.now()
         self.image=image
 
+
+
     def __repr__(self):
-        return '<Post %r>' % (self.title)
+        return "%s(%s)" % (self.__class__.__name__, self.id)
 
 
 class Comment(db.Model):
@@ -227,6 +231,9 @@ class Product(db.Model):
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('ProductReaction',
                                 backref=db.backref('post', passive_deletes=True))
+    favourites = db.relationship(FavouriteProduct,passive_deletes=True )
+
+
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -281,3 +288,34 @@ class CommentProduct(db.Model):
 
 
 
+
+from math import ceil
+
+class Pagination(object):
+
+    def __init__(self, page, per_page, total_count):
+        self.page = page
+        self.per_page = per_page
+        self.total_count = total_count
+
+    @property
+    def pages(self):
+        return int(ceil(self.total_count / float(self.per_page)))
+
+    @property
+    def has_prev(self):
+        return self.page > 1
+
+    @property
+    def has_next(self):
+        return self.page < self.pages
+
+    def iter_pages(self, left_edge=2, left_current=2, right_current=5, right_edge=2):
+        last = 0
+        for num in range(1, self.pages + 1):
+            if num <= left_edge or (num > self.page - left_current - 1 and num < self.page + right_current) or \
+               num > self.pages - right_edge:
+                if last + 1 != num:
+                    yield None
+                yield num
+                last = num

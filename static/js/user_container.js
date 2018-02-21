@@ -94,7 +94,8 @@ function UpdateFavouriteContainer() {
         data: "user_id=" + user + "&sort=" + sort + "&contain=" + contain,
         success: function (data) {
             $("#active-container").html(data.favourite_container);
-                    alert(data.favourite_container);
+            $("li.favourite_block").removeClass("active");
+            $("li.favourite_block[id=" + sort + "]").addClass("active");
                 },
                 error: function (xhr, str) {
                     alert('Mistake ' + xhr.responseCode);

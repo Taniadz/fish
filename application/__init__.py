@@ -1,22 +1,21 @@
 #!/usr/bin/env python
-# from flask_login import current_user
 import babel
 from celery import Celery
-from flask import Flask
+from flask import Flask, url_for, request
 from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
-from .extentions import db
-#
+# from .extentions import db
+
 #
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
 import config
 from social.apps.flask_app.template_filters import backends
 
 from flask import g
-
+from flask_caching import Cache
 
 
 
@@ -27,14 +26,12 @@ db = SQLAlchemy(app)
 
 init_social(app, db.session)
 
-def register_extensions(app):
-    """Register Flask extensions."""
-    # bcrypt.init_app(app)
-
-    with app.app_context():
-        db.init_app(app)
-        init_social(app, db.session)
-    app.app_context().push()
+# def register_extensions(app):
+#
+#     with app.app_context():
+#         db.init_app(app)
+#         init_social(app, db.session)
+#     app.app_context().push()
 
 
 def register_blueprints(app):
@@ -70,14 +67,25 @@ def register_teardown_appcontext(app):
 
 
 
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
-# app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 
 
 
+# def create_app():
+#     app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+#     app.config.from_object(config)
+    # register_extensions(app)
+register_blueprints(app)
+register_before_requests(app)
+register_context_processors(app)
+register_teardown_appcontext(app)
+    # return app
+
+# app = create_app()
 
 
 
+cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':['127.0.0.1:11211']})
+cache.init_app(app)
 
 
 def format_datetime(value, format='medium'):
@@ -89,7 +97,11 @@ def format_datetime(value, format='medium'):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
-
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 mail = Mail(app)
 
@@ -118,13 +130,6 @@ def make_celery(app):
 celery = make_celery(app)
 
 
-
-
-# register_extensions(app)
-register_blueprints(app)
-register_before_requests(app)
-register_context_processors(app)
-register_teardown_appcontext(app)
 
 
 import application.views

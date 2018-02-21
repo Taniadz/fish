@@ -759,9 +759,7 @@ body.ct-navbar--fixedTop .navbar, body.ct-navbar--fixedBottom .navbar, body.ct-n
     font-size: 40px;
 }
 
-.ct-u-borderBottomGrayLighter {
-    border-bottom: 1px solid #eeeeee;
-}
+
 
 .ct-u-paddingTop30 {
     padding-top: 30px !important;
@@ -1546,11 +1544,14 @@ img.liked, img.unliked, .popup-div img{
 .comment-under-box .reaction-counter img {
     width: 25px;
 }
-.ct-product img.smile{
+.ct-product img.smile {
     width: 25px;
 
 }
+.ct-product img.liked, .ct-product img.unliked{
+    width: 35px;
 
+}
 
 
 
@@ -2904,7 +2905,11 @@ img:hover + .avatar-edit{
 
 /*product grid ---------------------------------*/
 
-
+.one-product{
+      /*border-color: #b3b3b3;*/
+  /*!*border-radius: 50%;*!*/
+  /*border-width: 5px !important;*/
+}
 .ct-product img {
   width: 100%;
 }
@@ -2939,6 +2944,7 @@ img:hover + .avatar-edit{
   border-style: solid;
   border-width: 16px 13px 0 13px;
   border-color: #4c505e transparent transparent transparent;
+  z-index: 5;
 }
 .ct-product-circle {
   z-index: 2000;
@@ -2982,6 +2988,7 @@ img:hover + .avatar-edit{
 }
 .ct-product .ct-starRating {
     background-color: #eeeeee;
+    min-height: 30px;
 
 
 
@@ -3160,6 +3167,8 @@ img:hover + .avatar-edit{
 
 .reaction-counter.grid{
     float: left;
+    clear: none;
+    margin-left: 5%;
 }
 
 .favourite-button.grid{
@@ -3169,6 +3178,10 @@ img:hover + .avatar-edit{
 
 
 /*single product*/
+.product-price{
+    color: #4c505e;
+}
+
 
 /*my forms---------------------------------------------------------------------------------------*/
 .btn-form{
@@ -3549,8 +3562,8 @@ img:hover + .avatar-edit{
 }
 .btn.btn-primary{
     margin-left: 5% !important;
-    background-color: #1f8bf3;
-    border-color: #1f8bf3;
+    background-color: #1f8bf3 !important;
+    border-color: #1f8bf3 !important;
     float: left;
     width: 45%;
 
