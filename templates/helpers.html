@@ -524,8 +524,9 @@
 
 
 
-    {% if current_user.is_authenticated %}
+
         <div class="favourite-button grid">
+        {% if current_user.is_authenticated %}
                 <ul class="list-unstyled">
                     <li>
 
@@ -538,9 +539,10 @@
                 <i class="fa fa-star favourite-not-login" aria-hidden="true"></i>
 
 
-            {% endif %}
                      </li>
                 </ul>
+
+            {% endif %}
         </div>
 
     <div class="reaction-counter">

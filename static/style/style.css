@@ -1548,11 +1548,13 @@ img.liked, img.unliked, .popup-div img{
     width: 25px;
 
 }
-.ct-product img.liked, .ct-product img.unliked{
+.ct-product img.liked, .ct-product img.unliked, .ct-product img.like-not-login{
     width: 35px;
-
 }
 
+img.like-not-login{
+    width: 30px;
+}
 
 
 

@@ -47,7 +47,6 @@
                         {% endif %}
 
 
-
                     </div>
 
 
@@ -57,7 +56,7 @@
             <div class="ct-product">
                 {% for product in products %}
                     {% if not product.deleted %}
-                        <div class="col-sm-4 col-xs-12 ct-u-paddingTop20 one-product">
+                        <div class="col-md-4 col-xs-12 ct-u-paddingTop20 one-product">
                         {{ products_macro(product, products_relationships) }}
                         </div>
                     {% endif %}

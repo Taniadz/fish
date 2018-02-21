@@ -254,9 +254,9 @@ def get_post_reaction(**kwargs):
 def get_products_ordering(order, page, post_per_page, user_id = None):
     begin = (page-1) * post_per_page
     if user_id:
-        products = Product.query.filter_by(user_id=user_id).order_by(order)[begin: begin + post_per_page]
+        products = Product.query.filter_by(user_id=user_id).filter_by(deleted=False).order_by(order)[begin: begin + post_per_page]
     else:
-        products = Product.query.order_by(order)[begin: begin + post_per_page]
+        products = Product.query.order_by(order).filter_by(deleted=False)[begin: begin + post_per_page]
     print(products)
     return products
 
@@ -265,9 +265,9 @@ def get_products_ordering(order, page, post_per_page, user_id = None):
 def get_posts_ordering(order, page, post_per_page, user_id = None):
     begin = (page - 1) * post_per_page
     if user_id:
-        posts = Post.query.filter_by(user_id=user_id).order_by(order)[begin: begin + post_per_page]
+        posts = Post.query.filter_by(user_id=user_id).filter_by(deleted=False).order_by(order)[begin: begin + post_per_page]
     else:
-        posts = Post.query.order_by(order)[begin: begin + post_per_page]
+        posts = Post.query.order_by(order).filter_by(deleted=False)[begin: begin + post_per_page]
     return posts
 
 
