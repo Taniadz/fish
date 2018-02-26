@@ -45,14 +45,12 @@ def get_comment_dict(comments, model=None, sort=None, **kwargs):
         for comment in comments:
             if comment.parent != 0:
                 create_dict(comment_dict, comment.id, comment.parent)
-        print(comment_dict)
         return comment_dict
 
 
 
 def get_or_create(model, **kwargs):
     instance = model.query.filter_by(**kwargs).first()
-    print(instance, "instance")
     if instance:
         return instance, False
     else:
@@ -131,7 +129,7 @@ def check_decrease_count(base_model, react_model, **kwargs):
 def create_filename(data, default=None):
     if  data != None:
         f = data
-        print(f.filename)
+        print(f.filename, "filename form helpers")
         filename = secure_filename(f.filename)
 
         f.save(os.path.join(UPLOAD_FOLDER, filename))
@@ -231,7 +229,7 @@ def add_post_fav(user, post):
 
 def add_prod_fav(user, product):
     get_or_create(FavouriteProduct, user_id = user.id, product_id = product.id)
-    print("we sdd")
+
 
 def delete_prod_fav(user, product):
     product = get_one_obj(FavouriteProduct, user_id = user.id, product_id = product.id)
@@ -242,7 +240,7 @@ def delete_prod_fav(user, product):
 
 
 def delete_post_fav(user, post):
-    post =  get_or_create(FavouritePost, user_id = user.id, post_id = post.id)
+    post =  get_one_obj(FavouritePost, user_id = user.id, post_id = post.id)
     db.session.delete(post)
     db.session.commit()
 
@@ -257,7 +255,6 @@ def get_products_ordering(order, page, post_per_page, user_id = None):
         products = Product.query.filter_by(user_id=user_id).filter_by(deleted=False).order_by(order)[begin: begin + post_per_page]
     else:
         products = Product.query.order_by(order).filter_by(deleted=False)[begin: begin + post_per_page]
-    print(products)
     return products
 
 
@@ -452,7 +449,6 @@ def get_many_authors(checked, auth_dict):
 
     for c in checked:
         for a in authors_objects:
-            print(auth_dict)
             if c.user_id == a.id:
                 auth_dict[c.id] = {}
                 auth_dict[c.id]['author'] = a

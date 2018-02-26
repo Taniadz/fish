@@ -76,7 +76,6 @@ def last_posts(page=1):
     comments_rel={}
     get_many_authors(comments, comments_rel)
     get_post_for_comments(comments, comments_rel)
-    print(comments_rel, "reeeeeeeeeeeeeeeeeel")
     count = count_all_posts()
     pagination = Pagination(page, POSTS_PER_PAGE, count)
     posts_relationships=get_posts_relationship(posts, current_user)
@@ -95,6 +94,7 @@ def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
+
         post = create_obj(Post,
                           title=form.title.data.strip(),
                           body=form.body.data.strip(),
@@ -295,12 +295,14 @@ def add_product():
                              description=form.description.data.strip(),
                              user_id=current_user.id )
         images = request.files.getlist("images")
-        for img in images:
-            filename = create_filename(img)
-            print(filename, "filename")
-            new_image = create_obj(ProductImage, user_id=current_user.id,
-                                   filename=filename,
-                                   product_id=product.id)
+        print(images, "images")
+        if images:
+            for img in images:
+                filename = create_filename(img)
+                print(filename, "filenameeeeeee")
+                new_image = create_obj(ProductImage, user_id=current_user.id,
+                                       filename=filename,
+                                       product_id=product.id)
         return redirect(url_for('singleproduct', product_id=product.id))
     return render_template("add_product.html", form=form)
 
@@ -346,7 +348,6 @@ def like_prodcomment():
     if react_type == None:
         react_type = "like"
     comment = get_one_obj(CommentProduct, id=request.form.get('id'))
-    print(request.form.get('id'), comment)
     data = increase_count(comment, ProdComReaction, react_type, comment_id=request.form.get('id'),
                           user_id=current_user.id)  # increase vote count of comment
     return jsonify(data)
@@ -398,7 +399,6 @@ def comment_form():
 @app.route('/product_comment_form', methods=['POST'])
 def product_comment_form():
     form = CommentForm(request.form)
-    print(request.form.get('product_id'),request.form.get('parent_id'))
     data = {'com_form': render_template('product_comment_form.html',
                                         product_id=request.form.get('product_id'),
                                         parent_id=request.form.get('parent_id'), form=form)}
@@ -442,10 +442,8 @@ def user_contain_comment():
 
 @app.route('/user_contain_product', methods=['POST'])
 def user_contain_product():
-    print(request.form.get('user_id'),  22222222)
     page = 1
     PRODUCTS_PER_PAGE = count_product_by_user_id(request.form.get('user_id'))
-    print(PRODUCTS_PER_PAGE)
     if request.form.get('sort') == "date":
         products = get_products_ordering(Product.published_at.desc(), page, PRODUCTS_PER_PAGE, request.form.get('user_id'))
 
@@ -508,9 +506,7 @@ def user_contain_favourite():
 
 @app.route('/add_fav_product', methods=['POST'])
 def add_fav_product():
-
     product = get_or_abort_product(Product, id=request.form.get("product_id"))
-    print(product.id)
     add_prod_fav(current_user, product)
     return jsonify(request.form.get("product_id"))
 
@@ -673,12 +669,13 @@ def edit_product():
                                 title=form.title.data,
                                 price=form.price.data,)
         images = request.files.getlist("images")
-        for img in images:
-            filename = create_filename(img)
-            print(filename, "filename")
-            new_image = create_obj(ProductImage, user_id=current_user.id,
-                                   filename=filename,
-                                   product_id=product.id)
+        if images:
+            for img in images:
+                filename = create_filename(img)
+                print(filename, "filename")
+                new_image = create_obj(ProductImage, user_id=current_user.id,
+                                       filename=filename,
+                                       product_id=product.id)
 
         return redirect(url_for('singleproduct', product_id=request.args.get("id")))
     return render_template("edit_product.html", form=form, id=request.args.get("id"))

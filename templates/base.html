@@ -49,6 +49,54 @@
 	</head>
 	<body class="">
     <!-- :mobile Menu: -->
+    <div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to adding products or posts to your favourites
+                                            </p>
+
+
+            </div>
+
+                <div class="alert alert-danger alert-dismissable like-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to vote
+                                            </p>
+
+
+            </div>
+
+
+                <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <span aria-hidden="true">×</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <strong>Oh snap!</strong>
+
+                                            <p>
+                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
+                                                or <a href="{{ url_for('security.register') }}">Register</a>
+                                                to add comments
+                                            </p>
+
+
+            </div>
    <div class="ct-menuMobile">
                 <ul class="ct-menuMobile-navbar">
 
@@ -146,6 +194,7 @@
                         </ul>
                     </div>
                 </div>
+
             </nav>
             {% endblock %}
             <main>
@@ -156,54 +205,7 @@
 			</main>
 
 
-        		<div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                            <strong>Oh snap!</strong>
 
-                                            <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to adding products or posts to your favourites
-                                            </p>
-
-
-            </div>
-
-                <div class="alert alert-danger alert-dismissable like-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                            <strong>Oh snap!</strong>
-
-                                            <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to vote
-                                            </p>
-
-
-            </div>
-
-
-                <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                            <strong>Oh snap!</strong>
-
-                                            <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to add comments
-                                            </p>
-
-
-            </div>
 			<footer>
                 <section class="ct-footer-list ct-u-paddingBoth50">
     <div class="container">

@@ -1704,6 +1704,12 @@ color:#FFFFFF;
 .form-group.col-xs-9 textarea{
     margin-top: 10px;
 }
+
+@-moz-document url-prefix() {
+    .form-group.col-xs-9 textarea{
+    margin-top: 2px;
+}
+}
 .form-group label {
     padding: 0 !important;
 }
@@ -1799,9 +1805,14 @@ ul ul ul ul ul li span {
   font-size: 14px !important;
 }
 
+
+
 @media (max-width: 767px) {
     .btn-motive{
-        font-size: 11px;
+        font-size: 12px;
+    }
+    .mobile-form-group{
+        padding-right: 2px !important;
     }
     ul ul {
   margin-left:10px;
@@ -1821,7 +1832,9 @@ ul ul ul ul{
     line-height: 22px;
 }
 
-
+/*.hand-cursor{*/
+    /*padding-left: 5%;*/
+/*}*/
 
 #comments .comment-under-box ul{
     line-height: 1em;
@@ -3192,16 +3205,26 @@ img:hover + .avatar-edit{
     font-size: 24px;
 }
 
-@media (max-width: 767px){
-.btn-form {
-    font-size: 14px;
-}
-}
 
+@media (max-width: 767px) {
+    .btn-form {
+        margin-left: 25%;
+        width: 50%;
+        font-size: 18px;
+    }
+}
+.answer .answer-textarea{
+    padding-right: 5px !important;
+    padding-left: 5px !important;
 
+}
 
 
 /*homepage--------------------------------------------*/
+.home-post-grid{
+    padding-left: 0 !important;
+}
+
 .ct-navbarMobile--header a.left{
     margin-left: 40%;
 }

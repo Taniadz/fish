@@ -1,9 +1,9 @@
                             <form action="{{ url_for('singlepost', postid=post_id) }}" method="post"  enctype="multipart/form-data" class="answer_form" id ="{{ parent_id }}">
                         {{form.hidden_tag()}}
-                                    <div class="form-group col-xs-9 col-sm-10">
+                                    <div class="form-group col-xs-9 col-sm-10 answer-textarea">
                                {{form.text(class_="form-control", rows="2")}}
                                     </div>
-                                 <div id ="hide" class="form-group col-xs-3 col-sm-2">
+                                 <div id ="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
                             <label class="hand-cursor">
                                {{form.file}}
                                 <span class="fa fa-camera"></span>
