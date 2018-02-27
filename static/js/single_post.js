@@ -5,7 +5,6 @@ function TogglePostfavour(){
 
     if ($(this).hasClass("fa-star")){
         $.post( $SCRIPT_ROOT + '/delete_fav_post', {post_id: this.id});
-        alert(this.id);
         $(this).removeClass("fa-star");
         $(this).addClass("fa-star-o");
     }else{
@@ -25,7 +24,6 @@ function post_comment(post_id, sort, event) {
         url:  $SCRIPT_ROOT + '/post_contain_comment',
         data: "post_id="+ post_id + "&sort=" + sort,
         success: function (data) {
-            alert(data.comments);
             $("#comments").html(data.comments);
         },
         error: function (xhr, str) {

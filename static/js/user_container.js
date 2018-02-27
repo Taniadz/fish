@@ -18,7 +18,6 @@ function UpdatePostContainer() {
         url: $SCRIPT_ROOT +'/user_contain_post',
         data: "user_id=" + user + "&sort=" + sort,
         success: function (data) {
-            alert(data.post_container);
             $("#active-container").html(data.post_container);
             $("li#post_block").removeClass("active");
             $("li#post_block[sort=" + sort + "]").addClass("active");
@@ -36,7 +35,6 @@ function UpdatePostContainer() {
 function UpdateProductContainer() {
     event.preventDefault();
     event.stopImmediatePropagation();
-    alert(444);
     AddClassActive("#product_block");
     var sort = $(this).attr('sort');
     var user = $(this).attr('user');
@@ -45,7 +43,6 @@ function UpdateProductContainer() {
         url: $SCRIPT_ROOT +'/user_contain_product',
         data: "user_id=" + user + "&sort=" + sort,
         success: function (data) {
-            alert(data.product_container);
             $("#active-container").html(data.product_container);
             $("li#product_block").removeClass("active");
             $("li#product_block[sort=" + sort + "]").addClass("active");
@@ -62,14 +59,12 @@ function UpdateCommentContainer() {
     AddClassActive("#comment_block");
     var sort = $(this).attr('id');
     var contain = $(this).attr('rel_obj');
-    alert(contain);
     var user = $(this).attr('user');
     $.ajax({
         type: "POST",
         url: $SCRIPT_ROOT + '/user_contain_comment',
         data: "user_id=" + user + "&sort=" + sort + "&contain=" + contain,
         success: function (data) {
-            alert(data.com_container);
             $("#active-container").html(data.com_container);
             $("li.comment_block").removeClass("active");
             $("li.comment_block[id=" + sort + "]").addClass("active");
@@ -83,7 +78,6 @@ function UpdateCommentContainer() {
 function UpdateFavouriteContainer() {
     event.preventDefault();
     event.stopImmediatePropagation();
-    alert(555);
     AddClassActive("#favourite_block");
     var sort = $(this).attr('id');
     var contain = $(this).attr('class');

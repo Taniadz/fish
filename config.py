@@ -46,19 +46,26 @@ SOCIAL_AUTH_PIPELINE = (
 
 
 # flask-security settings
-SECURITY_CONFIRMABLE = False
-SECURITY_EMAIL_SENDER = 'no-reply@example.com'
+SECURITY_CONFIRMABLE = True
+SECURITY_EMAIL_SENDER = 'contact.me@fish.name'
 
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
 SECURITY_PASSWORD_SALT = 'ddddsdv123'
 SECURITY_POST_LOGIN = '/'
+SECURITY_RECOVERABLE = True
+SECURITY_TRACKABLE = True
+SECURITY_CHANGEABLE = True
 
-MAIL_SERVER = 'smtp.gmail.com'
+MAIL_SERVER = 'smtp.zoho.com'
 MAIL_PORT = 465
+MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'mail.aqua.fish@gmail.com'
-MAIL_PASSWORD = 'mail_aqua_fish23101994'
+MAIL_DEBUG = True
+MAIL_USERNAME = 'contact.me@fish.name'
+MAIL_PASSWORD = 'password'
+# MAIL_USERNAME = 'mail.aqua.fish@gmail.com'
+# MAIL_PASSWORD = 'mail_aqua_fish23101994'
 
 # celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

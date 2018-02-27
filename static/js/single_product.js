@@ -2,11 +2,9 @@
 function ToggleProductFavour(){
     if ($(this).hasClass("fa-star")){
         $.post( $SCRIPT_ROOT + '/delete_fav_product', {product_id: this.id});
-        alert(this.id);
         $(this).removeClass("fa-star");
         $(this).addClass("fa-star-o");
     }else{
-        alert("else");
         $.post( $SCRIPT_ROOT + '/add_fav_product', {product_id: this.id});
         $(this).removeClass("fa-star-o");
         $(this).addClass("fa-star");
@@ -61,7 +59,6 @@ function product_comment(product_id, sort, event) {
         url: $SCRIPT_ROOT + '/product_contain_comment',
         data: "product_id=" + product_id + "&sort=" + sort,
         success: function (data) {
-            alert("returned");
             $("#comments").html(data.comments);
         },
         error: function (xhr, str) {
@@ -124,7 +121,6 @@ $("#form2.comment_form").submit(function (event) {
         processData: false,
         contentType: false,
         success: function (data) {
-            alert(123)
             $("#comment").html(data.comments);
             $('textarea#text').val("");
 

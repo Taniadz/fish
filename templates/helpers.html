@@ -111,16 +111,16 @@
                             <li>
                                 <span id="like_count_like_comment_{{ comment.id }}">{{ comment.like_count }} </span>
                                 <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
-                                     width=20/>
+                                     />
                                 <span id="unlike_count_like_comment_{{ comment.id }}">{{ comment.unlike_count }} </span>
                                 <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-                                     width=20/>
+                                     />
                                 <span id="funny_count_like_comment_{{ comment.id }}">{{ comment.funny_count }} </span>
                                 <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
-                                     width=20/>
+                                     />
                                 <span id="angry_count_like_comment_{{ comment.id }}">{{ comment.angry_count }} </span>
                                 <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
-                                     width=20/>
+                                     />
 
                             </li>
                         </ul>
@@ -260,16 +260,16 @@
                             <li>
                                 <span id="like_count_like_prodcomment_{{ comment.id }}">{{ comment.like_count }} </span><img
                                     class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
-                                    width=20/>
+                                    />
                                 <span id="unlike_count_like_prodcomment_{{ comment.id }}">{{ comment.unlike_count }} </span><img
                                     class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-                                    width=20/>
+                                    />
                                 <span id="funny_count_like_prodcomment_{{ comment.id }}">{{ comment.funny_count }} </span><img
                                     class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
-                                    width=20/>
+                                    />
                                 <span id="angry_count_like_prodcomment_{{ comment.id }}">{{ comment.angry_count }} </span><img
                                     class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
-                                    width=20/>
+                                   />
                             </li>
 
                         </ul>
@@ -401,18 +401,22 @@
 
             <div class="reaction-counter grid">
 
-                <span id="like_count_like_post_{{ post.id }}">{{ post.like_count }} </span><img
+                <span id="like_count_like_post_{{ post.id }}">{{ post.like_count }} </span>
+                <img
                     class="smile img-rounded" src="{{ url_for('static',filename="image/reaction-like.png" ) }}"
-                    width=20/>
-                <span id="unlike_count_like_post_{{ post.id }}">{{ post.unlike_count }} </span><img
+                    />
+                <span id="unlike_count_like_post_{{ post.id }}">{{ post.unlike_count }} </span>
+                <img
                     class="smile img-rounded" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-                    width=20/>
-                <span id="funny_count_like_post_{{ post.id }}">{{ post.funny_count }} </span><img
+                    />
+                <span id="funny_count_like_post_{{ post.id }}">{{ post.funny_count }} </span>
+                <img
                     class="smile img-rounded" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}"
-                    width=20/>
-                <span id="angry_count_like_post_{{ post.id }}">{{ post.angry_count }} </span><img
+                    />
+                <span id="angry_count_like_post_{{ post.id }}">{{ post.angry_count }} </span>
+                <img
                     class="smile img-rounded" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}"
-                    width=20/>
+                    />
 
             </div>
             <div class="favourite-button grid">
@@ -570,14 +574,14 @@
 {#generate div with four different reaction when mouse hover on smile#}
 {% macro popup_div_macro(id, url) -%}
     <div class="popup-div" obj_id={{ id }} url={{ url }}>
-        <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}" obj_id={{ id }} width="40"
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}" obj_id={{ id }}
              type="like" url={{ url }}/>
         <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-             obj_id={{ id }} width="40"
+             obj_id={{ id }}
              type="unlike" url={{ url }}/>
-        <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}" obj_id={{ id }} width="40"
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}" obj_id={{ id }}
              type="funny" url={{ url }}/>
-        <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}" obj_id={{ id }} width="45"
+        <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}" obj_id={{ id }}
              type="angry" url={{ url }}/>
     </div>
 {% endmacro %}

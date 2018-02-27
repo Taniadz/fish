@@ -22,9 +22,7 @@ function ToggleLikeUnlike(){
     var ids = $(this).attr("obj_id");
     var id = ids.replace(/[^A-Za-z0-9]/g, '');
     var div_class = $(this).attr("class");
-    alert(div_class);
     if ($(this).hasClass("unliked")) {
-        alert("unliked");
         $(this).attr("src", '/static/image/button-liked.png');
         $.ajax({
             type: 'POST',
@@ -38,7 +36,6 @@ function ToggleLikeUnlike(){
          event.preventDefault();
     }
     else if ($(this).hasClass("liked")) {
-        alert("liked");
         var url = $(this).attr("url");
         var id = $(this).attr("obj_id");
             $(this).attr("src", '/static/image/not-reaction.png');
