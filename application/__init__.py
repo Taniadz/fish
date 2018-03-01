@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-import babel
 from celery import Celery
 from flask import Flask, url_for, request
 from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
+import babel
 from social_flask_sqlalchemy.models import init_social
 #from .extentions import db
 
@@ -19,33 +19,32 @@ from flask_caching import Cache
 
 
 
-ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.config.from_object(config)
-db = SQLAlchemy(app)
 
+db = SQLAlchemy(app)
+mail = Mail(app)
+cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':['127.0.0.1:11211']})
+cache.init_app(app)
 init_social(app, db.session)
 
-def register_extensions(app):
-
-    with app.app_context():
-        db.init_app(app)
-        init_social(app, db.session)
-    app.app_context().push()
 
 
+
+# def register_extensions(app):
+#     with app.app_context():
+#         db.init_app(app)
+#         init_social(app, db.session)
+#     app.app_context().push()
 def register_blueprints(app):
     """Register own and 3rd party blueprints."""
     app.register_blueprint(social_auth)
-
-
 
 def register_before_requests(app):
     """Register before_request functions."""
     def global_user():
         g.user = current_user
     app.before_request(global_user)
-
 
 def register_context_processors(app):
     """Register context_processor functions."""
@@ -80,32 +79,11 @@ register_context_processors(app)
 register_teardown_appcontext(app)
 
     # return app
-
 # app = create_app()
 
 
 
-cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':['127.0.0.1:11211']})
-cache.init_app(app)
-
-
-def format_datetime(value, format='medium'):
-    if format == 'full':
-        format="EEEE, d. MMMM y 'at' HH:mm"
-    elif format == 'medium':
-        format="dd.MM.y HH:mm"
-    return babel.dates.format_datetime(value, format)
-
-app.jinja_env.filters['datetime'] = format_datetime
-
-def url_for_other_page(page):
-    args = request.view_args.copy()
-    args['page'] = page
-    return url_for(request.endpoint, **args)
-app.jinja_env.globals['url_for_other_page'] = url_for_other_page
-
-mail = Mail(app)
-
+# init flask-security
 from .forms import ExtendedConfirmRegisterForm
 from .models import User, Role, Connection
 
@@ -133,8 +111,18 @@ celery = make_celery(app)
 
 
 
+
+def format_datetime(value, format='medium'):
+    if format == 'full':
+        format="EEEE, d. MMMM y 'at' HH:mm"
+    elif format == 'medium':
+        format="dd.MM.y HH:mm"
+    return babel.dates.format_datetime(value, format)
+
+app.jinja_env.filters['datetime'] = format_datetime
 import application.views
 import application.models
+
 
 
 

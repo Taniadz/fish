@@ -51,6 +51,7 @@ SECURITY_EMAIL_SENDER = 'contact.me@aqua.name'
 
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
+SECURITY_POST_REGISTER_VIEW = "/confirm"
 SECURITY_PASSWORD_SALT = 'ddddsdv123'
 SECURITY_POST_LOGIN = '/'
 SECURITY_RECOVERABLE = True
@@ -70,3 +71,6 @@ MAIL_PASSWORD = 'password'
 # celery settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+
+ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])

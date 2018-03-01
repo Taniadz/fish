@@ -38,6 +38,9 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.route('/confirm_email')
+def confirm_email():
+    return render_template('confirm.html')
 
 @app.route('/')
 def index():
