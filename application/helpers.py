@@ -149,6 +149,7 @@ def posts_dict_react(posts, user, dict_like):
 
 
 def product_dict_react(products, user, dict_like):
+
     if user.is_authenticated:
         for p in products:
             for react in user.product_react:

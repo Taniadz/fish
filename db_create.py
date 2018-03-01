@@ -3,9 +3,9 @@ import os.path
 
 from migrate.versioning import api
 
-from application import db, create_app
+from application import db, app
 
-from social_flask_sqlalchemy.models import init_social
+
 
 from social.apps.flask_app.default import models
 from application.models import User

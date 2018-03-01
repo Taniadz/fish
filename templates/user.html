@@ -214,7 +214,7 @@
                     <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
                     <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
 
-                        {% for post in posts %}
+                        {% for post in side_posts %}
                             <li>
                             <a href="{{url_for('singlepost', postid=post.id)}}">
                             {% if post.image %}

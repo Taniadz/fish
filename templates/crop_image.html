@@ -77,7 +77,6 @@
         roundedCanvas = getRoundedCanvas(croppedCanvas);
         // Get data and send
           var image_data = $image.cropper('getData');
-          alert(1);
 
           $.post( $SCRIPT_ROOT + "/crop_image", image_data ,function( data ){
              var username = "{{ user.username }}";

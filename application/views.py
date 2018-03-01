@@ -110,16 +110,19 @@ def add_post():
 
 @app.route('/user/<username>')
 def user(username):
+    page = 1
     user = get_or_abort_user(User, username=username)
-    posts = get_posts_ordering(Post.published_at.desc(), 1, POSTS_PER_PAGE)
+
+    POSTS_PER_USER_PAGE = count_post_by_user_id(request.form.get('user_id'))
+
+    side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
 
     # show posts, written by profile owner(default), others container rendered by ajax
     # with def user_contain_* functions. This part is showed by included user_contain_post.html
-    pagination = Pagination(1, POSTS_PER_PAGE, 5)
-    posts_relationships=get_posts_relationship(posts, current_user)
+    posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
+    posts_relationships = get_posts_relationship(posts, current_user)
     return render_template('user.html', posts_relationships =posts_relationships,
-                           pagination = pagination,
-                           user=user, user_id=user.id, posts=posts)
+                           user=user, user_id=user.id, posts=posts, side_posts=side_posts)
 
 
 
@@ -410,8 +413,6 @@ def product_comment_form():
 @app.route('/user_contain_comment', methods=['POST'])
 def user_contain_comment():
     page =1
-
-
     if request.form.get('contain') == "comment":
         COMMENTS_PER_PAGE = count_post_comments_by_user_id(request.form.get('user_id'))
         if request.form.get('sort') == "date":

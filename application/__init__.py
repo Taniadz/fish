@@ -7,7 +7,7 @@ from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
-# from .extentions import db
+#from .extentions import db
 
 #
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
@@ -26,12 +26,12 @@ db = SQLAlchemy(app)
 
 init_social(app, db.session)
 
-# def register_extensions(app):
-#
-#     with app.app_context():
-#         db.init_app(app)
-#         init_social(app, db.session)
-#     app.app_context().push()
+def register_extensions(app):
+
+    with app.app_context():
+        db.init_app(app)
+        init_social(app, db.session)
+    app.app_context().push()
 
 
 def register_blueprints(app):
@@ -73,11 +73,12 @@ def register_teardown_appcontext(app):
 # def create_app():
 #     app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 #     app.config.from_object(config)
-    # register_extensions(app)
+#     register_extensions(app)
 register_blueprints(app)
 register_before_requests(app)
 register_context_processors(app)
 register_teardown_appcontext(app)
+
     # return app
 
 # app = create_app()
@@ -105,12 +106,12 @@ app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 mail = Mail(app)
 
-from .forms import ExtendedRegisterForm
+from .forms import ExtendedConfirmRegisterForm
 from .models import User, Role, Connection
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore,
-         register_form=ExtendedRegisterForm)
+                    confirm_register_form=ExtendedConfirmRegisterForm)
 
 
 

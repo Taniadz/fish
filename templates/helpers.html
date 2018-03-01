@@ -56,12 +56,12 @@
                                     {% else %}
                                         <img class="unliked"
                                              src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                             url="like_comment" obj_id={{ comment.id }}/>
+                                             url="like_comment" obj_id={{ comment.id }} />
 
                                     {% endif %}
                                 {% else %}
                                     <img class="like-not-login"
-                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
+                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}" />
 
                                 {% endif %}
                             </li>
@@ -202,12 +202,12 @@
                                     {% else %}
                                         <img class="unliked"
                                              src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                             url="like_prodcomment" obj_id={{ comment.id }}/>
+                                             url="like_prodcomment" obj_id={{ comment.id }} />
 
                                     {% endif %}
                                 {% else %}
                                     <img class="like-not-login"
-                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
+                                         src="{{ url_for('static',filename="image/not-reaction.png" ) }}" />
 
                                 {% endif %}
                             </li>

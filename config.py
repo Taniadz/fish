@@ -47,7 +47,7 @@ SOCIAL_AUTH_PIPELINE = (
 
 # flask-security settings
 SECURITY_CONFIRMABLE = True
-SECURITY_EMAIL_SENDER = 'contact.me@fish.name'
+SECURITY_EMAIL_SENDER = 'contact.me@aqua.name'
 
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
@@ -57,12 +57,12 @@ SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
 
-MAIL_SERVER = 'smtp.zoho.com'
-MAIL_PORT = 465
-MAIL_USE_TLS = False
-MAIL_USE_SSL = True
+MAIL_SERVER = 'smtp.zoho.eu'
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USE_SSL = False
 MAIL_DEBUG = True
-MAIL_USERNAME = 'contact.me@fish.name'
+MAIL_USERNAME = 'contact.me@aqua.name'
 MAIL_PASSWORD = 'password'
 # MAIL_USERNAME = 'mail.aqua.fish@gmail.com'
 # MAIL_PASSWORD = 'mail_aqua_fish23101994'

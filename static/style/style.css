@@ -3230,8 +3230,9 @@ div.one-product:hover{
     padding-left: 0 !important;
 }
 
-.ct-navbarMobile--header a.left{
-    margin-left: 40%;
+.ct-navbarMobile--header a.right{
+    margin-left: 10%;
+    float: right;
 }
 
 
