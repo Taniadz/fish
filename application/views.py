@@ -40,7 +40,7 @@ def page_not_found(e):
 
 @app.route('/confirm_email')
 def confirm_email():
-    return render_template('confirm.html')
+    return render_template('confirm_email.html')
 
 @app.route('/')
 def index():
