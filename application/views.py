@@ -250,7 +250,6 @@ def singleproduct(product_id=None):
         product_author = get_one_obj(User, id=product.user_id)
         product_images= get_all_obj(ProductImage, product_id = product.id)
 
-
         if product.deleted:
             return render_template("deleted_object.html", object=product)
         products=get_products_ordering(Product.published_at.desc(), 1, 10)  # products for side box
@@ -265,7 +264,6 @@ def singleproduct(product_id=None):
             product_liked = False
         comments_relationships = get_prod_comment_relationships(comments, current_user)
 
-
         return render_template("single_product.html",
                                if_favorite=if_favorite, product_liked=product_liked, products_images=products_images,
                                 products=products, comments_relationships=comments_relationships,
@@ -279,7 +277,6 @@ def singleproduct(product_id=None):
         comment = create_obj(CommentProduct, text=form.text.data,
                              user_id=current_user.id, product_id=product_id,
                              image=filename, parent=parent)
-
         comments = get_all_comments_by_product_id(product_id)
 
         data = {'comments' : render_template('product_comments.html',
@@ -301,7 +298,6 @@ def add_product():
                              description=form.description.data.strip(),
                              user_id=current_user.id )
         images = request.files.getlist("images")
-        print(images, "images")
         if images:
             for img in images:
                 filename = create_filename(img)

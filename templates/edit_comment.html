@@ -1,3 +1,4 @@
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>
 
   {% from 'helpers.html' import comment_edit with context %}
 
@@ -6,28 +7,3 @@
   {{ comment_edit(url, comment) }}
 </div>
 
-<script>
-$(".edit_comment").submit(function(event) {
-    var id = "{{comment.id}}"
-    alert(123);
-    var formData = new FormData($(this)[0]);
-    $.ajax({
-        type: "POST",
-        url: $(this).attr('action'),
-        data: formData,
-        processData: false,
-        contentType: false,
-
-        success: function (data) {
-            $("#comment" + id).html(data.comment);
-            $("textarea#text").val("");
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-});
-
-</script>

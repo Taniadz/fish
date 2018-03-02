@@ -30,7 +30,7 @@
                 </div>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-8">
+                <div class="col-xs-12 col-sm-8" id="single-post">
 
                     <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter ct-clear-both">
 
@@ -147,7 +147,7 @@
                         </div>
                         <div id ="hide" class="form-group col-xs-3 col-sm-2">
                             <label class="hand-cursor">
-                               {{form.file}}
+                                     {{ form.file(class="comment-file") }}
                                 <span class="fa fa-camera"></span>
                                 <span class="photo_text hidden-xs">Image</span>
                             </label>
@@ -315,6 +315,15 @@
     </section>
 
 
+<script>
+$(document).ready(function() {
 
+
+    $(".discussion.post-form.comment-login").on("click", RenderPostCommentForm);
+
+
+});
+
+</script>
 {% endblock %}
 

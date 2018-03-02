@@ -1,5 +1,7 @@
         //show image? seleted by user for file form field
         jQuery(window).on("load", function () {
+
+
             var inputs = document.querySelectorAll('.inputfile');
             Array.prototype.forEach.call(inputs, function (input) {
                 var label = input.nextElementSibling,
@@ -21,4 +23,6 @@
                         label.innerHTML = labelVal;
                 });
             });
+
+
         });

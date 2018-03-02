@@ -1,16 +1,20 @@
 {#this form rendered when discussion button for comment clicked#}
 
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}"></script>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>
 
-<form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post" enctype="multipart/form-data"
-      class="answer_form" id="{{ parent_id }}">
+
+<form action="{{ url_for('singleproduct', product_id=product_id, parent=parent_id)}}" method="post" enctype="multipart/form-data"
+      class="answer-form" id="{{ parent_id }}">
+
     {{ form.hidden_tag() }}
     <div class="form-group col-xs-9 col-sm-10 answer-textarea">
+
         {{ form.text(class_="form-control", rows="2") }}
     </div>
     <div id="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
         <label class="hand-cursor">
-            {{ form.file }}
+            {{ form.file(class="comment-file") }}
             <span class="fa fa-camera"></span>
             <span class="photo_text hidden-xs">Image</span>
         </label>
@@ -29,24 +33,7 @@
 
 
 <script>
-    $(".answer_form").submit(function (event) {
-        var formData = new FormData($(this)[0]);
-        $.ajax({
-            type: "POST",
-            url: "{{ url_for('singleproduct', product_id=product_id, parent=parent_id) }}",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                $("#comments").html(data.comments);
-                $("textarea#text").val("");
-            },
-            error: function (xhr, str) {
-                alert('Mistake ' + xhr.responseCode);
-            }
-        });
-        event.preventDefault();
-    });
+
     {#reinit buttons for likes, reactions and discussion#}
     $(document).ready(function () {
         $("img.unliked, img.liked").on("click", ToggleLikeUnlike);

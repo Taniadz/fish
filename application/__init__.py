@@ -8,8 +8,9 @@ from social_flask.routes import social_auth
 import babel
 from social_flask_sqlalchemy.models import init_social
 #from .extentions import db
+from flask_uploads import UploadSet, IMAGES, configure_uploads
 
-#
+
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
 import config
 from social.apps.flask_app.template_filters import backends
@@ -21,7 +22,10 @@ from flask_caching import Cache
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.config.from_object(config)
+app.config['UPLOADS_DEFAULT_DEST'] = UPLOAD_FOLDER
 
+images = UploadSet('images', IMAGES)
+configure_uploads(app, (images,))
 db = SQLAlchemy(app)
 mail = Mail(app)
 cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':['127.0.0.1:11211']})

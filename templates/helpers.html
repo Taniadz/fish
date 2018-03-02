@@ -20,12 +20,15 @@
                     <span>{{ comments_relationships[comment.id]["author"].username }} </span>
                     - {{ comment.timestamp|datetime }}
                 </p>
-                <p>
+                <div>
                     {% if comment.image %}
                         <img class="img-inherited" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
                     {% endif %}
-                    {{ comment.text }}
-                </p>
+                </div>
+                <p> {{ comment.text }}</p>
+
+
+
                 <div class="under-box comment-under-box">
                     {{ popup_div_macro(comment.id   , "like_comment ") }}
                     <div class="reaction-button">
@@ -165,10 +168,12 @@
                     - {{ comment.timestamp|datetime }}
                     {{ comment.id }}
                 </p>
-                <p>
+                <div>
                     {% if comment.image %}
                         <img class="img-inherited" src="{{ url_for('uploaded_file',filename= comment.image) }}"/>
                     {% endif %}
+                </div>
+                <p>
                     {{ comment.text }}
                 </p>
                 <div class="under-box comment-under-box">
@@ -304,7 +309,7 @@
 
 {% macro comment_edit(url, comment) -%}
     <form action="{{ url_for( url, comment_id=comment.id ) }}" method="post"
-          enctype="multipart/form-data" class="edit_comment">
+          enctype="multipart/form-data" class="edit_comment" id="{{ comment.id }}">
         {{ form.hidden_tag() }}
         <div class="form-group col-xs-9 col-sm-9">
             {{ form.text(class_="form-control", rows=2) }}
@@ -312,7 +317,7 @@
         </div>
         <div id="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
             <label class="hand-cursor">
-                {{ form.file }}
+            {{ form.file(class="comment-file") }}
                 <span class="fa fa-camera"></span>
                 <span class="photo_text hidden-xs">Image</span>
             </label>

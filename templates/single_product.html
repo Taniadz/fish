@@ -161,7 +161,7 @@
                         </div>
                         <div id ="hide" class="form-group col-xs-3 col-sm-2">
                             <label class="hand-cursor">
-                               {{form.file}}
+                                {{ form.file(class="comment-file") }}
                                 <span class="fa fa-camera"></span>
                                 <span class="photo_text hidden-xs">Image</span>
                             </label>
@@ -345,6 +345,12 @@
  });
 
 
+$(document).ready(function() {
+
+
+    $(".discussion.product-form.comment-login").on("click", RenderProductCommentForm);
+
+});
 </script>
 {% endblock %}
 

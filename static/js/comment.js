@@ -91,7 +91,55 @@ function edit_comment(event, id, url) {
         });
         event.preventDefault();
     }
+    $(".answer-form").submit(function (event) {
+        var formData = new FormData($(this)[0]);
 
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $("#comments").html(data.comments);
+                $("textarea#text").val("");
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        event.preventDefault();
+    });
+
+$(".edit_comment").submit(function(event) {
+    var id = $(this).attr("id");
+    alert(id);
+    var formData = new FormData($(this)[0]);
+    $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function (data) {
+            $("#comment" + id).html(data.comment);
+            $("textarea#text").val("");
+
+        },
+        error: function (xhr, str) {
+            alert('Mistake ' + xhr.responseCode);
+        }
+    });
+    event.preventDefault();
+});
+$(document).ready(function() {
+$('.comment-file').change(function() {
+    $(this).next().html("<div class='uploaded'>Uploaded</div>");
+    $(this).next().next().html(" ");
+
+});
+});
 // $(document).ready(function() {
 // // data send by ajax on server where render template with updated comment part
 //

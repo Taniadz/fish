@@ -4,265 +4,261 @@
 {% block body %}
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/user_container.js") }}" acync></script>
 
-    <div class="container">
-        <div class="row ">
+<div class="container">
+    <div class="row ">
 
-            <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+    <div class="ct-pageSectionHeader ct-u-paddingBoth20">
 
-                <h3 class="text-uppercase ct-u-size40 text-center">{{ user.username }}</h3>
+                    <h3 class="text-uppercase ct-u-size40 text-center">{{ user.username }}</h3>
 
             </div>
-            <div class="col-sm-9">
+        <div class="col-sm-9">
 
 
-                <div class="row">
-                    <div class="max_avatar col-sm-4 col-xs-12">
-                        {% if user.avatar %}
-                            <img src="{{ url_for('uploaded_file',filename= user.avatar) }}" width="60"/>
-                        {% else %}
-                            <img src="{{ url_for('uploaded_file',filename="icon-user-default.png") }}" width="60"/>
-                        {% endif %}
-                        <div class="avatar-edit">
-                            <a href="{{ url_for('user_edit', username = user.username ) }}">
-                                <i class="fa fa-camera" aria-hidden="true"></i> edit your avatar
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div class="col-xs-12 col-sm-6" id=user_about>
-                        {% if user.last_seen %}
-                            <p><i>Last seen on: {{ user.last_seen }}</i></p>
-                        {% endif %}
-                        <p class="ct-u-paddingBottom5">
-                            <span>Registered on</span>
-                            {{ user.registered_on|datetime }}
-                        </p>
-                        {% if user.about_me %}
-                            <p>{{ user.about_me }}</p>
-                        {% else %}
-                            {% if current_user == user %}
-                                <p>Could you tell something about you?</p>
-                                <a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a>
-                            {% endif %}
-                        {% endif %}
-                        <a href="{{ url_for('user_edit', username = user.username ) }}">Edit yor profile</a>
-
-                    </div>
+            <div class="row">
+            <div class="max_avatar col-sm-4 col-xs-12">
+                {% if user.avatar %}
+                    <img src="{{ url_for('uploaded_file',filename= user.avatar) }}" width="60"/>
+                {% else %}
+                    <img src="{{ url_for('uploaded_file',filename="icon-user-default.png") }}" width="60"/>
+                {% endif %}
+                <div class="avatar-edit">
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">
+                        <i class="fa fa-camera" aria-hidden="true"></i> edit your avatar
+                    </a>
                 </div>
+            </div>
 
 
+
+        <div class="col-xs-12 col-sm-6" id=user_about>
+            {% if user.last_seen %}
+                <p><i>Last seen on: {{ user.last_seen }}</i></p>
+            {% endif %}
+            <p class="ct-u-paddingBottom5">
+                <span>Registered on</span>
+                {{ user.registered_on|datetime }}
+            </p>
+            {% if user.about_me %}
+                <p>{{ user.about_me }}</p>
+            {% else %}
                 {% if current_user == user %}
-                    <section class="ct-u-paddingBoth20">
-                    <div class="row">
+                    <p>Could you tell something about you?</p>
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a>
+                {% endif %}
+            {% endif %}
+            <a href="{{ url_for('user_edit', username = user.username ) }}">Edit yor profile</a>
 
-                        <div class="user-activities panel-group">
-                            <div class="col-xs-12 col-sm-6 col-md-3">
-
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="panel-title active">
-                                            <h4 class="active user_but" id="post_block" sort="date"
-                                                user="{{ user.id }}">
-                                                <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
-                                                Post
-                                            </h4>
-
-                                        </div>
-                                    </div>
-                                </div>
+        </div>
+        </div>
 
 
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-3">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="panel-title">
-                                            <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
-                                                data-toggle="dropdown">
-                                                <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                                comment
-                                            </h4>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li id="date" class="comment_block" rel_obj="comment"
-                                                    user="{{ user.id }}"><a href="#">for post</a></li>
-                                                <li id="date" class="comment_block" rel_obj="prod_comment"
-                                                    user="{{ user.id }}"><a href="#">for product</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    {% if current_user == user %}
+        <section class="ct-u-paddingBoth20">
+        <div class="row">
 
-                            <div class="col-xs-12 col-sm-6 col-md-3">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="panel-title">
-                                            <h4 class="user_but" id="product_block" sort="date" user="{{ user.id }}">
-                                                <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
-                                                product
-                                            </h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-3">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="panel-title">
-                                            <h4 type="button" id="favourite_block" class="dropdown-toggle user_but"
-                                                data-toggle="dropdown">
-                                                <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                                saved
-                                            </h4>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li id="date" class="post" user="{{ user.id }}"><a href="#">posts</a>
-                                                </li>
-                                                <li id="date" class="product" user="{{ user.id }}"><a
-                                                        href="#">products</a></li>
+        <div class="user-activities panel-group">
+            <div class="col-xs-12 col-sm-6 col-md-3">
 
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title active">
+                              <h4 class="active user_but" id="post_block"  sort="date" user="{{ user.id }}">
+                                  <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                                  Post
+                            </h4>
 
-
+                          </div>
                         </div>
                     </div>
-                    <div class="row ct-u-paddingTop10 child-active">
-                        <div class="col-md-12">
-                            <div id="active-container">
-                                {#                        {% include '/user_container/user_contain_post.html' %}#}
-                                {% if posts|length >= 1 %}
-                                    <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
-                                        <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">
-                                            <li id="post_block" sort="date" user="{{ user_id }}" role="presentation"
-                                                class="active">
-                                                <div class="ct-tabBorder">
 
 
-                                                    <a href="#" role="tab" data-toggle="tab">latest</a>
-                                                </div>
-                                                <div class="mini-triangle">
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                                <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
+                                        data-toggle="dropdown">
+                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                                    comment
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">for post</a></li>
+                                    <li id="date" class ="comment_block" rel_obj="prod_comment" user="{{ user.id }}"><a href="#">for product</a></li>
+                                </ul>
+                        </div>
+                        </div>
+                </div>
+            </div>
 
-                                                </div>
-                                            </li>
-                                            <li role="presentation" id="post_block" sort="vote" user="{{ user_id }}">
-                                                <div class="ct-tabBorder">
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                <h4  class="user_but" id="product_block" sort="date" user="{{ user.id }}">
+                    <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
+                    product
+                </h4>
+                          </div>
+                        </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <div class="panel-title">
+                    <h4 type="button" id="favourite_block" class="dropdown-toggle user_but"
+                            data-toggle="dropdown">
+                        <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
+                        saved </h4>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">posts</a></li>
+                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">products</a></li>
+
+                    </ul>
+                </div>
+                        </div>
+            </div>
+            </div>
 
 
-                                                    <a href="#" role="tab" data-toggle="tab">popular</a>
-                                                </div>
-                                                <div class="mini-triangle">
+            </div>
+        </div>
+            <div class="row ct-u-paddingTop10 child-active">
+                <div class="col-md-12">
+                    <div id="active-container">
+{#                        {% include '/user_container/user_contain_post.html' %}#}
+                        {% if posts|length >= 1 %}
+                            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
+                                <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">
+                                    <li id="post_block" sort="date" user ="{{ user_id }}" role="presentation" class="active">
+                                        <div class="ct-tabBorder">
 
-                                                </div>
-                                            </li>
 
-                                        </ul>
-                                    </div>
+                                            <a href="#"  role="tab" data-toggle="tab">latest</a>
+                                        </div>
+                                        <div class="mini-triangle">
+
+                                        </div>
+                                    </li>
+                                    <li role="presentation"  id="post_block" sort="vote" user ="{{ user_id }}">
+                                        <div class="ct-tabBorder">
+
+
+                                            <a href="#" role="tab" data-toggle="tab">popular</a>
+                                        </div>
+                                        <div class="mini-triangle">
+
+                                        </div>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+
+
+
 
 
                                     <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
                                         {% for post in posts %}
-                                            <div class="col-md-12 ct-js-blogMasonry-item">
+                                             <div class="col-md-12 ct-js-blogMasonry-item" >
 
-                                                {{ posts_macro(post, posts_relationships) }}
-                                            </div>
+                                            {{ posts_macro(post, posts_relationships) }}
+                                             </div>
 
                                         {% endfor %}
 
-                                    </div>
-                                {% else %}
-                                    <p>You have not post yet</p>
-                                    <p>Could you write something?</p>
-                                    <a href="{{ url_for('add_post') }}">Add_post</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-
-                {% endif %}
-                </section>
-            </div>
-
-            <div class="col-xs-12 col-sm-3 sidebar">
-                <div class="ct-inputSearch ct-u-marginBottom40">
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <a class="collapsed" href="{{ url_for('add_post') }}">
-                                        new post
-                                        <div class="plus ct-Diamond ct-Diamond--motive"></div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <a class="collapsed" href="{{ url_for('add_product') }}">
-                                        new product
-                                        <div class="plus ct-Diamond ct-Diamond--motive"></div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                                        </div>
+                                    {% else %}
+                                        <p>You have not post yet</p>
+                                        <p>Could you write something?</p>
+                                        <a href="{{ url_for('add_post') }}">Add_post</a>
+                                    {% endif %}
                     </div>
                 </div>
-
-                <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
-                <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
-
-                    {% for post in side_posts %}
-                        <li>
-                            <a href="{{ url_for('singlepost', postid=post.id) }}">
-                                {% if post.image %}
-
-                                    <img class="img-circle left-image"
-                                         src="{{ url_for('uploaded_file',filename= post.image ) }}" style="height:50px">
-
-                                {% else %}
-                                    <img class="img-circle left-image"
-                                         src="{{ url_for('uploaded_file',filename="carusel4.jpg" ) }}"
-                                         style="height:50px">
-
-                                {% endif %}
-                                <div class="description side">
-                                    <p class="ct-fw-600 ct-u-size18">{{ post.title|truncate(50, True) }}</p>
+            </div>
 
 
-                                    <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>
+    {% endif %}
+        </section>
+    </div>
 
-
+                    <div class="col-xs-12 col-sm-3 sidebar">
+                    <div class="ct-inputSearch ct-u-marginBottom40">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <div class="panel-title">
+                                    <a class="collapsed" href="{{url_for('add_post')}}">
+                                        new post
+                                       <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                    </a>
+                                  </div>
                                 </div>
+                            </div>
+                            <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <div class="panel-title">
+                                <a class="collapsed" href="{{url_for('add_product')}}">
+                                    new product
+                                   <div class="plus ct-Diamond ct-Diamond--motive"></div>
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
+                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+
+                        {% for post in side_posts %}
+                            <li>
+                            <a href="{{url_for('singlepost', postid=post.id)}}">
+                            {% if post.image %}
+
+                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename= post.image )}}" style="height:50px">
+
+                            {% else %}
+                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename="carusel4.jpg" )}}" style="height:50px">
+
+                            {% endif %}
+                            <div class="description side">
+                                <p class="ct-fw-600 ct-u-size18">{{post.title|truncate(50, True) }}</p>
+
+
+                                 <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>
+
+
+                            </div>
                             </a>
-                        </li>
-                    {% endfor %}
+                             </li>
+                             {% endfor%}
+
 
 
                 </ul>
 
-            </div>
+                </div>
 
-        </div>
     </div>
-    <script>
-        $(document).ready(function () {
+</div>
+<script>
+$(document).ready(function() {
 
-            $(".dropdown-menu li.comment_block").on("click", UpdateCommentContainer);
-            $("#product_block").on("click", UpdateProductContainer);
-            $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
-            $("#post_block").on("click", UpdatePostContainer);
+     $(".dropdown-menu li.comment_block").on("click", UpdateCommentContainer);
+     $("#product_block").on("click", UpdateProductContainer);
+     $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
+     $("#post_block").on("click", UpdatePostContainer);
 
-            $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
-            $("li#post_block").on("click", UpdatePostContainer);
-
-
-        });
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+    $("li#post_block").on("click", UpdatePostContainer);
 
 
-    </script>
+ });
+
+
+</script>
 {% endblock %}

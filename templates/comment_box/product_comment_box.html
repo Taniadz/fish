@@ -1,29 +1,12 @@
 
 {#this is a little part of template, which rendered after one comment editet. It is allows to not reload all comments,
 but update with ajax only one comment, that was edited#}
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}"></script>
 
 {% from 'helpers.html' import product_comment_macro with context %}
                     {{ product_comment_macro(comment, comments_relationships) }}
 <script>
-$("form.edit_comment").submit(function(event) {
-    var id = "{{comment.id}}";
-    var formData = new FormData($(this)[0]);
-    $.ajax({
-        type: "POST",
-        url: $(this).attr('action'),
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (data) {
-            $(".one_comment#comment" + id).html(data.comment);
-            $("textarea#text").val("");
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
-    });
-    event.preventDefault();
-});
+
 $(document).ready(function() {
     $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
     $('.smile').on("click", AddReaction);

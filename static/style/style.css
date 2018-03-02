@@ -396,8 +396,11 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
     -moz-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
-}
 
+}
+form .fa.fa-camera, form .photo_text{
+    cursor: pointer;
+}
 .ct-checkbox {
     margin-left: 10px;
     text-transform: none !important;
@@ -1715,6 +1718,23 @@ color:#FFFFFF;
 
 
 /*single post-----------------------------------------------------*/
+
+
+@media (min-width: 768px) {
+#single-post img{
+    max-width: 450px;
+}
+}
+.uploaded{
+    font-size: 12px;
+    display: inline;
+}
+@media (min-width: 768px) {
+.uploaded{
+    font-size: 18px;
+}
+}
+
 
 
 .edit-product-block .dropdown-menu, .edit-post-block .dropdown-menu{
@@ -3619,3 +3639,8 @@ div.one-product:hover{
 .comment-form-edit .btn{
     line-height: 30px;
 }
+
+.description .comment-image{
+    display: block;
+}
+
