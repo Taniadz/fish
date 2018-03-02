@@ -1,89 +1,69 @@
 {% extends "base.html" %}
 {% block body %}
-{% from 'helpers.html' import products_macro with context %}
+    {% from 'helpers.html' import products_macro with context %}
     {% from 'helpers.html' import render_pagination with context %}
 
 
     <section class=" ct-blogGrid ct-u-paddingBottom20">
 
-    <div class="ct-pageSectionHeader ct-u-paddingBottom20">
+        <div class="ct-pageSectionHeader ct-u-paddingBottom20">
             <h3 class="text-uppercase ct-u-size50 text-center">CATALOG</h3>
-    </div>
+        </div>
 
+        <div class="container">
+            <div class="row">
+                <div class="sort_box">
+                    {% if sort == "rating" %}
+                        <div class="sort-left col-md-6 col-sm-6">
 
-    <div class="container">
-        <div class="row">
-        <div class="sort_box">
-        {% if sort == "rating" %}
-                            <div class="sort-left col-md-6">
+                            <a href="{{ url_for('popular_product', sort = 'rating') }}">
+                                <h4 class="ct-u-size30 active">popular posts</h4>
+                            </a>
 
-                                <a href="{{url_for('popular_product', sort = 'rating')}}">
-                                    <h4 class="ct-u-size30 active">popular posts</h4>
-                                </a>
+                        </div>
+                        <div class="sort-right col-md-6 col-sm-6">
+                            <a href="{{ url_for('popular_product', sort = 'data') }}" class="ct-u-floatLeft">
+                                <h4 class="ct-u-size30">latest posts</h4>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="sort-left col-md-6 col-sm-6">
 
-                            </div>
-                            <div class="sort-right col-md-6">
-
-
-                                <a href="{{url_for('popular_product', sort = 'data')}}" class="ct-u-floatLeft">
-                                    <h4 class="ct-u-size30">latest posts</h4>
-                                </a>
-                            </div>
-                        {% else %}
-                            <div class="sort-left col-md-6">
-
-                                <a href="{{url_for('popular_product', sort = 'rating')}}">
-                                    <h4 class="ct-u-size30">popular posts</h4>
-                                </a>
-
-                            </div>
-                            <div class="sort-right col-md-6">
-
-
-                                <a href="{{url_for('popular_product', sort = 'data')}}" class="ct-u-floatLeft">
-                                    <h4 class="ct-u-size30 active">latest posts</h4>
-                                </a>
-                            </div>
-                        {% endif %}
-
-
-                    </div>
-
-
-
-
-        <div id="product_container">
-            <div class="ct-product">
-                {% for product in products %}
-                    {% if not product.deleted %}
-                        <div class="col-md-4 col-xs-12 ct-u-paddingTop20 one-product">
-                        {{ products_macro(product, products_relationships) }}
+                            <a href="{{ url_for('popular_product', sort = 'rating') }}">
+                                <h4 class="ct-u-size30">popular posts</h4>
+                            </a>
+                        </div>
+                        <div class="sort-right col-md-6 col-sm-6">
+                            <a href="{{ url_for('popular_product', sort = 'data') }}" class="ct-u-floatLeft">
+                                <h4 class="ct-u-size30 active">latest posts</h4>
+                            </a>
                         </div>
                     {% endif %}
-                {% endfor %}
-             </div>
+                </div>
+                <div id="product_container">
+                    <div class="ct-product">
+                        {% for product in products %}
+                            {% if not product.deleted %}
+                                <div class="col-md-4 col-xs-12 ct-u-paddingTop20 one-product">
+                                    {{ products_macro(product, products_relationships) }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="ct-u-marginBoth20 ct-pagination">
+                <ul class="pagination pagination-lg ">
+                    {{ render_pagination(pagination, "popular_product", sort) }}
+                </ul>
+            </div>
 
         </div>
-
-
-    </div>
-
-    <div class="ct-u-marginBoth20 ct-pagination">
-            <ul class="pagination pagination-lg ">
-                        {{  render_pagination(pagination, "popular_product", sort) }}
-            </ul>
-        </div>
-
-    </div>
     </section>
-<script>
-    $(document).ready(function() {
 
-        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
-        $('.smile').on("click", AddReaction);
-        ShowReactionDiv();
-    });
-</script>
 {% endblock %}
 
 

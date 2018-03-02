@@ -84,13 +84,14 @@ register_teardown_appcontext(app)
 
 
 # init flask-security
-from .forms import ExtendedConfirmRegisterForm
+from .forms import ExtendedConfirmRegisterForm, ExtendedRegisterForm
 from .models import User, Role, Connection
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore,
                     confirm_register_form=ExtendedConfirmRegisterForm)
-
+# security = Security(app, user_datastore,
+#                     register_form=ExtendedRegisterForm)
 
 
 def make_celery(app):

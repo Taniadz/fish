@@ -4,7 +4,7 @@ from wtforms.widgets import TextArea
 from wtforms.validators import Required, Length, DataRequired
 from flask_uploads import UploadSet, IMAGES
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from flask_security.forms import ConfirmRegisterForm
+from flask_security.forms import ConfirmRegisterForm, RegisterForm
 from .models import User
 from .utils.validators import Unique
 
@@ -20,7 +20,13 @@ class ExtendedConfirmRegisterForm(ConfirmRegisterForm):
             message='There is already an account with that username.')]
     )
 
-
+class ExtendedRegisterForm(RegisterForm):
+    username = StringField('First Name', validators=[DataRequired(),
+        Unique(
+            User,
+            User.username,
+            message='There is already an account with that username.')]
+    )
 
 
 class UserEditForm(FlaskForm):

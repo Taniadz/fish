@@ -1,67 +1,59 @@
-                            <form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post"  enctype="multipart/form-data" class="answer_form" id ="{{ parent_id }}">
+{#this form rendered when discussion button for comment clicked#}
 
-                                          {{ form.hidden_tag() }}
-                               <div class="form-group col-xs-9 col-sm-10 answer-textarea">
-                               {{form.text(class_="form-control", rows="2")}}
-                                    </div>
-                                 <div id ="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
-                            <label class="hand-cursor">
-                               {{form.file}}
-                                <span class="fa fa-camera"></span>
-                                <span class="photo_text hidden-xs">Image</span>
-                            </label>
-                            <button type="submit" class="btn btn-motive">comment</button>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}"></script>
 
+<form action="{{ url_for('singleproduct', product_id=product_id) }}" method="post" enctype="multipart/form-data"
+      class="answer_form" id="{{ parent_id }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group col-xs-9 col-sm-10 answer-textarea">
+        {{ form.text(class_="form-control", rows="2") }}
+    </div>
+    <div id="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
+        <label class="hand-cursor">
+            {{ form.file }}
+            <span class="fa fa-camera"></span>
+            <span class="photo_text hidden-xs">Image</span>
+        </label>
+        <button type="submit" class="btn btn-motive">comment</button>
+    </div>
 
+    {% if form.errors %}
+        <ul class=errors>
+            {% for error in form.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-                        </div>
-
-
-                                        {% if form.errors %}
-                                            <ul class=errors>
-                                             {% for error in form.errors %}
-                                              <li>{{ error }}</li>
-                                            {% endfor %}
-                                            </ul>
-                                        {% endif %}
-
-
-
-                          </form>
-
-
+</form>
 
 
 <script>
-$(".answer_form").submit(function(event) {
-    var formData = new FormData($(this)[0]);
-
-    $.ajax({
-        type: "POST",
-        url: "{{ url_for('singleproduct', product_id=product_id, parent=parent_id) }}",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (data) {
-            alert(123);
-            $("#comments").html(data.comments);
-            $("textarea#text").val("");
-
-        },
-        error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
-        }
+    $(".answer_form").submit(function (event) {
+        var formData = new FormData($(this)[0]);
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('singleproduct', product_id=product_id, parent=parent_id) }}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $("#comments").html(data.comments);
+                $("textarea#text").val("");
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        event.preventDefault();
     });
-    event.preventDefault();
-});
-
-$(document).ready(function() {
-
-    $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
-    $('.smile').on("click", AddReaction);
-    ShowReactionDiv();
-    $(".discussion.product-form.comment-login").on("click", RenderProductCommentForm);
-});
+    {#reinit buttons for likes, reactions and discussion#}
+    $(document).ready(function () {
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+        $(".discussion.product-form.comment-login").on("click", RenderProductCommentForm);
+    });
 
 
 </script>

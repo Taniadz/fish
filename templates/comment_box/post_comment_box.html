@@ -1,8 +1,9 @@
-<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>-->
-<!--<script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}" acync></script>-->
+{#this is a little part of template, which rendered after one comment editet. It is allows to not reload all comments,
+but update with ajax only one comment, that was edited#}
 
 {% from 'helpers.html' import post_comment_macro with context %}
-                    {{ post_comment_macro(comment, comments_relationships) }}
+
+{{ post_comment_macro(comment, comments_relationships) }}
 <script>
 $("form.edit_comment").submit(function(event) {
     var id = "{{comment.id}}";
@@ -14,11 +15,9 @@ $("form.edit_comment").submit(function(event) {
         data: formData,
         processData: false,
         contentType: false,
-
         success: function (data) {
             $(".one_comment#comment" + id).html(data.comment);
             $("textarea#text").val("");
-
         },
         error: function (xhr, str) {
             alert('Mistake ' + xhr.responseCode);
@@ -26,8 +25,8 @@ $("form.edit_comment").submit(function(event) {
     });
     event.preventDefault();
 });
+{#reinit buttons for likes, reactions and discussion#}
 $(document).ready(function() {
-
     $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
     $('.smile').on("click", AddReaction);
     ShowReactionDiv();

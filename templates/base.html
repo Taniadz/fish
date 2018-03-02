@@ -42,6 +42,8 @@
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootbox.min.js") }}"></script>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}" acync></script>
+
 <script>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     $(document).ready(function(){
@@ -261,7 +263,14 @@
 	</body>
         <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
 
-
+    <script>
+{#    script for activate likes and reactions in my.js #}
+        $(document).ready(function () {
+            $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+            $('.smile').on("click", AddReaction);
+            ShowReactionDiv();
+        });
+    </script>
 
 </html>
 
