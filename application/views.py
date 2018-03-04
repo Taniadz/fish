@@ -97,7 +97,6 @@ def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
-
         post = create_obj(Post,
                           title=form.title.data.strip(),
                           body=form.body.data.strip(),

@@ -35,7 +35,7 @@
                     <div class="ct-u-paddingBottom30 ct-u-borderBottomGrayLighter ct-clear-both">
 
                         {% if post.image %}
-                            <img src="{{ url_for('uploaded_file',filename=post.image) }}" />
+                            <img src="{{ url_for('uploaded_file',filename=post.image) }}" class="single-post-image" />
                         {% endif %}
                         <p class="ct-u-motiveLight">
                             By

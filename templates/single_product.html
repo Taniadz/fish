@@ -36,7 +36,7 @@
                         <div class="popup-gallery">
                             {% for img in product_images  %}
                                 <a href="{{ url_for('uploaded_file',filename= img.filename) }}">
-                                    <img src="{{ url_for('uploaded_file',filename= img.filename) }}" width="200"/>
+                                    <img src="{{ url_for('uploaded_file',filename= img.filename) }}" class="single-product-image" />
                                 </a>
                             {% endfor %}
                         </div>

@@ -22,7 +22,7 @@
                 </p>
                 <div>
                     {% if comment.image %}
-                        <img class="img-inherited" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
+                        <img class="img-comment" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
                     {% endif %}
                 </div>
                 <p> {{ comment.text }}</p>
@@ -159,7 +159,7 @@
                     <img class="img-inherited"
                          src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
                 {% else %}
-                    <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}" width="40px"/>
+                    <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}" />
                 {% endif %}
             </div>
             <div class="description">
@@ -170,7 +170,7 @@
                 </p>
                 <div>
                     {% if comment.image %}
-                        <img class="img-inherited" src="{{ url_for('uploaded_file',filename= comment.image) }}"/>
+                        <img class="img-comment" src="{{ url_for('uploaded_file',filename= comment.image) }}"/>
                     {% endif %}
                 </div>
                 <p>
