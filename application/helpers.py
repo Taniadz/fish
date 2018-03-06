@@ -362,7 +362,6 @@ def update_product_rows(product, description, title, price):
 def update_user_rows(user, avatar, username, avatar_min=None, about_me=None, ):
     user.about_me = about_me
     user.avatar = avatar
-    user.avatar_min = avatar_min
     user.username = username
     db.session.add(user)
     db.session.commit()

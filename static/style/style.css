@@ -1725,6 +1725,8 @@ color:#FFFFFF;
     max-width: 450px;
 }
     .single-product-image{
+        max-width: 250px;
+
 
 }
     .img-comment{
@@ -1894,6 +1896,13 @@ ul ul ul ul{
     display:inline; /* для IE6, чтоб отступ слева не удвоился */
 
    }
+
+.sidebar .left-image {
+    float:left; /* Выравнивание по левому краю */
+    width: 50px;
+    display:inline; /* для IE6, чтоб отступ слева не удвоился */
+
+   }
 .description{
     margin-left: 45px;
     overflow:hidden;
@@ -1912,6 +1921,10 @@ ul ul ul ul{
   width: 100%;
   background: #bdbdbd;
 
+}
+
+.ct-u-cursor-pointer{
+    cursor: pointer;
 }
 @media (max-width: 767px) {
   .ct-tabHeader {

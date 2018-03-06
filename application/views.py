@@ -114,14 +114,15 @@ def add_post():
 def user(username):
     page = 1
     user = get_or_abort_user(User, username=username)
+    POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
 
-    POSTS_PER_USER_PAGE = count_post_by_user_id(request.form.get('user_id'))
 
     side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
 
     # show posts, written by profile owner(default), others container rendered by ajax
     # with def user_contain_* functions. This part is showed by included user_contain_post.html
     posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
+    print(posts)
     posts_relationships = get_posts_relationship(posts, current_user)
     return render_template('user.html', posts_relationships =posts_relationships,
                            user=user, user_id=user.id, posts=posts, side_posts=side_posts)
@@ -181,11 +182,13 @@ def user_edit(username):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
     user = get_one_obj(User, username=username)
     if request.method == 'POST' and form.validate_on_submit():
-        filename = create_filename(form.file.data)  # create secure filename
+        if form.file.data:
+            filename = create_filename(form.file.data)  # create secure filename
+        else:
+            filename = user.avatar
         user = update_user_rows(user, avatar=filename,
                            username=form.username.data,
-                           about_me=form.about_me.data,
-                           avatar_min=None)
+                           about_me=form.about_me.data)
         if form.file.data is not None:
             return redirect(url_for('crop_image'))
         else:
@@ -699,10 +702,13 @@ def edit_post():
         return render_template("edit_post.html", form=form, id=request.args.get("id"))
 
     elif request.method == 'POST' and form.validate_on_submit():
-        filename = create_filename(form.file.data)
+
         post = get_one_obj(Post, id=request.args.get("id"))
+        if form.file.data:
+            filename = create_filename(form.file.data)
+        else:
+            filename = post.image
         update_post_rows(post,  body=form.body.data,
              title=form.title.data,
              image=filename)
-        print("must redirect")
         return redirect(url_for('singlepost', postid=request.args.get("id")))

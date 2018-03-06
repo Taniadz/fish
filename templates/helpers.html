@@ -1,4 +1,4 @@
-{#all comment to post on page "single_post"#}
+all comment to post on page "single_post"
 {% macro post_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
         {% if comment.deleted %}
@@ -11,7 +11,7 @@
                     <img class="img-inherited"
                          src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
                 {% else %}
-                    <img src="{{ url_for('uploaded_file',filename= "min_icon-user-default.png") }}" width="40px"/>
+                    <img src="{{ url_for('static',filename= "image/min_icon-user-default.png") }}" width="40px"/>
                 {% endif %}
             </div>
             <div class="description">
@@ -147,7 +147,7 @@
 
 
 
-{#all comment to product on page "single_product"#}
+all comment to product on page "single_product"
 {% macro product_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
         {% if comment.deleted %}
@@ -159,7 +159,7 @@
                     <img class="img-inherited"
                          src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
                 {% else %}
-                    <img src="{{ url_for('uploaded_file',filename="min_icon-user-default.png") }}" />
+                    <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}" />
                 {% endif %}
             </div>
             <div class="description">
@@ -460,7 +460,7 @@
 
 
 
-{#generate product_boxes#}
+generate product_boxes
 {% macro products_macro(product, products_relationships ) -%}
 
     <div class="product-title">
@@ -545,7 +545,7 @@
                     <i class="fa fa-star-o not-favourite product-fav" id="{{ product.id }}" aria-hidden="true"></i>
                 {% endif %}
             {% else %}
-                <i class="fa fa-star favourite-not-login" aria-hidden="true"></i>
+                <i class="fa fa-star-o favourite-not-login" aria-hidden="true"></i>
 
 
                      </li>
@@ -576,7 +576,7 @@
 
 
 
-{#generate div with four different reaction when mouse hover on smile#}
+generate div with four different reaction when mouse hover on smile
 {% macro popup_div_macro(id, url) -%}
     <div class="popup-div" obj_id={{ id }} url={{ url }}>
         <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}" obj_id={{ id }}

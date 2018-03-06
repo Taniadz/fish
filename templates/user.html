@@ -20,7 +20,7 @@
                 {% if user.avatar %}
                     <img src="{{ url_for('uploaded_file',filename= user.avatar) }}" width="60"/>
                 {% else %}
-                    <img src="{{ url_for('uploaded_file',filename="icon-user-default.png") }}" width="60"/>
+                    <img src="{{ url_for('static',filename="image/icon-user-default.png") }}" width="60"/>
                 {% endif %}
                 <div class="avatar-edit">
                     <a href="{{ url_for('user_edit', username = user.username ) }}">
