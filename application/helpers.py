@@ -25,6 +25,7 @@ def create_dict(d, child, parent=0):
 
 
 def get_comment_dict(comments, model=None, sort=None, **kwargs):
+    print(sort, "sort")
     comment_dict = OrderedDict()
 
     # create dict without sorting
@@ -34,7 +35,7 @@ def get_comment_dict(comments, model=None, sort=None, **kwargs):
         return comment_dict
 
     else:
-        if sort == "date":
+        if sort == "data":
             comments_ordering = get_ordered_list(model, model.timestamp.desc(), **kwargs)
         else:
             comments_ordering = get_ordered_list(model, model.like_count.desc(), **kwargs)
@@ -505,7 +506,7 @@ def get_ordered_list(model, sorting, **kwargs):
     return list
 
 
-@cache.memoize(500)
+# @cache.memoize(500)
 def get_all_comments_by_post_id(id):
     return Comment.query.filter_by(post_id = id).all()
 
@@ -519,7 +520,7 @@ def get_last_comments_for_products():
     return CommentProduct.query.order_by(CommentProduct.timestamp.desc())[:10]
 
 
-@cache.memoize(500)
+# @cache.memoize(500)
 def get_all_comments_by_product_id(id):
     return CommentProduct.query.filter_by(product_id = id).all()
 
@@ -558,23 +559,25 @@ def after_insert_product(mapper, connection, target):
 
 @event.listens_for(Comment, 'after_update')
 def after_update_comment(mapper, connection, target):
-    cache.delete_memoized(get_all_comments_by_post_id, target.post_id)
+    # cache.delete_memoized(get_all_comments_by_post_id, target.post_id)
     cache.delete_memoized(get_last_comments_for_posts)
 
 
 @event.listens_for(Comment, 'after_insert')
 def after_insert_comment(mapper, connection, target):
-    cache.delete_memoized(get_all_comments_by_post_id, target.post_id)
+    # cache.delete_memoized(get_all_comments_by_post_id, target.post_id)
     cache.delete_memoized(get_last_comments_for_posts)
 
 
 @event.listens_for(CommentProduct, 'after_update')
 def after_update_comment(mapper, connection, target):
-    cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
+    print("update")
+    # cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
     cache.delete_memoized(get_last_comments_for_products)
 
 
 @event.listens_for(CommentProduct, 'after_insert')
 def after_insert_comment(mapper, connection, target):
-    cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
+    print("insert")
+    # cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
     cache.delete_memoized(get_last_comments_for_products)

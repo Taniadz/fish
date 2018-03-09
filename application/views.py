@@ -181,24 +181,27 @@ def crop_image():
 def user_edit(username):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
     user = get_one_obj(User, username=username)
-    if request.method == 'POST' and form.validate_on_submit():
-        if form.file.data:
-            filename = create_filename(form.file.data)  # create secure filename
+    if current_user == user:
+        if request.method == 'POST' and form.validate_on_submit():
+            if form.file.data:
+                filename = create_filename(form.file.data)  # create secure filename
+            else:
+                filename = user.avatar
+            user = update_user_rows(user, avatar=filename,
+                               username=form.username.data,
+                               about_me=form.about_me.data)
+            if form.file.data is not None:
+                return redirect(url_for('crop_image'))
+            else:
+                return redirect(url_for('user', username=username))
         else:
-            filename = user.avatar
-        user = update_user_rows(user, avatar=filename,
-                           username=form.username.data,
-                           about_me=form.about_me.data)
-        if form.file.data is not None:
-            return redirect(url_for('crop_image'))
-        else:
-            return redirect(url_for('user', username=username))
+            form.username.data = user.username
+            form.about_me.data = user.about_me
+            return render_template('user_edit.html',
+                                   user=user,
+                                   form=form)
     else:
-        form.username.data = user.username
-        form.about_me.data = user.about_me
-        return render_template('user_edit.html',
-                               user=user,
-                               form=form)
+        return render_template('home.html')
 
 
 @app.route('/post/<int:postid>', methods=['GET', 'POST'])
@@ -258,6 +261,8 @@ def singleproduct(product_id=None):
         images_dict={}
         products_images=get_many_images(products, images_dict)
         comments = get_all_comments_by_product_id(product_id)
+        for c in comments:
+            print(c.product_id, "single")
         if_favorite = check_if_product_favourite(current_user, product)  # check if post added to favourite by user, False for not login too
         if current_user.is_authenticated:
             product_liked = get_one_obj(ProductReaction, user_id=current_user.id,
@@ -432,7 +437,7 @@ def user_contain_comment():
             comments = get_product_comments_by_user_id(CommentProduct.timestamp.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
         else:
             comments = get_product_comments_by_user_id( CommentProduct.like_count.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
-
+        print(comments)
         comments_relationships = get_prod_comment_relationships(comments, current_user)
         data = {'com_container': render_template('/user_container/user_contain_prod_comment.html',
                                                 comments_relationships=comments_relationships, comments=comments,
@@ -555,7 +560,10 @@ def post_contain_comment():
 @app.route('/product_contain_comment', methods=['POST'])
 def product_contain_comment():
     form = CommentForm(request.form)
+    print(request.form.get('product_id'), "idddddddddddddd")
     comments = get_all_comments_by_product_id(request.form.get('product_id'))
+    for c in comments:
+        print(c.product_id)
     comment_tree = get_comment_dict(comments, CommentProduct, request.form.get('sort'), product_id=request.form.get('product_id'))
     data = {'comments': render_template('product_comments.html',
                                         comments_relationships=get_prod_comment_relationships(comments, current_user),

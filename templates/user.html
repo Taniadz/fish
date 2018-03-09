@@ -41,13 +41,14 @@
             </p>
             {% if user.about_me %}
                 <p>{{ user.about_me }}</p>
-            {% else %}
-                {% if current_user == user %}
-                    <p>Could you tell something about you?</p>
-                    <a href="{{ url_for('user_edit', username = user.username ) }}">Edit</a>
-                {% endif %}
+             {% else %}
+                <p>Could you tell something about you?</p>
             {% endif %}
-            <a href="{{ url_for('user_edit', username = user.username ) }}">Edit yor profile</a>
+                {% if current_user == user %}
+
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">Edit yr profile</a>
+                {% endif %}
+
 
         </div>
         </div>
