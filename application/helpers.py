@@ -12,6 +12,8 @@ from .models import User, Post, Comment, CommentProduct, Product, PostReaction, 
 
 from sqlalchemy import event, update
 
+
+# create dict of comment tree
 def create_dict(d, child, parent=0):
     if parent == 0:
         d[child] = OrderedDict()
@@ -25,7 +27,6 @@ def create_dict(d, child, parent=0):
 
 
 def get_comment_dict(comments, model=None, sort=None, **kwargs):
-    print(sort, "sort")
     comment_dict = OrderedDict()
 
     # create dict without sorting
@@ -33,7 +34,7 @@ def get_comment_dict(comments, model=None, sort=None, **kwargs):
         for comment in comments:
             create_dict(comment_dict, comment.id, comment.parent)
         return comment_dict
-
+    # create dict with sorting
     else:
         if sort == "data":
             comments_ordering = get_ordered_list(model, model.timestamp.desc(), **kwargs)
@@ -61,25 +62,21 @@ def get_or_create(model, **kwargs):
         return instance, True
 
 
-
+# increase or decrease rection counters
 def type_of_count(obj, type, integer):
     if type == "like":
         new_count = obj.like_count + integer
-        # update_rows(obj, like_count=new_count)
         obj.like_count=new_count
 
     elif type == "unlike":
         new_count = obj.unlike_count + integer
-        # update_rows(obj, unlike_count=new_count)
         obj.unlike_count=new_count
     elif type == "angry":
         new_count = obj.angry_count + integer
-        # update_rows(obj, angry_count=new_count)
         obj.angry_count = new_count
 
     elif type == "funny":
         new_count = obj.funny_count + integer
-        # update_rows(obj, funny_count=new_count)
         obj.funny_count=new_count
     db.session.add(obj)
     db.session.commit()
@@ -89,18 +86,22 @@ def type_of_count(obj, type, integer):
 def increase_count(base_model, reaction_model, react_type, **kwargs):
     like = reaction_model.query.filter_by(**kwargs).first()
 
+    # if reaction object exists
     if like is not None:
-        if like.type == react_type:
 
+        # if reaction object exists with the same type
+        if like.type == react_type:
             return {"like": base_model.like_count, "unlike": base_model.unlike_count,
                     "funny": base_model.funny_count, "angry": base_model.angry_count}
 
         else:
+            # if reaction object exists with different type
             prev_type = like.type
             type_of_count(base_model, prev_type, -1)
             type_of_count(base_model, react_type, 1)
             reaction_model.query.filter_by(**kwargs).update(dict(type=react_type))
             db.session.commit()
+    # if reaction object doesn't exist - create new reaction object
     else:
         like=reaction_model(**kwargs)
         like.type = react_type  # creating of new like
@@ -116,9 +117,12 @@ def increase_count(base_model, reaction_model, react_type, **kwargs):
 
 def check_decrease_count(base_model, react_model, **kwargs):
     like = react_model.query.filter_by(**kwargs).first()
+
+    # if reaction object doesn't exist
     if not like:
         return {"like": base_model.like_count, "unlike": base_model.unlike_count,
                 "funny": base_model.funny_count, "angry": base_model.angry_count}
+    # if exixst
     else:
         type_of_count(base_model, like.type, -1)
         db.session.delete(like)
@@ -130,9 +134,7 @@ def check_decrease_count(base_model, react_model, **kwargs):
 def create_filename(data, default=None):
     if  data != None:
         f = data
-        print(f.filename, "filename form helpers")
         filename = secure_filename(f.filename)
-
         f.save(os.path.join(UPLOAD_FOLDER, filename))
     else:
         filename = default
@@ -150,7 +152,6 @@ def posts_dict_react(posts, user, dict_like):
 
 
 def product_dict_react(products, user, dict_like):
-
     if user.is_authenticated:
         for p in products:
             for react in user.product_react:
@@ -444,7 +445,7 @@ def get_many_authors(checked, auth_dict):
     authors_objects=[]
     for c in checked:
         authors_id.append(c.user_id)
-    uniq_set_id = set(authors_id)
+    uniq_set_id = set(authors_id)   #get only unique authors
     for id in uniq_set_id:
         authors_objects.append(get_one_obj(User, id = id))
 

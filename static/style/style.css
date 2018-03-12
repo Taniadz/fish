@@ -3558,6 +3558,12 @@ div.one-product:hover{
   font-size: 250px;
   margin-bottom: -10px;
 }
+.blue-hover:hover{
+    color: #1f8bf3;
+    text-decoration: none;
+}
+
+
 .ct-errorText p {
   border-top: 2px solid #f8f8f8;
 }
