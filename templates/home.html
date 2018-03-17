@@ -18,9 +18,9 @@
                     </a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for("index") }}">Home</a></li>
-                    <li><a href="{{ url_for("popular_product") }}">Catalog</a></li>
-                    <li><a href="{{ url_for("last_posts") }}">Blog</a></li>
+                    <li><a href="{{ url_for("index") }}">Главная</a></li>
+                    <li><a href="{{ url_for("popular_product") }}">Каталог</a></li>
+                    <li><a href="{{ url_for("last_posts") }}">Блог</a></li>
                 </ul>
                 <ul class="nav navbar-nav yamm ct-navbar--right">
                     {% if current_user.is_authenticated %}
@@ -37,14 +37,14 @@
                             <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
                         </li>
                         <li>
-                            <a href="{{ url_for('security.logout') }}">Logout</a>
+                            <a href="{{ url_for('security.logout') }}">Выйти</a>
                         </li>
                     {% else %}
                         <li>
-                            <a href="{{ url_for('security.login') }}">Login</a>
+                            <a href="{{ url_for('security.login') }}">Войти</a>
                         </li>
                         <li>
-                            <a href="{{ url_for('security.register') }}">Register</a>
+                            <a href="{{ url_for('security.register') }}">Регистрация</a>
                         </li>
                     {% endif %}
 
@@ -98,13 +98,14 @@
     <div class="container ct-u-positionRelative">
     <div class="ct-u-positionRelative">
         <div class="ct-pageSectionHeader ct-offsetTop25 ct-u-borderBottomGrayLighter">
-            <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">me information bout us So <span>Aquarium's Life...</span></h4>
+            <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">Узнайте больше о любимом хобби -  <span>Аквариумистике</span></h4>
             <div class="ct-u-paddingBottom40">
                 <p class="text-justify">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    Добавляйте посты и продукты, обменивайтесь своим опытом, узнайте много нового.
+                    Вам сюда, если вы хотите развиваться как специалист. Но если для вас аквариумистика - не род занятий,
+                    а удивительное и интересное исскуство, то на этом форуме вы сможете пообщаться с людьми, которых объединяет с вами любимое дело.
+                    Форум аквариуистики - это сообщестыво, где вы сможете найти друзей и соратников.
+
                 </p>
             </div>
         </div>
@@ -115,7 +116,7 @@
         <div class="container">
             <a href="{{url_for("last_posts")}}" class="blue-hover">
 
-        <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Latest posts </h4>
+        <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Последние посты</h4>
 
 </a>
             <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20 ">
@@ -138,7 +139,7 @@
 
         <a href="{{url_for("popular_product")}}" class="blue-hover">
 
-        <h4 class="ct-fw-600 ct-u-size28 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Popular products</h4>
+        <h4 class="ct-fw-600 ct-u-size28 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Популярные продукты</h4>
 
 </a>
 

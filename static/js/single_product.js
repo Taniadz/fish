@@ -4,16 +4,20 @@ function ToggleProductFavour(){
         $.post( $SCRIPT_ROOT + '/delete_fav_product', {product_id: this.id});
         $(this).removeClass("fa-star");
         $(this).addClass("fa-star-o");
+        $(this).attr("title", "Добавить в избранное");
+
     }else{
         $.post( $SCRIPT_ROOT + '/add_fav_product', {product_id: this.id});
         $(this).removeClass("fa-star-o");
         $(this).addClass("fa-star");
+        $(this).attr("title", "Убрать с избранного");
+
     }
 }
 // delete product and redirect
 function delete_product(product_id, e) {
     bootbox.confirm({
-        message: "Do you want to delete product?",
+        message: "Вы действительно хотите удалить продукт?",
         callback: function (result) { /* result is a boolean; true = OK, false = Cancel*/
 
         if(result){
@@ -71,7 +75,7 @@ function product_comment(product_id, sort, event) {
 
 function ShowProdCommentForm() {
     $("#hiden_form1.product-form").slideToggle(400);
-    $("form#form1.comment_form textarea").val("Type your comment");
+    $("form#form1.comment_form textarea").val("Добавьте свой комментарий");
     $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
 
 }

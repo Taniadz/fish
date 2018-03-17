@@ -7,7 +7,7 @@
             <li role="presentation" class="active comment_block" id="date" rel_obj="comment"  user="{{ user_id }}">
                 <div class="ct-tabBorder">
 
-                    <a href=""  role="tab" data-toggle="tab">latest</a>
+                    <a href=""  role="tab" data-toggle="tab">последние</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -17,7 +17,7 @@
                 <div class="ct-tabBorder">
 
 
-                    <a href=""  role="tab" data-toggle="tab">popular</a>
+                    <a href=""  role="tab" data-toggle="tab">популярные</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -32,7 +32,7 @@
         {% if not comment.deleted %}
 
             <div class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10 col-xs-12">
-            Comment for post
+            Комментарий к посту
             <a href="{{ url_for('singlepost', postid = comment.post_id ) }}">{{ comment.post.title }}</a>
             {{ post_comment_macro(comment, comments_relationships) }}
             </div>
@@ -41,9 +41,9 @@
 
 
 {% else %}
-    <p>You have not comments yet</p>
-    <p>Could you read something?</p>
-    <a href="{{ url_for('last_posts') }}">Read latest</a>
+    <p>Вы еще ничего не прокомментировали</p>
+    <p>Хотите что-нибудь <a href="{{ url_for('last_posts') }}">почитать</a>?</p>
+
 {% endif %}
 </div>
 

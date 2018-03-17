@@ -88,13 +88,15 @@ function ShowReactionDiv() {
         var url = $(this).attr("url");
         var $div2 = $(".popup-div[obj_id=" + id+"][url=" + url +"]");
         if ($div2.is(":visible")) { return; }
-        $div2.show();
+               $div2.show();
         setTimeout(function() {
             $div2.hide();
         }, 3000);
+
+
+
     });
 }
-
 
 // $(document).ready(function() {
 //

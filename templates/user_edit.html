@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% from "helpers.html" import render_field_with_errors, render_field %}
 
 
 {% block body %}
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}"></script>
 
-    <section class="ct-u-paddingBoth40">
+    <section class="ct-u-paddingBoth20">
         <div class="container">
             <div class="ct-sectionHeader ct-u-paddingBoth20">
-                <h2 class="ct-u-size34">add product</h2>
+                <h2 class="ct-u-size34">Редактируйте профиль</h2>
             </div>
             <div class="row">
                 <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
                     <form action="{{ url_for('user_edit', username = user.username ) }}" method="post" name="edit"
                           enctype=multipart/form-data>
                         {{ form.hidden_tag() }}
-                        {{ render_field_with_errors(form.username, class="form-control") }}
-                        {{ render_field_with_errors(form.about_me, class="form-control", rows = 3) }}
+                        {{ render_field_with_errors(form.username, label="Никнейм", class="form-control") }}
+                        {{ render_field_with_errors(form.about_me, label="Биография", class="form-control", rows = 3) }}
 
                         <div id="hide" class="form-group big-form-file">
-                            {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
+                            {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} файлов выбрано") }}
 
                             <label for="file" class="hand-cursor">
                                 <span class="photo_text hidden-xs ct-u-size24"><i class="fa fa-camera ct-u-size30"
-                                                                                  aria-hidden="true"></i> Select image</span>
+                                                                                  aria-hidden="true"></i> Выбрать аватар</span>
                             </label>
                         </div>
 
                         <div class="control-group">
                             <div class="controls">
-                                <button type="submit" class="btn btn-motive btn-form">Publish</button>
+                                <button type="submit" class="btn btn-motive btn-form">Сохранить</button>
                             </div>
                         </div>
                     </form>

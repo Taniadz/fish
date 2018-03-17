@@ -9,8 +9,7 @@
             {% for comment in comments %}
                 {% if comment.id == key %}
                         {% if comment.deleted %}
-                            comment has been deleted
-
+                            Комментарий был удален
                         {%else%}
                             <li class="ct-u-borderBottomGrayLighter ct-u-marginTop5 ct-u-paddingBoth10">{{ product_comment_macro(comment, comments_relationships) }}</li>
 

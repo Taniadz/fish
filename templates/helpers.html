@@ -2,7 +2,7 @@ all comment to post on page "single_post"
 {% macro post_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
         {% if comment.deleted %}
-            <p>Comment has been deleted</p>
+            <p>Комментарий был удален</p>
         {% else %}
 
 
@@ -15,17 +15,48 @@ all comment to post on page "single_post"
                 {% endif %}
             </div>
             <div class="description">
-
-                <p class="ct-u-paddingBottom5">
+                <div class="ct-u-floatLeft">
+                       <p class="ct-u-paddingBottom5">
                     <span>{{ comments_relationships[comment.id]["author"].username }} </span>
                     - {{ comment.timestamp|datetime }}
                 </p>
+
+                </div>
+                <div class="ct-u-floatRight">
+
+                    <div class="comment-edit">
+                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
+
+                            <div class="dropdown prod_com_edit" id="edit{{ comment.id }}">
+
+                                <h4 class="dropdown-toggle " data-toggle="dropdown">
+                                    <i class="fa fa-pencil-square-o ct-u-size22" aria-hidden="true"></i>
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#"
+                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>редактировать</a></li>
+                                    <li><a href="#"
+                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_prod_comment');">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        удалить
+                                    </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
                 <div>
                     {% if comment.image %}
                         <img class="img-comment" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
                     {% endif %}
                 </div>
-                <p> {{ comment.text }}</p>
+
+                <p class="ct-clear-both"> {{ comment.text }}</p>
 
 
 
@@ -68,7 +99,7 @@ all comment to post on page "single_post"
 
                                 {% endif %}
                             </li>
-                            <li><h4>like</h4></li>
+
                         </ul>
                     </div>
                     <div id="button_comment1" class="comment-button">
@@ -81,34 +112,14 @@ all comment to post on page "single_post"
 
                                     <h4 class="discussion post-form comment-login" id="{{ comment.id }}"
                                         user="{{ comments_relationships[comment.id]["author"].username }}"
-                                        post_id="{{ comment.post_id }}">discussion</h4>
+                                        post_id="{{ comment.post_id }}">ответить</h4>
                                 {% else %}
-                                    <h4 class="discussion post-form comment-not-login">discussion</h4>
+                                    <h4 class="discussion post-form comment-not-login">ответить</h4>
                                 {% endif %}
                             </li>
                         </ul>
                     </div>
-                    <div class="comment-edit">
-                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
 
-                            <div class="dropdown post_com_edit" id="edit{{ comment.id }}">
-
-                                <h4 class="dropdown-toggle " data-toggle="dropdown">
-                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                    edit
-                                </h4>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#"
-                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
-                                    <li><a href="#"
-                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">delete</a>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </div>
                     <div class="comment-counter reaction-counter">
                         <ul>
                             <li>
@@ -151,7 +162,7 @@ all comment to product on page "single_product"
 {% macro product_comment_macro(comment, comments_relationships) -%}
     <div id="comment{{ comment.id }}">
         {% if comment.deleted %}
-            <p> Comment hase been deleted </p>
+            <p> Комеентрарий был удален </p>
 
         {% else %}
             <div class="left-image">
@@ -163,19 +174,48 @@ all comment to product on page "single_product"
                 {% endif %}
             </div>
             <div class="description">
-                <p class="ct-u-paddingBottom5">
+                <div class="ct-u-floatLeft">
+                       <p class="ct-u-paddingBottom5">
                     <span>{{ comments_relationships[comment.id]["author"].username }} </span>
                     - {{ comment.timestamp|datetime }}
-                    {{ comment.id }}
                 </p>
+
+                </div>
+                <div class="ct-u-floatRight">
+
+                    <div class="comment-edit">
+                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
+
+                            <div class="dropdown prod_com_edit" id="edit{{ comment.id }}">
+
+                                <h4 class="dropdown-toggle " data-toggle="dropdown">
+                                    <i class="fa fa-pencil-square-o ct-u-size22" aria-hidden="true"></i>
+                                </h4>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#"
+                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>редактировать</a></li>
+                                    <li><a href="#"
+                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_prod_comment');">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        удалить
+                                    </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
                 <div>
                     {% if comment.image %}
-                        <img class="img-comment" src="{{ url_for('uploaded_file',filename= comment.image) }}"/>
+                        <img class="img-comment" src="{{ url_for('uploaded_file',filename = comment.image) }}"/>
                     {% endif %}
                 </div>
-                <p>
-                    {{ comment.text }}
-                </p>
+
+                <p class="ct-clear-both"> {{ comment.text }}</p>
                 <div class="under-box comment-under-box">
                     {{ popup_div_macro(comment.id, "like_prodcomment ") }}
                     <div class="reaction-button">
@@ -216,7 +256,7 @@ all comment to product on page "single_product"
 
                                 {% endif %}
                             </li>
-                            <li><h4>like</h4></li>
+
                         </ul>
                     </div>
                     <div id="button_comment1" class="comment-button">
@@ -229,37 +269,17 @@ all comment to product on page "single_product"
                                 <li>
                                     <h4 class="discussion product-form comment-login" id="{{ comment.id }}"
                                         user="{{ comments_relationships[comment.id]["author"].username }}"
-                                        product_id="{{ comment.product_id }}">discussion</h4>
+                                        product_id="{{ comment.product_id }}">ответить</h4>
                                 </li>
                             {% else %}
                                 <li>
-                                    <h4 class="discussion product-form comment-not-login">discussion</h4>
+                                    <h4 class="discussion product-form comment-not-login">ответить</h4>
                                 </li>
                             {% endif %}
                         </ul>
                     </div>
 
-                    <div class="comment-edit">
-                        {% if current_user ==  comments_relationships[comment.id]["author"] %}
 
-                            <div class="dropdown prod_com_edit" id="edit{{ comment.id }}">
-
-                                <h4 class="dropdown-toggle " data-toggle="dropdown">
-                                    <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                    edit
-                                </h4>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#"
-                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>edit</a></li>
-                                    <li><a href="#"
-                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_prod_comment');">delete</a>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </div>
                     <div class="comment-counter reaction-counter">
                         <ul>
                             <li>
@@ -319,9 +339,9 @@ all comment to product on page "single_product"
             <label class="hand-cursor">
             {{ form.file(class="comment-file") }}
                 <span class="fa fa-camera"></span>
-                <span class="photo_text hidden-xs">Image</span>
+                <span class="photo_text hidden-xs">Фото</span>
             </label>
-            <button type="submit" class="btn btn-motive">comment</button>
+            <button type="submit" class="btn btn-motive">ответить</button>
 
 
         </div>
@@ -348,9 +368,9 @@ all comment to product on page "single_product"
     <article class="ct-articleBox">
         <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size34">{{ post.title }}</h5></a>
         <p class="ct-u-motiveLight">
-            By
+
             <a href="{{ url_for('user', username=posts_relationships[post.id]["author"].username) }}">{{ posts_relationships[post.id]["author"].username }}</a>
-            on
+
             {{ post.published_at|datetime }}
 
         </p>
@@ -429,10 +449,10 @@ all comment to product on page "single_product"
                     <li>
                         {% if current_user.is_authenticated %}
                             {% if posts_relationships[post.id]["if_favourite"] %}
-                                <i class="fa fa-star favourite post-fav" id="{{ post.id }}" aria-hidden="true"></i>
+                                <i class="fa fa-star favourite post-fav" id="{{ post.id }}" aria-hidden="true" title="Убрать с избранного"></i>
                             {% else %}
                                 <i class="fa fa-star-o not-favourite post-fav" id="{{ post.id }}"
-                                   aria-hidden="true"></i>
+                                   aria-hidden="true" title="Добавить в избранное"></i>
                             {% endif %}
                         {% else %}
 
@@ -462,7 +482,7 @@ all comment to product on page "single_product"
 
 generate product_boxes
 {% macro products_macro(product, products_relationships ) -%}
-
+<a href="{{ url_for('singleproduct', product_id=product.id) }}">
     <div class="product-title">
         <a href="{{ url_for('singleproduct', product_id=product.id) }}">
             <h5 class="ct-imgWrapper-name opacity-title ct-u-size24 text-center">{{ product.title|truncate (50, False) }}</h5>
@@ -540,9 +560,9 @@ generate product_boxes
                     <li>
 
                 {% if products_relationships[product.id]["if_favourite"] %}
-                    <i class="fa fa-star favourite product-fav" id="{{ product.id }}" aria-hidden="true"></i>
+                    <i class="fa fa-star favourite product-fav" id="{{ product.id }}" aria-hidden="true" title="Убрать с избранного"></i>
                 {% else %}
-                    <i class="fa fa-star-o not-favourite product-fav" id="{{ product.id }}" aria-hidden="true"></i>
+                    <i class="fa fa-star-o not-favourite product-fav" id="{{ product.id }}" aria-hidden="true" title="Добавить в избранное"></i>
                 {% endif %}
             {% else %}
                 <i class="fa fa-star-o favourite-not-login" aria-hidden="true"></i>
@@ -569,7 +589,7 @@ generate product_boxes
 
     <p class="ct-u-paddingTop10"> {{ product.description | truncate(148, False) }}</p>
     <span class="ct-fw-600 ct-u-motiveDark ct-u-size30">{{ product.price }}</span>
-
+</a>
 {%- endmacro %}
 
 
@@ -580,14 +600,13 @@ generate div with four different reaction when mouse hover on smile
 {% macro popup_div_macro(id, url) -%}
     <div class="popup-div" obj_id={{ id }} url={{ url }}>
         <img class="smile" src="{{ url_for('static',filename="image/reaction-like.png" ) }}" obj_id={{ id }}
-             type="like" url={{ url }}/>
+             type="like" url={{ url }} title="нравится" />
         <img class="smile" src="{{ url_for('static',filename="image/reaction-unlike.png" ) }}"
-             obj_id={{ id }}
-             type="unlike" url={{ url }}/>
+             obj_id={{ id }} type="unlike" url={{ url }} title="не_нравится" />
         <img class="smile" src="{{ url_for('static',filename="image/reaction-funny.png" ) }}" obj_id={{ id }}
-             type="funny" url={{ url }}/>
+             type="funny" url={{ url }} title="ха-ха" />
         <img class="smile" src="{{ url_for('static',filename="image/reaction-angry.png" ) }}" obj_id={{ id }}
-             type="angry" url={{ url }}/>
+             type="angry" url={{ url }} title="возмутительно" />
     </div>
 {% endmacro %}
 
@@ -597,8 +616,13 @@ generate div with four different reaction when mouse hover on smile
 
 
 
-{% macro render_field(field) %}
+{% macro render_field_with_errors(field, label) %}
+    {% if label %}
+        <label class="gray-label">{{ label }}</label>
+    {% else %}
     {{ field.label }}
+    {% endif %}
+    {{ field(**kwargs)|safe }}
     {% if field.errors %}
         <ul class="errors">
             {% for error in field.errors %}
@@ -606,7 +630,11 @@ generate div with four different reaction when mouse hover on smile
             {% endfor %}
         </ul>
     {% endif %}
-    {{ field(**kwargs)|safe }}
+{% endmacro %}
+
+
+{% macro render_field(field) %}
+  <p>{{ field(**kwargs)|safe }}</p>
 {% endmacro %}
 
 

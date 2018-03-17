@@ -1,12 +1,12 @@
 
 {% extends "base.html" %}
-{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% from "helpers.html" import render_field_with_errors, render_field %}
 {% include "security/_messages.html" %}
 {% block body %}
  <section class="ct-u-paddingBottom80">
 <div class="container">
     <div class="ct-sectionHeader ct-u-paddingBottom20">
-        <h2>login</h2>
+        <h2>Войти</h2>
 
         <a href="{{ url_for("social.auth", backend="facebook") }}"><img src="{{ url_for('static',filename="image/log_in_with_facebook_button.png") }}" width="250px" ></a>
 
@@ -19,13 +19,16 @@
 <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
   {{ login_user_form.hidden_tag() }}
     <div class="form-group">
-        {{ render_field_with_errors(login_user_form.email, class="form-control") }}
+        {{ render_field_with_errors(login_user_form.email, label="E-mail", class="form-control") }}
 
 
-  {{ render_field_with_errors(login_user_form.password, class="form-control") }}
-  {{ render_field_with_errors(login_user_form.remember, class="ct-checkbox") }}
+  {{ render_field_with_errors(login_user_form.password, label="Пароль", class="form-control") }}
+  {{ render_field_with_errors(login_user_form.remember, label="Запомнить меня", class="ct-checkbox") }}
+         <a href="{{ url_for_security('forgot_password') }}" class="pull-right"><span>Забыли свой пароль?</span></a>
   {{ render_field(login_user_form.next) }}
-  {{ render_field(login_user_form.submit, class="btn btn-motive btn-form", value="login now") }}
+
+  {{ render_field(login_user_form.submit, class="btn btn-motive btn-form", value="войти") }}
+
 
   </div>
 </form>

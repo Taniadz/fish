@@ -7,11 +7,14 @@ function TogglePostfavour(){
         $.post( $SCRIPT_ROOT + '/delete_fav_post', {post_id: this.id});
         $(this).removeClass("fa-star");
         $(this).addClass("fa-star-o");
-    }else{
+        $(this).attr("title", "Добавить в избранное");
 
+    }else{
         $.post( $SCRIPT_ROOT + '/add_fav_post', {post_id: this.id});
         $(this).removeClass("fa-star-o");
         $(this).addClass("fa-star");
+        $(this).attr("title", "Убрать с избранного");
+
     }
 }
 
@@ -36,7 +39,7 @@ function post_comment(post_id, sort, event) {
 
 function ShowCommentForm() {
     $("#hiden_form1.post-form").slideToggle(400);
-    $("form#form1.comment_form textarea").val("Type your comment");
+    $("form#form1.comment_form textarea").val("Дбавьте свой комментарий");
     $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
 
 
@@ -46,7 +49,7 @@ function ShowCommentForm() {
 function delete_post(post_id, e) {
 
     bootbox.confirm({
-        message: "Do you want to delete this post?",
+        message: "Вы действительно хотите удалить этот пост?",
         callback: function (result) { /* result is a boolean; true = OK, false = Cancel*/
 
         if(result){

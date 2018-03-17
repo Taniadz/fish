@@ -24,7 +24,7 @@
                 {% endif %}
                 <div class="avatar-edit">
                     <a href="{{ url_for('user_edit', username = user.username ) }}">
-                        <i class="fa fa-camera" aria-hidden="true"></i> edit your avatar
+                        <i class="fa fa-camera" aria-hidden="true"></i> редактировать аватарку
                     </a>
                 </div>
             </div>
@@ -33,20 +33,20 @@
 
         <div class="col-xs-12 col-sm-6" id=user_about>
             {% if user.last_seen %}
-                <p><i>Last seen on: {{ user.last_seen }}</i></p>
+                <p><i>Был онлайн: {{ user.last_seen }}</i></p>
             {% endif %}
             <p class="ct-u-paddingBottom5">
-                <span>Registered on</span>
+                <span>Дата регистрации</span>
                 {{ user.registered_on|datetime }}
             </p>
             {% if user.about_me %}
                 <p>{{ user.about_me }}</p>
              {% else %}
-                <p>Could you tell something about you?</p>
+                <p>Хотите что-нибудь рассказать о себе?</p>
             {% endif %}
                 {% if current_user == user %}
 
-                    <a href="{{ url_for('user_edit', username = user.username ) }}">Edit yr profile</a>
+                    <a href="{{ url_for('user_edit', username = user.username ) }}">Редактировать профиль</a>
                 {% endif %}
 
 
@@ -66,7 +66,7 @@
                           <div class="panel-title active">
                               <h4 class="active user_but" id="post_block"  sort="date" user="{{ user.id }}">
                                   <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
-                                  Post
+                                  Посты
                             </h4>
 
                           </div>
@@ -82,11 +82,11 @@
                                 <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
                                         data-toggle="dropdown">
                                     <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                    comment
+                                    Комментарии
                                 </h4>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">for post</a></li>
-                                    <li id="date" class ="comment_block" rel_obj="prod_comment" user="{{ user.id }}"><a href="#">for product</a></li>
+                                    <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">к постам</a></li>
+                                    <li id="date" class ="comment_block" rel_obj="prod_comment" user="{{ user.id }}"><a href="#">к продуктам</a></li>
                                 </ul>
                         </div>
                         </div>
@@ -99,7 +99,7 @@
                           <div class="panel-title">
                 <h4  class="user_but" id="product_block" sort="date" user="{{ user.id }}">
                     <nav class="no-plus ct-Diamond ct-Diamond--motive"></nav>
-                    product
+                    продукты
                 </h4>
                           </div>
                         </div>
@@ -112,10 +112,10 @@
                     <h4 type="button" id="favourite_block" class="dropdown-toggle user_but"
                             data-toggle="dropdown">
                         <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                        saved </h4>
+                        избранные </h4>
                     <ul class="dropdown-menu" role="menu">
-                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">posts</a></li>
-                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">products</a></li>
+                        <li id="date" class="post" user ="{{ user.id }}"><a href="#">посты</a></li>
+                        <li id="date" class="product" user ="{{ user.id }}"><a href="#">продукты</a></li>
 
                     </ul>
                 </div>
@@ -137,7 +137,7 @@
                                         <div class="ct-tabBorder">
 
 
-                                            <a href="#"  role="tab" data-toggle="tab">latest</a>
+                                            <a href="#"  role="tab" data-toggle="tab">Последние</a>
                                         </div>
                                         <div class="mini-triangle">
 
@@ -147,7 +147,7 @@
                                         <div class="ct-tabBorder">
 
 
-                                            <a href="#" role="tab" data-toggle="tab">popular</a>
+                                            <a href="#" role="tab" data-toggle="tab">Популярные</a>
                                         </div>
                                         <div class="mini-triangle">
 
@@ -173,9 +173,9 @@
 
                                         </div>
                                     {% else %}
-                                        <p>You have not post yet</p>
-                                        <p>Could you write something?</p>
-                                        <a href="{{ url_for('add_post') }}">Add_post</a>
+                                        <p>Вы еще не создавали посты</p>
+                                        <p>Хотите <a href="{{ url_for('add_post') }}">написать</a>  что-нибудь?</p>
+
                                     {% endif %}
                     </div>
                 </div>
@@ -193,7 +193,7 @@
                                 <div class="panel-heading">
                                   <div class="panel-title">
                                     <a class="collapsed" href="{{url_for('add_post')}}">
-                                        new post
+                                        создать пост
                                        <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                     </a>
                                   </div>
@@ -203,7 +203,7 @@
                             <div class="panel-heading">
                               <div class="panel-title">
                                 <a class="collapsed" href="{{url_for('add_product')}}">
-                                    new product
+                                    добавить продукт
                                    <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                 </a>
                               </div>
@@ -212,7 +212,7 @@
                     </div>
                     </div>
 
-                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Recent Posts</h4>
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Новые посты</h4>
                     <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
 
                         {% for post in side_posts %}

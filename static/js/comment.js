@@ -1,14 +1,14 @@
 function delete_comment(e, id, url) {
 
     bootbox.confirm({
-    title: "Delete Comment?",
-    message: "Do you want to activate the Deathstar now? This cannot be undone.",
+    title: "Удалить комментарий?",
+    message: "Вы дейстительно хотите удалить этот комментарий?",
     buttons: {
         cancel: {
-            label: '<i class="fa fa-times"></i> Cancel'
+            label: '<i class="fa fa-times"></i> Отменить'
         },
         confirm: {
-            label: '<i class="fa fa-check"></i> Confirm'
+            label: '<i class="fa fa-check"></i> Удалить'
         }
     },
     callback: function (result) {
@@ -135,7 +135,7 @@ $(".edit_comment").submit(function(event) {
 });
 $(document).ready(function() {
 $('.comment-file').change(function() {
-    $(this).next().html("<div class='uploaded'>Uploaded</div>");
+    $(this).next().html("<div class='uploaded'>Загружено</div>");
     $(this).next().next().html(" ");
 
 });

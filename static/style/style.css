@@ -280,7 +280,7 @@ span {
 }
 .ct-navbarMobile--header a.not-auth {
 
-    padding-left: 60%;
+    padding-left: 40%;
     padding-right: 5%;
 }
 .ct-navbarMobile--header img {
@@ -1752,6 +1752,13 @@ color:#FFFFFF;
 
 
 /*comment..........................................................*/
+
+
+
+
+.comment-edit h4{
+    margin-right: 5%;
+}
 
 .comment-counter{
     padding-bottom: 5px;
@@ -3665,7 +3672,23 @@ div.one-product:hover{
     line-height: 30px;
 }
 
-.description .comment-image{
+.description .comment-image {
     display: block;
 }
+label.gray-label {
+    font-size: 16px;
+    padding-bottom: 10px;
+    color: #5f5f5f;
+    line-height: 1;
+    font-weight: 600;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
 
+
+
+.popup-div img:hover{
+   width: 40px;
+}

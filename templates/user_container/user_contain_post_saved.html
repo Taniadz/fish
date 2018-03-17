@@ -7,7 +7,7 @@
             <li role="presentation" class="active favourite_block" id="date">
                 <div class="ct-tabBorder">
 
-                    <a href="" id="date" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">date</a>
+                    <a href="" id="date" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">последние</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -17,7 +17,7 @@
                 <div class="ct-tabBorder">
 
 
-                    <a href="" id="vote" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">Rating</a>
+                    <a href="" id="vote" class="post"  user="{{ user_id }}" role="tab" data-toggle="tab">популярные</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -40,7 +40,7 @@
     </div>
 
 {% else %}
-    <p>You have not saved yet</p>
+    <p>В избранных пока пусто. <a href="{{ url_for('last_posts') }}">Почитайте последние посты </a>, может, вас что-то заинтересует.</p>
 
 {% endif %}
 <script>

@@ -11,7 +11,7 @@
                     console.log(1);
                     var fileName = '';
                     if (this.files && this.files.length > 1) {
-                        fileName = this.files.length + " files selected";
+                        fileName = this.files.length + " выбрано";
 
                     }
                     else

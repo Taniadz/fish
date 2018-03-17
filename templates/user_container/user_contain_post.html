@@ -9,7 +9,7 @@
                 <div class="ct-tabBorder">
 
 
-                    <a href="#"  role="tab" data-toggle="tab">latest</a>
+                    <a href="#"  role="tab" data-toggle="tab">последние</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -19,7 +19,7 @@
                 <div class="ct-tabBorder">
 
 
-                    <a href="#" role="tab" data-toggle="tab">popular</a>
+                    <a href="#" role="tab" data-toggle="tab">популярные</a>
                 </div>
                 <div class="mini-triangle">
 
@@ -45,26 +45,15 @@
 
     </div>
 {% else %}
-    <p>You have not post yet</p>
-    <p>Could you write something?</p>
-    <a href="{{ url_for('add_post') }}">Add_post</a>
+    <p>Вы еще не создавали постов</p>
+    <p>Хотите о чем-нибудь <a href="{{ url_for('add_post') }}">написать</a>?</p>
+
 {% endif %}
 
 
 
 <script>
-    jQuery(window).on("load",function () {
 
-
-        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
-            $('.ct-js-blogMasonry').masonry({
-                itemSelector: '.ct-js-blogMasonry-item',
-                masonry: {
-                }
-            });
-        }
-
-});
 $(document).ready(function() {
 
     $("img.unliked, img.liked").on("click", ToggleLikeUnlike);

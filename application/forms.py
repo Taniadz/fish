@@ -14,18 +14,18 @@ from application import images
 
 
 class ExtendedConfirmRegisterForm(ConfirmRegisterForm):
-    username = StringField('First Name', validators=[DataRequired(),
+    username = StringField('Никнейм', validators=[DataRequired(),
         Unique(
             User,
             User.username,
-            message='There is already an account with that username.')]
+            message='Уже существует профиль стаким никнейом.')]
     )
 class ExtendedRegisterForm(RegisterForm):
-    username = StringField('First Name', validators=[DataRequired(),
+    username = StringField('Никнейм', validators=[DataRequired(),
         Unique(
             User,
             User.username,
-            message='There is already an account with that username.')]
+            message='Уже существует профиль стаким никнейом.')]
     )
 
 
@@ -34,18 +34,18 @@ class UserEditForm(FlaskForm):
     class Meta:
         model = User
 
-    username = StringField('username', validators = [Length(min=4, max=25), Unique] )
-    about_me = StringField('about_me', widget=TextArea(), validators = [Length(min = 0, max = 1000)])
-    file = FileField('image', validators=[
-        FileAllowed(images, 'Images only!')
+    username = StringField('Никнейм', validators = [Length(min=4, max=25), Unique] )
+    about_me = StringField('О себе', widget=TextArea(), validators = [Length(min = 0, max = 1000)])
+    file = FileField('Изображение', validators=[
+        FileAllowed(images, 'Только картинки!')
     ])
 
 
 
 class PostForm(FlaskForm):
-    title = StringField('Title', [validators.Length(min = 1,max=200)])
-    body = StringField('Body', [validators.Length(min = 5, max=1000)], widget=TextArea())
-    file = FileField('image',  validators=[
+    title = StringField('Заголовок', [validators.Length(min = 1,max=200)])
+    body = StringField('Текст', [validators.Length(min = 5, max=1000)], widget=TextArea())
+    file = FileField('Фото',  validators=[
         FileAllowed(images, 'Images only!')
     ])
 
@@ -54,8 +54,8 @@ class PostForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     text = StringField('text', [validators.Length(min=1, max=800)], widget=TextArea())
-    file = FileField('image', validators=[
-        FileAllowed(images, 'Images only!')
+    file = FileField('фото', validators=[
+        FileAllowed(images, 'Только картинки!')
     ])
 
 
@@ -66,16 +66,16 @@ class ProductCommentForm(FlaskForm):
     parent = HiddenField()
     product_id = HiddenField()
     file = FileField('image', validators=[
-        FileAllowed(images, 'Images only!')
+        FileAllowed(images, 'Только картинки!')
     ])
 
 
 
 class ProductForm(FlaskForm):
-    title = StringField('Title', [validators.Length(min =1, max=200)])
-    price = StringField('Price', [validators.Length(min=1, max=200)])
-    images = FileField('images', validators=[
-        FileAllowed(images, 'Images only!')
+    title = StringField('Название', [validators.Length(min =1, max=200)])
+    price = StringField('Цена', [validators.Length(min=1, max=200)])
+    images = FileField('Фото', validators=[
+        FileAllowed(images, 'Только картинки!')
     ])
-    description = StringField('Description', [validators.Length(min = 5, max=1500)], widget=TextArea())
+    description = StringField('Описание', [validators.Length(min = 5, max=1500)], widget=TextArea())
 

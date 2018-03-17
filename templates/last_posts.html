@@ -1,10 +1,12 @@
 {% extends "base.html" %}
+
 {% from 'helpers.html' import posts_macro with context %}
 {% from 'helpers.html' import render_pagination with context %}
+{% block title %}Блог{% endblock %}
 {% block body %}
     <section class="ct-blogGrid ct-u-paddingBottom20">
         <div class="ct-pageSectionHeader ct-u-paddingBottom20">
-            <h3 class="text-uppercase ct-u-size50 text-center">BLOG</h3>
+            <h3 class="text-uppercase ct-u-size50 text-center">БЛОГ</h3>
         </div>
         <div class="container">
             <div class="row">
@@ -13,27 +15,27 @@
                         <div class="sort-left col-md-6 col-sm-6">
 
                             <a href="{{ url_for('last_posts', sort = 'rating') }}">
-                                <h4 class="ct-u-size30 active">popular posts</h4>
+                                <h4 class="ct-u-size30 active">популярные </h4>
                             </a>
 
                         </div>
                         <div class="sort-right col-md-6 col-sm-6">
                             <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30">latest posts</h4>
+                                <h4 class="ct-u-size30">последние</h4>
                             </a>
                         </div>
                     {% else %}
                         <div class="sort-left col-md-6 col-sm-6">
 
                             <a href="{{ url_for('last_posts', sort = 'rating') }}">
-                                <h4 class="ct-u-size30">popular posts</h4>
+                                <h4 class="ct-u-size30">популярные </h4>
                             </a>
 
                         </div>
                         <div class="sort-right col-md-6 col-sm-6">
 
                             <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30 active">latest posts</h4>
+                                <h4 class="ct-u-size30 active">последние </h4>
                             </a>
                         </div>
             {% endif %}
@@ -57,7 +59,7 @@
                                     <div class="panel-heading">
                                         <div class="panel-title">
                                             <a class="collapsed" href="{{ url_for('add_post') }}">
-                                                new post
+                                                Создать пост
                                                 <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                             </a>
                                         </div>
@@ -67,7 +69,7 @@
                                     <div class="panel-heading">
                                         <div class="panel-title">
                                             <a class="collapsed" href="{{ url_for('add_product') }}">
-                                                new product
+                                                Добавить продукт
                                                 <div class="plus ct-Diamond ct-Diamond--motive"></div>
                                             </a>
                                         </div>
@@ -77,8 +79,7 @@
                         </div>
 
 
-                        <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Latest
-                            Comments</h4>
+                        <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Новые коментари</h4>
                         <ul class="ct-simpleList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
                             {% for comment in comments %}
                                 <li><i class="fa fa-chevron-right"></i>{{ comments_rel[comment.id]["author"].username }}

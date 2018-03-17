@@ -3,6 +3,9 @@
 	<head>
 		<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Форум аквариумистов">
+  <meta name="keywords" content="форум Аквариумистов, форум аквариумистики, сайт аквариумистики, аквариум форум, морские аквариумисты, аквариумистика,
+морская аквариумистика">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114849975-1"></script>
 <script>
@@ -12,11 +15,8 @@
 
   gtag('config', 'UA-114849975-1');
 </script>
-        {% if title %}
-            <title>{{ title }} - Aqua</title>
-        {% else %}
-            <title>Aqua</title>
-        {% endif %}
+            <title>{% block title %}{% endblock %} Форум Аквариумистов</title>
+
         <link rel="icon" type="image/ico" href="{{ url_for('static',filename="image/my_favicon.ico") }}" />
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
@@ -63,14 +63,14 @@
     <div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
                                             <button type="button" class="close" data-dismiss="alert">
                                                 <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
+                                                <span class="sr-only">Закрыть</span>
                                             </button>
-                                            <strong>Oh snap!</strong>
+                                            <strong>Oх нет!</strong>
 
                                             <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to adding products or posts to your favourites
+                                                Вы не можете добавлять посты и продукты в свое избранное. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+                                                и все получится!
                                             </p>
 
 
@@ -79,14 +79,14 @@
                 <div class="alert alert-danger alert-dismissable like-alert" role="alert">
                                             <button type="button" class="close" data-dismiss="alert">
                                                 <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
+                                                <span class="sr-only">Закрыть</span>
                                             </button>
-                                            <strong>Oh snap!</strong>
+                                            <strong>О нет!</strong>
 
                                             <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to vote
+                                                Вы не можете пока ставить лайки. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+                                                и все получится!
                                             </p>
 
 
@@ -96,14 +96,14 @@
                 <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
                                             <button type="button" class="close" data-dismiss="alert">
                                                 <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Close</span>
+                                                <span class="sr-only">Закрыть</span>
                                             </button>
-                                            <strong>Oh snap!</strong>
+                                            <strong>О нет!</strong>
 
                                             <p>
-                                                You have to <a href="{{ url_for('security.login') }}">Login</a>
-                                                or <a href="{{ url_for('security.register') }}">Register</a>
-                                                to add comments
+                                                Вы не можете пока коментировать. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+                                                и все получится!
                                             </p>
 
 
@@ -112,13 +112,13 @@
                 <ul class="ct-menuMobile-navbar">
 
 
-                    <li> <a href="{{ url_for('index') }}"><i class="fa fa-home"></i> HOME</a></li>
-                    <li> <a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> CATALOG</a></li>
-                    <li> <a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> BLOG</a></li>
+                    <li> <a href="{{ url_for('index') }}"><i class="fa fa-home"></i> ГЛАВНАЯ</a></li>
+                    <li> <a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> КАТАЛОГ</a></li>
+                    <li> <a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> БЛОГ</a></li>
 
                     {% if current_user.is_authenticated %}
-                        <li> <a href="{{ url_for('add_post') }}"><i class="fa fa-pencil-square"></i> ADD NEW POST</a></li>
-                        <li> <a href="{{ url_for('add_product') }}"><i class="fa fa-pencil-square"></i> ADD NEW PRODUCT</a></li>
+                        <li> <a href="{{ url_for('add_post') }}"><i class="fa fa-pencil-square"></i> СОЗДАТЬ ПОСТ</a></li>
+                        <li> <a href="{{ url_for('add_product') }}"><i class="fa fa-pencil-square"></i> ДОБАВИТЬ ПРОДУКТ</a></li>
                     {% endif %}
                 </ul>
 
@@ -149,11 +149,11 @@
                     <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}"  width=49px />
                 {% endif %}
                 <a href="{{ url_for('user', username = current_user.username) }}">{{current_user.username}}</a>
-                <a class="right" href="{{ url_for('security.logout') }}">logout</a>
+                <a class="right" href="{{ url_for('security.logout') }}">Выйти</a>
             {% else %}
-                 <a class="not-auth" href="{{ url_for('security.login') }}">Login</a>
+                 <a class="not-auth" href="{{ url_for('security.login') }}">Войти</a>
 
-            <a href="{{ url_for('security.register') }}">Register</a>
+            <a href="{{ url_for('security.register') }}">Регистрация</a>
 
             {% endif %}
 
@@ -172,9 +172,9 @@
                             </a>
                         </div>
                         <ul class="nav navbar-nav">
-                            <li> <a href="{{ url_for('index') }}">Home</a></li>
-                            <li> <a href="{{ url_for('popular_product') }}">Catalog</a></li>
-                            <li> <a href="{{ url_for('last_posts') }}">Blog</a></li>
+                            <li> <a href="{{ url_for('index') }}">Главная</a></li>
+                            <li> <a href="{{ url_for('popular_product') }}">Каталог</a></li>
+                            <li> <a href="{{ url_for('last_posts') }}">Блог</a></li>
                         </ul>
                         <ul class="nav navbar-nav yamm ct-navbar--right">
                             {% if current_user.is_authenticated %}
@@ -191,14 +191,14 @@
                                     <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
                                 </li>
                                 <li>
-                                    <a href="{{ url_for('security.logout') }}">Logout</a>
+                                    <a href="{{ url_for('security.logout') }}">Выйти</a>
                                 </li>
                             {% else %}
                                 <li>
-                                    <a href="{{ url_for('security.login') }}">Login</a>
+                                    <a href="{{ url_for('security.login') }}">Войти</a>
                                 </li>
                                 <li>
-                                    <a href="{{ url_for('security.register') }}">Register</a>
+                                    <a href="{{ url_for('security.register') }}">Регистрация</a>
                                 </li>
                             {% endif %}
 
@@ -221,36 +221,24 @@
                 <section class="ct-footer-list ct-u-paddingBoth50">
     <div class="container">
         <div class="row">
-            <div class="col-sm-4 col-xs-12">
-                <div class="ct-list ct-list--dark">
-                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Information</h5>
-                    <ul class="ct-u-paddingTop10">
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Specials</span></a></li>
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>New products</span></a></li>
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Best Sellers</span></a></li>
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-chevron-right"></i></div></div><span>Most Top Rated</span></a></li>
-                    </ul>
-                </div>
-            </div>
 
-            <div class="col-sm-4 col-xs-12">
+
+            <div class="col-sm-6 col-xs-12">
                 <div class="ct-list ct-list--dark">
-                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Follow Us</h5>
+                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Найдите нас</h5>
                     <ul class="ct-u-paddingTop10">
                         <li><a href="https://www.facebook.com/createITpl"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-facebook"></i></div></div><span>Facebook</span></a></li>
-                        <li><a href="https://twitter.com/createitpl"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-twitter"></i></div></div><span>Twitter</span></a></li>
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-rss"></i></div></div><span>RSS</span></a></li>
                         <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-linkedin"></i></div></div><span>Linkedin</span></a></li>
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-4 col-xs-12">
+            <div class="col-sm-6 col-xs-12">
                 <div class="ct-list ct-list--dark">
-                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Contact Us</h5>
+                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Свяжитесь с нами</h5>
                     <ul class="ct-u-paddingTop10">
-                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-home"></i></div></div><span>Street Name, 1234, Somewhere, Nowhere</span></li>
-                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-phone"></i></div></div><span>(012) 345-6789</span></li>
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div></div><span>info @ support.com</span></a></li>
+                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-home"></i></div></div><span>Винница</span></li>
+                        <li><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-phone"></i></div></div><span>093-175-88-43</span></li>
+                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div></div><span>contact.me@aqua.name</span></a></li>
                     </ul>
                 </div>
             </div>

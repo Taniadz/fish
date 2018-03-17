@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% block title %}Каталог{% endblock %}
+
 {% block body %}
     {% from 'helpers.html' import products_macro with context %}
     {% from 'helpers.html' import render_pagination with context %}
@@ -7,7 +9,7 @@
     <section class=" ct-blogGrid ct-u-paddingBottom20">
 
         <div class="ct-pageSectionHeader ct-u-paddingBottom20">
-            <h3 class="text-uppercase ct-u-size50 text-center">CATALOG</h3>
+            <h3 class="text-uppercase ct-u-size50 text-center">Каталог</h3>
         </div>
 
         <div class="container">
@@ -17,25 +19,25 @@
                         <div class="sort-left col-md-6 col-sm-6">
 
                             <a href="{{ url_for('popular_product', sort = 'rating') }}">
-                                <h4 class="ct-u-size30 active">popular posts</h4>
+                                <h4 class="ct-u-size30 active">Популярные</h4>
                             </a>
 
                         </div>
                         <div class="sort-right col-md-6 col-sm-6">
                             <a href="{{ url_for('popular_product', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30">latest posts</h4>
+                                <h4 class="ct-u-size30">Последние</h4>
                             </a>
                         </div>
                     {% else %}
                         <div class="sort-left col-md-6 col-sm-6">
 
                             <a href="{{ url_for('popular_product', sort = 'rating') }}">
-                                <h4 class="ct-u-size30">popular posts</h4>
+                                <h4 class="ct-u-size30">популярные</h4>
                             </a>
                         </div>
                         <div class="sort-right col-md-6 col-sm-6">
                             <a href="{{ url_for('popular_product', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30 active">latest posts</h4>
+                                <h4 class="ct-u-size30 active">последние</h4>
                             </a>
                         </div>
                     {% endif %}
