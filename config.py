@@ -67,7 +67,7 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_DEBUG = True
 MAIL_USERNAME = 'contact.me@aqua.name'
-MAIL_PASSWORD = 'password'
+MAIL_PASSWORD = 'Gfhjksot11041988'
 # MAIL_USERNAME = 'mail.aqua.fish@gmail.com'
 # MAIL_PASSWORD = 'mail_aqua_fish23101994'
 

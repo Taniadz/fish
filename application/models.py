@@ -41,7 +41,7 @@ class PostReaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
     type = db.Column(db.Integer)
-    posts = db.relationship('Post', passive_deletes=True)
+    posts = db.relationship('Post')
     __table_args__ = (db.UniqueConstraint('user_id', 'post_id', name='post_user'),
                       )
 
@@ -63,6 +63,8 @@ class PostComReaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     type = db.Column(db.Integer)
+    comments = db.relationship('Comment')
+
     __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='comment_user'),
                       )
 
@@ -166,7 +168,7 @@ class Post(db.Model):
     image = db.Column(db.String, nullable=True)
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostReaction',
-                            backref=db.backref('post',  passive_deletes=True))
+                            backref=db.backref('post'))
     favourites = db.relationship(FavouritePost,passive_deletes=True )
 
 
@@ -199,7 +201,7 @@ class Comment(db.Model):
     parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostComReaction',
-                                backref=db.backref('post', passive_deletes=True))
+                                backref=db.backref('post'))
 
 
     like_count = db.Column(db.Integer, default=0)
@@ -230,7 +232,7 @@ class Product(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('ProductReaction',
-                                backref=db.backref('post', passive_deletes=True))
+                                backref=db.backref('post'))
     favourites = db.relationship(FavouriteProduct,passive_deletes=True )
 
 
@@ -267,7 +269,7 @@ class CommentProduct(db.Model):
     deleted= db.Column(db.Boolean,  default=False)
 
     reactions = db.relationship('ProdComReaction',
-                                backref=db.backref('post', passive_deletes=True))
+                                backref=db.backref('post'))
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
     funny_count = db.Column(db.Integer, default=0)

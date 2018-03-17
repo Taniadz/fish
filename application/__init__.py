@@ -23,6 +23,8 @@ from flask_caching import Cache
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.config.from_object(config)
 app.config['UPLOADS_DEFAULT_DEST'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 
 images = UploadSet('images', IMAGES)
 configure_uploads(app, (images,))
