@@ -2,6 +2,7 @@
 from celery import Celery
 from flask import Flask, url_for, request
 from flask_mail import Mail
+import flask_security
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
@@ -9,15 +10,16 @@ import babel
 from social_flask_sqlalchemy.models import init_social
 #from .extentions import db
 from flask_uploads import UploadSet, IMAGES, configure_uploads
-
-
+from flask_admin import Admin
+from wtforms import BooleanField, StringField, PasswordField
 from config import SQLALCHEMY_TRACK_MODIFICATIONS, SQLALCHEMY_DATABASE_URI, UPLOAD_FOLDER, TEMPLATE_DIR, STATIC_DIR
 import config
 from social.apps.flask_app.template_filters import backends
 
 from flask import g
 from flask_caching import Cache
-
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib import  sqla
 
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
@@ -33,6 +35,9 @@ mail = Mail(app)
 cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':['127.0.0.1:11211']})
 cache.init_app(app)
 init_social(app, db.session)
+
+
+admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
 
 
@@ -91,13 +96,28 @@ register_teardown_appcontext(app)
 
 # init flask-security
 from .forms import ExtendedConfirmRegisterForm, ExtendedRegisterForm
-from .models import User, Role, Connection
+from .models import User, Role, Post, Connection
+
+
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore,
                     confirm_register_form=ExtendedConfirmRegisterForm)
 # security = Security(app, user_datastore,
 #                     register_form=ExtendedRegisterForm)
+
+
+
+
+
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Post, db.session))
+
+
+
+
+
+
 
 
 def make_celery(app):
