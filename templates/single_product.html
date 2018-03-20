@@ -9,7 +9,7 @@
     <section class="ct-u-paddingBottom10">
         <div class="container">
 
-        <div class="ct-pageSectionHeader ct-u-paddingBoth30">
+        <div class="ct-pageSectionHeader ct-u-paddingBoth30 padding-title">
 
                     <h3 class="text-uppercase ct-u-size30 text-center">{{ product.title }}</h3>
 
@@ -300,7 +300,7 @@
                                 <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename= products_images[product.id]["images"][0].filename )}}" style="height:50px">
 
                             {% else %}
-                                <img class="img-circle left-image" src="{{ url_for('uploaded_file',filename= "carusel4.jpg" )}}" style="height:50px">
+                                <img class="img-circle left-image" src="{{ url_for('static',filename= "image/carusel4.jpg" )}}" style="height:50px">
 
                             {% endif %}
                             <div class="description side">

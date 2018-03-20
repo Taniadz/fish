@@ -18,14 +18,14 @@ class ExtendedConfirmRegisterForm(ConfirmRegisterForm):
         Unique(
             User,
             User.username,
-            message='Уже существует профиль стаким никнейом.')]
+            message='Уже существует профиль с этим никнейом.')]
     )
 class ExtendedRegisterForm(RegisterForm):
     username = StringField('Никнейм', validators=[DataRequired(),
         Unique(
             User,
             User.username,
-            message='Уже существует профиль стаким никнейом.')]
+            message='Уже существует профиль с этим никнейом.')]
     )
 
 
@@ -43,17 +43,17 @@ class UserEditForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    title = StringField('Заголовок', [validators.Length(min = 1,max=200)])
-    body = StringField('Текст', [validators.Length(min = 5, max=1000)], widget=TextArea())
+    title = StringField('Заголовок', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])
+    body = StringField('Текст', [validators.Length(min = 5, max=2500, message="Длина текста должна быть от 5 до 2500 символов")], widget=TextArea())
     file = FileField('Фото',  validators=[
-        FileAllowed(images, 'Images only!')
+        FileAllowed(images, 'Только картинки!')
     ])
 
 
 
 
 class CommentForm(FlaskForm):
-    text = StringField('text', [validators.Length(min=1, max=800)], widget=TextArea())
+    text = StringField('text', [validators.Length(min=1, max=1000,  message="Длина комментария должна быть от одного до 1000 символов")], widget=TextArea())
     file = FileField('фото', validators=[
         FileAllowed(images, 'Только картинки!')
     ])
@@ -62,7 +62,7 @@ class CommentForm(FlaskForm):
 
 
 class ProductCommentForm(FlaskForm):
-    text = StringField('Text', [validators.Length(min = 1, max=800)], widget=TextArea())
+    text = StringField('Text', [validators.Length(min = 1, max=1000, message="Длина комментария должна быть от 1 до 1000 символов")], widget=TextArea())
     parent = HiddenField()
     product_id = HiddenField()
     file = FileField('image', validators=[
@@ -72,10 +72,10 @@ class ProductCommentForm(FlaskForm):
 
 
 class ProductForm(FlaskForm):
-    title = StringField('Название', [validators.Length(min =1, max=200)])
+    title = StringField('Название*', [validators.Length(min =1, max=300, message="Длина названия должна быть от 1 до 1000 символов")])
     price = StringField('Цена', [validators.Length(min=1, max=200)])
     images = FileField('Фото', validators=[
         FileAllowed(images, 'Только картинки!')
     ])
-    description = StringField('Описание', [validators.Length(min = 5, max=1500)], widget=TextArea())
+    description = StringField('Описание*', [validators.Length(min = 5, max=1500, message="Длина описания должна быть от 5 до 1500 символов")], widget=TextArea())
 

@@ -326,7 +326,6 @@ class Pagination(object):
 
 
 
-
 # Customized User model for SQL-Admin
 class UserAdmin(sqla.ModelView):
 
@@ -371,7 +370,20 @@ class UserAdmin(sqla.ModelView):
 
 # Customized Role model for SQL-Admin
 class RoleAdmin(sqla.ModelView):
+    # Prevent administration of Roles unless the currently logged-in user has the "admin" role
+    def is_accessible(self):
+        return current_user.has_role('admin')
 
+# Customized Role model for SQL-Admin
+class PostAdmin(sqla.ModelView):
+    # Prevent administration of Roles unless the currently logged-in user has the "admin" role
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+
+
+# Customized Role model for SQL-Admin
+class ProductAdmin(sqla.ModelView):
     # Prevent administration of Roles unless the currently logged-in user has the "admin" role
     def is_accessible(self):
         return current_user.has_role('admin')

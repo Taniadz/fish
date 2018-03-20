@@ -8,7 +8,7 @@ from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
-
+import re
 POSTS_PER_PAGE = 6
 
 
@@ -95,7 +95,9 @@ def last_posts(page=1):
 @login_required
 def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
+
     if request.method == 'POST' and form.validate_on_submit():
+        print(form.body.data.strip())
         filename = create_filename(form.file.data)
         post = create_obj(Post,
                           title=form.title.data.strip(),
@@ -103,6 +105,7 @@ def add_post():
                           user_id=current_user.id,
                           image=filename)
         return redirect(url_for('singlepost', postid=post.id))
+
     return render_template("add_post.html", form=form)
 
 

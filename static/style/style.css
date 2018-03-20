@@ -3692,3 +3692,40 @@ label.gray-label {
 .popup-div img:hover{
    width: 40px;
 }
+
+#textarea-edited{
+    border: 1px solid #ccc;
+    min-height: 100px;
+}
+
+.button-grid-edit{
+    position: relative;
+    min-height: 45px;
+}
+
+.button-text-edit{
+
+
+}
+.button-text-edit button{
+    clear: none !important;
+    line-height: 30px;
+        outline: none !important;
+
+
+}
+
+#underline_btn{
+    text-decoration: underline;
+}
+#italic_btn{
+    font-style: italic;
+}
+
+@media (min-width: 768px) {
+    .padding-title{
+        padding-left: 20%;
+        padding-right: 20%;
+
+    }
+}

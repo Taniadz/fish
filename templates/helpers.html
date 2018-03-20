@@ -374,16 +374,18 @@ all comment to product on page "single_product"
             {{ post.published_at|datetime }}
 
         </p>
-        <p>
-            {% if post.image %}
-                <img src="{{ url_for('uploaded_file',filename=post.image) }}"/><br>
 
+            {% if post.image %}
+
+                <img src="{{ url_for('uploaded_file',filename=post.image) }}"/><br>
+                <p>
                 {{ post.body|truncate(170, True) }}
+                </p>
 
             {% else %}
-                {{ post.body|truncate(350, True) }}
+               <p>{{ post.body|truncate(350, True) }}</p>
             {% endif %}
-        </p>
+
         <div class="under-box">
 
         {{ popup_div_macro(post.id, "like_post ") }}

@@ -28,6 +28,7 @@
 
 # OS generated files #
 ######################
+*.db
 .DS_Store
 ehthumbs.db
 Icon

@@ -11,11 +11,15 @@
             </div>
             <div class="row">
                 <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
-                    <form action="" method="post" class="form-horizontal" enctype=multipart/form-data>
+                    <form action="" method="post" class="form-horizontal" enctype=multipart/form-data >
                         <div class="form-group">
                             {{ form.hidden_tag() }}
                             {{ render_field_with_errors(form.title, class="form-control") }}
-                            {{ render_field_with_errors(form.body, class="form-control") }}
+                            {{ render_field_with_errors(form.body, class="form-control", contenteditable="true") }}
+
+
+
+
                             <div id="hide" class="form-group big-form-file">
                                 {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
                                 <label for="file" class="hand-cursor">
@@ -30,10 +34,19 @@
                                 <button type="submit" class="btn btn-motive btn-form">создать</button>
                             </div>
                         </div>
+
+
                     </form>
+
+
+
+
                 </div>
             </div>
         </div>
     </section>
+
+
+
 
 {% endblock %}

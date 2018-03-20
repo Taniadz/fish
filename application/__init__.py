@@ -37,7 +37,6 @@ cache.init_app(app)
 init_social(app, db.session)
 
 
-admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
 
 
@@ -96,23 +95,29 @@ register_teardown_appcontext(app)
 
 # init flask-security
 from .forms import ExtendedConfirmRegisterForm, ExtendedRegisterForm
-from .models import User, Role, Post, Connection
+from .models import User, Role, Post, Product, Connection, PostAdmin, ProductAdmin, UserAdmin, RoleAdmin
 
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore,
-                    confirm_register_form=ExtendedConfirmRegisterForm)
 # security = Security(app, user_datastore,
-#                     register_form=ExtendedRegisterForm)
+#                     confirm_register_form=ExtendedConfirmRegisterForm)
+security = Security(app, user_datastore,
+                    register_form=ExtendedRegisterForm)
 
 
 
+admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
 
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Post, db.session))
 
+# admin.add_view(ModelView(User, db.session))
+admin.add_view(PostAdmin(Post, db.session))
+admin.add_view(ProductAdmin(Product, db.session))
+# Add Flask-Admin views for Users and Roles
+
+admin.add_view(UserAdmin(User, db.session))
+admin.add_view(RoleAdmin(Role, db.session))
 
 
 
