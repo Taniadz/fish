@@ -1,14 +1,24 @@
 # from .extentions import db
-from application import db
+from application import db, app
 from datetime import datetime
 from flask_security import UserMixin, RoleMixin
 import flask_security
 from wtforms import PasswordField
 from flask_admin.contrib import  sqla
 
+
+
+
 from flask_security import current_user
+tags = db.Table('tags',
+                db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+                db.Column('photo_id', db.Integer, db.ForeignKey('post.id')),
+                )
 
 
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), unique=True)
 
 class FavouriteProduct(db.Model):
     __tablename__ = 'favourite_products'
@@ -33,7 +43,7 @@ class ProductImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    filename = db.Column(db.String)
+    filename = db.Column(db.String(3000))
     image = db.relationship('Product', passive_deletes=True,  backref='image')
 
 
@@ -42,7 +52,7 @@ class PostReaction(db.Model):
     __tablename__ = 'postreaction'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
-    type = db.Column(db.Integer)
+    type = db.Column(db.String(10))
     posts = db.relationship('Post')
     __table_args__ = (db.UniqueConstraint('user_id', 'post_id', name='post_user'),
                       )
@@ -53,7 +63,7 @@ class ProductReaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    type = db.Column(db.Integer)
+    type = db.Column(db.String(10))
     __table_args__ = (db.UniqueConstraint('user_id', 'product_id', name='product_user'),
                       )
 
@@ -64,7 +74,7 @@ class PostComReaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
-    type = db.Column(db.Integer)
+    type = db.Column(db.String(10))
     comments = db.relationship('Comment')
 
     __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='comment_user'),
@@ -77,7 +87,7 @@ class ProdComReaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), )
     comment_id = db.Column(db.Integer, db.ForeignKey('commentproduct.id'))
-    type = db.Column(db.Integer)
+    type = db.Column(db.String(10))
     __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='prod_comment_user'),
                       )
 
@@ -97,6 +107,8 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64),unique=True, index=True)
+    last_name = db.Column(db.String(64))
+
 
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
@@ -107,8 +119,8 @@ class User(db.Model, UserMixin):
 
     registered_on = db.Column('registered_on', db.DateTime)
     last_seen = db.Column(db.DateTime)
-    avatar = db.Column(db.String, nullable=True)
-    avatar_min = db.Column(db.String, nullable=True)
+    avatar = db.Column(db.String(3000), nullable=True)
+    avatar_min = db.Column(db.String(3000), nullable=True)
     about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post')
@@ -161,23 +173,28 @@ class Connection(db.Model):
 
 class Post(db.Model):
     __tablename__ = 'post'
+
+
+
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(200))
     body = db.Column(db.String(1000))
     published_at = db.Column('published_at', db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
-    image = db.Column(db.String, nullable=True)
+    image = db.Column(db.String(3000), nullable=True)
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostReaction',
                             backref=db.backref('post'))
     favourites = db.relationship(FavouritePost,passive_deletes=True )
 
+    tags = db.relationship('Tag', secondary=tags, backref='posts')
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
     funny_count = db.Column(db.Integer, default=0)
     angry_count = db.Column(db.Integer, default=0)
+
 
     def __init__(self, title, body, image, user_id):
         self.title = title
@@ -197,10 +214,10 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
     text = db.Column(db.String(800))
-    image = db.Column(db.String, nullable=True)
+    image = db.Column(db.String(3000), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
+    parent = db.Column(db.Integer, nullable=True)
     deleted= db.Column(db.Boolean, default=False)
     reactions = db.relationship('PostComReaction',
                                 backref=db.backref('post'))
@@ -225,6 +242,8 @@ class Comment(db.Model):
 
 
 class Product(db.Model):
+    __searchable__ = ['description']
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), unique=True)
     description = db.Column(db.String(1500), nullable=True)
@@ -264,10 +283,10 @@ class CommentProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column('timestamp', db.DateTime)
     text = db.Column(db.String(800))
-    image = db.Column(db.String, nullable=True)
+    image = db.Column(db.String(3000), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    parent = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
+    parent = db.Column(db.Integer, nullable=True)
     deleted= db.Column(db.Boolean,  default=False)
 
     reactions = db.relationship('ProdComReaction',
@@ -387,3 +406,4 @@ class ProductAdmin(sqla.ModelView):
     # Prevent administration of Roles unless the currently logged-in user has the "admin" role
     def is_accessible(self):
         return current_user.has_role('admin')
+

@@ -39,7 +39,7 @@ function post_comment(post_id, sort, event) {
 
 function ShowCommentForm() {
     $("#hiden_form1.post-form").slideToggle(400);
-    $("form#form1.comment_form textarea").val("Дбавьте свой комментарий");
+    $("form#form1.comment_form textarea").val("Добавьте свой комментарий");
     $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
 
 

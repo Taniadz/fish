@@ -18,7 +18,7 @@
                             {{ render_field_with_errors(form.title, class="form-control") }}
                             {{ render_field_with_errors(form.body, class="form-control") }}
                             <div id="hide" class="form-group big-form-file">
-                                {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
+                                {{ form.file(id="file", class="inputfile") }}
 
                                 <label for="file" class="hand-cursor">
                                     <span class="photo_text hidden-xs ct-u-size24"><i class="fa fa-camera ct-u-size30"

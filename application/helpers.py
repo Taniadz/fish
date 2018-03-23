@@ -7,10 +7,50 @@ from werkzeug.exceptions import abort
 
 # from .extentions import db
 from application  import UPLOAD_FOLDER, app, db, cache
-from .models import User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage
+from .models import User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag
 
 
 from sqlalchemy import event, update
+
+def count_user_rating(user):
+    rating =0
+    posts = Post.query.filter_by(user_id=user.id).all()
+    comments = Comment.query.filter_by(user_id=user.id).all()
+
+
+    for p in posts:
+        rating_by_post = p.like_count + p.funny_count*2 - p.unlike_count
+        rating=rating+rating_by_post
+    for c in comments:
+        rating_by_post = c.like_count + c.funny_count * 2 - c.unlike_count
+        rating = rating + rating_by_post
+    print(rating, "rating")
+    return rating
+
+def get_last_tags():
+    tag =  Tag.query[:7]
+    print(tag)
+    return tag
+
+def get_posts_by_tagname(name):
+    posts = Post.query.filter(Post.tags.any(name=name)).all()
+    return posts
+
+def get_tags_name(query):
+    result = db.session.query(Tag).filter(Tag.name.op('regexp')(r'{}\w*'.format(query))).all()
+
+    return result
+
+
+def get_posts_search(query):
+    posts1 = db.session.query(Post).filter(Post.title.contains(query)).all()
+    posts2 = db.session.query(Post).filter(Post.body.contains(query)).all()
+    tag = get_one_obj(Tag, name=query)
+    if tag:
+        post3 = Post.query.filter(Post.tags.any(name=query)).all()
+        return set(posts1 + posts2 + post3)
+
+    return set(posts1 + posts2)
 
 
 # create dict of comment tree
@@ -369,10 +409,9 @@ def update_user_rows(user, avatar, username, avatar_min=None, about_me=None, ):
     db.session.commit()
     return
 
-def delete_object(object):
-
-    object.deleted = True
-    db.session.add(object)
+def delete_object(instance):
+    instance.deleted = True
+    db.session.add(instance)
     db.session.commit()
     return
 
@@ -570,6 +609,7 @@ def after_insert_comment(mapper, connection, target):
     cache.delete_memoized(get_last_comments_for_posts)
 
 
+
 @event.listens_for(CommentProduct, 'after_update')
 def after_update_comment(mapper, connection, target):
     print("update")
@@ -582,3 +622,4 @@ def after_insert_comment(mapper, connection, target):
     print("insert")
     # cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
     cache.delete_memoized(get_last_comments_for_products)
+

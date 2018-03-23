@@ -22,11 +22,32 @@
 
                             <div id="hide" class="form-group big-form-file">
                                 {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
+                            <p class="ct-fw-300 ct-u-motiveLight">
+                                Выбtрите несколько тегов к вашему посту (напр."мой аквариум", "аквариум своими руками")
+
+                            </p>
+
+                                {% for f in form.tags %}
+                                    <div class="col-md-4">
+                                {{ f (class="tags", rows=1)}}
+                                    <div class="dropdown">
+                                      <a class="dropdown-toggle"  data-toggle="dropdown" href="#"></a>
+                                      <ul class="dropdown-menu tag-menu" id ={{ f.id }} role="menu" aria-labelledby="dLabel">
+
+                                      </ul>
+                                    </div>
+
+                                    </div>
+                                {% endfor %}
+
+                                <div id="hide" class="form-group big-form-file ct-clear-both">
+                                {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
                                 <label for="file" class="hand-cursor">
                                     <span class="photo_text hidden-xs ct-u-size24"><i class="fa fa-camera ct-u-size30"
                                                                                       aria-hidden="true"></i> Выбрать изображение</span>
 
                                 </label>
+                            </div>
                             </div>
                         </div>
                         <div class="control-group">
@@ -47,6 +68,23 @@
     </section>
 
 
+<script>
+$(".tags textarea").on("input",function () {
+    var menu_id = $(this).parent().parent().parent().parent().prop("id");
 
+    $("body").on("click", function () {
+        $('.dropdown-menu').hide();
+    });
+    var letter = $(this).val();
+    $.post($SCRIPT_ROOT + '/add_post', {letter: letter}, function (data) {
+        $('#' + menu_id + '.dropdown-menu').html(data.tags_menu);
+        console.log('#' + menu_id + '.dropdown-menu');
+        $('#' + menu_id + '.dropdown-menu').show();
+
+        });
+
+
+})
+</script>
 
 {% endblock %}

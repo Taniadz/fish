@@ -1,13 +1,14 @@
 
 {% extends "base.html" %}
-{% from "security/_macros.html" import render_field_with_errors, render_field %}
-{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% from "helpers.html" import render_field_with_errors, render_field %}
 {% include "security/_messages.html" %}
 {% block body %}
  <section class="ct-u-paddingBottom80">
 <div class="container">
     <div class="ct-sectionHeader ct-u-paddingBottom20">
         <h2>Регистрация</h2>
+                <a href="{{ url_for("social.auth", backend="facebook") }}"><img src="{{ url_for('static',filename="image/log_in_with_facebook_button.png") }}" width="250px" ></a>
+
     </div>
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
@@ -19,11 +20,11 @@
 
 
   {{ render_field_with_errors(register_user_form.username,  class="form-control") }}
-  {{ render_field_with_errors(register_user_form.email,  class="form-control") }}
-  {{ render_field_with_errors(register_user_form.password,  class="form-control") }}
+  {{ render_field_with_errors(register_user_form.email,  label="E-mail", class="form-control") }}
+  {{ render_field_with_errors(register_user_form.password,  label="Пароль", class="form-control") }}
 
   {% if register_user_form.password_confirm %}
-    {{ render_field_with_errors(register_user_form.password_confirm,  class="form-control") }}
+    {{ render_field_with_errors(register_user_form.password_confirm,   label="Повторите пароль", class="form-control") }}
   {% endif %}
   {{ render_field(register_user_form.submit,  class="btn btn-motive btn-form", value="зарегистрироваться") }}
 </div>

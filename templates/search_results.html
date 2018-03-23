@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% from 'helpers.html' import posts_macro with context %}
+{% from 'helpers.html' import render_pagination with context %}
+
+{% block body %}
+    <section class="ct-blogGrid ct-u-paddingBottom20">
+        <div class="ct-pageSectionHeader ct-u-paddingBottom20">
+            <h3 class="text-uppercase ct-u-size34 text-center">результаты по запросу <span>"{{ query }}"</span></h3>
+        </div>
+        <div class="container">
+            <div class="row">
+
+
+
+                <div class="ct-blog ct-u-paddingBoth20">
+                    <div class="col-sm-8">
+                        {% for p in posts %}
+
+                                {{ posts_macro(p, posts_relationships) }}
+
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+            </div>
+
+
+{#            <div class="ct-u-marginBoth20 ct-pagination">#}
+{#                <ul class="pagination pagination-lg ">#}
+{#                    {{ render_pagination(pagination, "last_posts", sort) }}#}
+{#                </ul>#}
+{#            </div>#}
+        </div>
+    </section>
+
+
+
+{% endblock %}
+
+

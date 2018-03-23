@@ -1,9 +1,9 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
-from application import celery, UPLOAD_FOLDER, security, cache
-from .forms import PostForm, CommentForm, UserEditForm, ProductForm
+from application import celery, UPLOAD_FOLDER, security, cache, db
+from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm
 from werkzeug import secure_filename
-from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination
+from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
@@ -71,10 +71,12 @@ def popular_product(page=1):
 @app.route('/last_posts', methods=['GET', 'POST'])
 @app.route('/last_posts/<int:page>', methods=['GET', 'POST'])
 def last_posts(page=1):
-    if request.args.get("sort") == "data":  # sort by datetime
-        posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
-    else:  # sort by rating
+    if request.args.get("sort") == "rating":  # sort by datetime
         posts = get_posts_ordering(Post.like_count.desc(), page, POSTS_PER_PAGE)
+
+
+    else:  # sort by rating
+        posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
     comments = get_last_comments_for_posts()
     comments_rel={}
     get_many_authors(comments, comments_rel)
@@ -82,8 +84,9 @@ def last_posts(page=1):
     count = count_all_posts()
     pagination = Pagination(page, POSTS_PER_PAGE, count)
     posts_relationships=get_posts_relationship(posts, current_user)
+    tags = get_last_tags()
     return render_template('last_posts.html',
-                           posts=posts, comments = comments,
+                           posts=posts, comments = comments, tags=tags,
                            posts_relationships = posts_relationships,
                            pagination=pagination, comments_rel=comments_rel,
                            sort=request.args.get("sort"))
@@ -95,6 +98,13 @@ def last_posts(page=1):
 @login_required
 def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
+    if request.is_xhr:
+        tags = get_tags_name(request.form.get("letter"))
+        print(tags, "taaaaaaaaaaaaaaags")
+        data = {'tags_menu': render_template('tags_menu.html',
+                                            tags=tags)}
+        print(data, "data")
+        return jsonify(data)
 
     if request.method == 'POST' and form.validate_on_submit():
         print(form.body.data.strip())
@@ -104,6 +114,13 @@ def add_post():
                           body=form.body.data.strip(),
                           user_id=current_user.id,
                           image=filename)
+
+        for t in form.tags.data:
+            tag = get_or_create(Tag, name = t["name"])
+
+
+            post.tags.append(tag[0])
+            db.session.commit()
         return redirect(url_for('singlepost', postid=post.id))
 
     return render_template("add_post.html", form=form)
@@ -117,6 +134,7 @@ def add_post():
 def user(username):
     page = 1
     user = get_or_abort_user(User, username=username)
+    rating = count_user_rating(user)
     POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
 
 
@@ -127,8 +145,8 @@ def user(username):
     posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
     print(posts)
     posts_relationships = get_posts_relationship(posts, current_user)
-    return render_template('user.html', posts_relationships =posts_relationships,
-                           user=user, user_id=user.id, posts=posts, side_posts=side_posts)
+    return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(),
+                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating)
 
 
 
@@ -219,6 +237,8 @@ def singlepost(postid=None):
         posts = get_posts_ordering(Post.published_at.desc(), 1, POSTS_PER_PAGE) # posts for side box
         editable = check_post_editable(post)  # check if user can edit post
         comments = get_all_comments_by_post_id(post.id)
+        print(1111111111111111111111111)
+        print(comments, "commenooooooots")
         post_author = get_one_obj(User, id=post.user_id)
         if_favorite = check_if_post_favourite(current_user, post)  # check if post added to favourite by user, False for not login too
         comments_relationships = get_post_comment_relationships(comments, current_user)
@@ -228,7 +248,7 @@ def singlepost(postid=None):
         else:
             post_liked = False    # for not authenticated users
         return render_template("single_post.html", editable=editable, post_author=post_author,
-                               comments_relationships=comments_relationships,
+                               comments_relationships=comments_relationships, tags=get_last_tags(),
                                posts=posts, post=post,  form=form, comments=comments, if_favorite=if_favorite,
                                post_liked=post_liked, comment_tree=get_comment_dict(comments))
 
@@ -237,6 +257,7 @@ def singlepost(postid=None):
         parent = request.args.get('parent')
         if request.args.get('parent') is None:
             parent = 0
+        print(parent, "parent")
         create_obj(Comment, text=form.text.data, user_id=current_user.id,
                    post_id=postid, image=filename, parent=parent)
         comments = get_all_comments_by_post_id(postid)
@@ -697,23 +718,32 @@ def edit_product():
 @app.route('/delete_post', methods=['POST'])
 def delete_post():
     post = get_one_obj(Post, id=request.form.get("id"))
-    update_rows(post, deleted=True)
+    delete_object(post)
     return redirect(url_for('last_posts'))
 
 
 @app.route('/edit_post', methods=['POST', 'GET'])
 def edit_post():
-    form = PostForm(CombinedMultiDict((request.files, request.form)))
+    form = EditPostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
+        print("geeeeet")
         post = get_one_obj(Post, id=request.args.get("id"))
         if not check_post_editable(post):
             return redirect(url_for('singlepost', postid=request.args.get("id")))
         form.body.data=post.body
         form.title.data=post.title
         return render_template("edit_post.html", form=form, id=request.args.get("id"))
+    # elif request.method == 'POST':
+    #     print("nnnnnnnnnnnn")
+    #     print(form.data, "ffffffffffffffffffffff")
+    #     for errorMessages in form.errors.items():
+    #         for err in errorMessages:
+    #             print(err, "err")
+    #     return render_template("edit_post.html", form=form, id=request.args.get("id"))
 
     elif request.method == 'POST' and form.validate_on_submit():
-
+        print("poooooooooooooooo")
+        print(form.data, "ffffffffffffffffffffff")
         post = get_one_obj(Post, id=request.args.get("id"))
         if form.file.data:
             filename = create_filename(form.file.data)
@@ -723,3 +753,30 @@ def edit_post():
              title=form.title.data,
              image=filename)
         return redirect(url_for('singlepost', postid=request.args.get("id")))
+
+
+@app.route('/search', methods = ['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('index'))
+    return redirect(url_for('search_results', query = g.search_form.search.data))
+
+
+@app.route('/search_results/<query>')
+@login_required
+def search_results(query):
+    only_tag = request.args.get("only_tag")
+    # if search only by tagname
+    if only_tag:
+        posts= get_posts_by_tagname(query)
+        print(query)
+        print(posts, "only tag")
+
+    else:    #if use tagname search and full text search
+        posts = get_posts_search(query)
+
+    return render_template('search_results.html',
+        query = query,
+        posts = posts,
+                        posts_relationships = get_posts_relationship(posts, current_user))

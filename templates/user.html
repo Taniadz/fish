@@ -10,12 +10,22 @@
     <div class="ct-pageSectionHeader ct-u-paddingBoth20">
 
                     <h3 class="text-uppercase ct-u-size40 text-center">{{ user.username }}</h3>
+                    <h3 class="text-center"> <i type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                                                 data-content="Рейтинговая система основывается на ваших голосах,которые вы получили за посты и комментарии к постам.
+                                                 За голос нравится плюс 1 балл;
+                                                 за голос ха-ха плюс 2 балла;
+                                                 за голос не нравится минус 1 балл"
+                         class="fa fa-question-circle-o informer-button" >
+
+                        </i>Рейтинг  {{ rating }}<i class="fa fa-star star-rating"></i>
+                    </h3>
 
             </div>
         <div class="col-sm-9">
 
 
             <div class="row">
+
             <div class="max_avatar col-sm-4 col-xs-12">
                 {% if user.avatar %}
                     <img src="{{ url_for('uploaded_file',filename= user.avatar) }}" width="60"/>
@@ -82,7 +92,7 @@
                                 <h4 type="button" id="comment_block" class="dropdown-toggle user_but"
                                         data-toggle="dropdown">
                                     <nav class="plus ct-Diamond ct-Diamond--motive"></nav>
-                                    Комментарии
+                                    Комменты
                                 </h4>
                                 <ul class="dropdown-menu" role="menu">
                                     <li id="date" class="comment_block" rel_obj="comment" user="{{ user.id }}"><a href="#">к постам</a></li>
@@ -188,6 +198,17 @@
 
                     <div class="col-xs-12 col-sm-3 sidebar">
                     <div class="ct-inputSearch ct-u-marginBottom40">
+                        <form style="display: inline;" action="{{url_for('search')}}" method="post" name="search">
+                            {{g.search_form.hidden_tag()}}
+                            {{g.search_form.search(size=20,type="text", placeholder="Поиск...")}}
+
+
+                        <button class="" type="submit"><i class="fa fa-search"></i></button>
+
+                        </form>
+                    </div>
+
+                    <div class="ct-inputSearch ct-u-marginBottom40">
                         <div class="panel-group">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -211,9 +232,15 @@
                         </div>
                     </div>
                     </div>
+                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom10 ct-u-borderBottomGrayLighter">Посты по тегам</h4>
+                    <ul class="ct-simpleList list-unstyled ct-u-paddingTop5 ct-u-paddingBottom30">
+                        {% for t in tags %}
+                <li><a href="{{url_for('search_results', query = t.name, only_tag=True)}}"><i class="fa fa-hashtag" ></i>{{ t.name }}</a></li>
+                        {% endfor %}
 
-                    <h4 class="text-uppercase ct-fw-600 ct-u-paddingBottom15 ct-u-borderBottomGrayLighter">Новые посты</h4>
-                    <ul class="ct-mediaList list-unstyled ct-u-paddingTop10 ct-u-paddingBottom40">
+                    </ul>
+                    <h4 class="text-uppercase ct-fw-600  ct-u-borderBottomGrayLighter">Новые посты</h4>
+                    <ul class="ct-mediaList list-unstyled  ct-u-paddingBottom40">
 
                         {% for post in side_posts %}
                             <li>
@@ -254,12 +281,12 @@ $(document).ready(function() {
      $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
      $("#post_block").on("click", UpdatePostContainer);
 
-    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
     $("li#post_block").on("click", UpdatePostContainer);
 
 
  });
-
-
+$(".informer-button").on("click", function () {
+    $(".informer-button").popover('show');
+})
 </script>
 {% endblock %}

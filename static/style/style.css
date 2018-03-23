@@ -3255,7 +3255,7 @@ div.one-product:hover{
 /*my forms---------------------------------------------------------------------------------------*/
 .btn-form{
     margin-left: 35%;
-    width: 30%;
+    width: auto;
     font-size: 24px;
 }
 
@@ -3553,7 +3553,23 @@ div.one-product:hover{
      color: #1f8bf3;
 }
 
+.ct-inputSearch input, .ct-inputSearch input:focus {
+    padding: 5px 40px 5px 10px;
+    border: 1px solid #eeeeee;
+    outline: none;
+    width: 100%;
+    color: #4c505e;
+}
 
+.ct-inputSearch button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -17px;
+    background: #ffffff;
+    border: none;
+    color: #4c505e;
+}
 /*404______________________________________________________*/
 .ct-errorText h1,
 .ct-errorText p {
@@ -3728,4 +3744,45 @@ label.gray-label {
         padding-right: 20%;
 
     }
+}
+
+.tag-menu{
+    left: 5%;
+}
+
+table.tags textarea{
+    height: 15px;
+}
+
+element.style {
+}
+.ct-simpleList li a {
+    color: #4c505e;
+}
+a {
+    color: #1f8bf3;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.ct-simpleList li i {
+    -webkit-transition: all 0.6s ease;
+    -moz-transition: all 0.6s ease;
+    -o-transition: all 0.6s ease;
+    transition: all 0.6s ease;
+    color: #1f8bf3;
+    margin-right: 15px;
+    font-weight: 300;
+    font-size: 14px;
+}
+
+.ct-simpleList li a:hover i {
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+.fa.star-rating{
+    cursor: auto;
+    color: #ffeb4e;
 }

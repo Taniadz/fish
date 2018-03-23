@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-import os.path
-
-from migrate.versioning import api
 
 from application import db, app
 

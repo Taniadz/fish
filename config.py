@@ -5,7 +5,8 @@ UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
 TEMPLATE_DIR = os.path.join(basedir, 'templates')
 STATIC_DIR= os.path.join(basedir, "static")
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = "mysql://apps:apps@localhost/test"
+# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://apps:XXXXXXXX@localhost/apps'
 
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -47,13 +48,13 @@ SOCIAL_AUTH_PIPELINE = (
 
 
 # flask-security settings
-SECURITY_CONFIRMABLE = True
+SECURITY_CONFIRMABLE = False
 SECURITY_EMAIL_SENDER = 'contact.me@aqua.name'
 
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
 SECURITY_POST_REGISTER_VIEW = "/confirm_email"
-SECURITY_PASSWORD_SALT = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+SECURITY_PASSWORD_SALT = ''
 SECURITY_POST_LOGIN = '/'
 SECURITY_RESET_URL = "/reset_password"
 
@@ -67,7 +68,7 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_DEBUG = True
 MAIL_USERNAME = 'contact.me@aqua.name'
-MAIL_PASSWORD = 'xxxxxxxxxxxxxxxxxxxxxx'
+MAIL_PASSWORD = 'XXXXXXXXXXXXXXXXXXXXXx'
 
 
 # celery settings
@@ -76,3 +77,5 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 
 ALLOWED_EXTENSIONS = set(['png', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+

@@ -1,4 +1,4 @@
-        //show image? seleted by user for file form field
+        //show image, seleted by user for file form field
         jQuery(window).on("load", function () {
 
 
@@ -8,7 +8,6 @@
                     labelVal = label.innerHTML;
 
                 input.addEventListener('change', function (e) {
-                    console.log(1);
                     var fileName = '';
                     if (this.files && this.files.length > 1) {
                         fileName = this.files.length + " выбрано";
@@ -17,8 +16,10 @@
                     else
                         fileName = e.target.value.split('\\').pop();
 
-                    if (fileName)
-                        label.querySelector('span').innerHTML = fileName
+                    if (fileName) {
+                        console.log(fileName);
+                        $('span').html(fileName);
+                    }
                     else
                         label.innerHTML = labelVal;
                 });

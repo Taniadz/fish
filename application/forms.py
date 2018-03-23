@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 
-from wtforms import BooleanField, StringField, PasswordField, HiddenField,  TextAreaField, validators
+from wtforms import StringField, HiddenField, validators, FieldList, FormField
 from wtforms.widgets import TextArea
-from wtforms.validators import Required, Length, DataRequired
+from wtforms.validators import Required, Length, DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_security.forms import RegisterForm, ConfirmRegisterForm
 from .models import User
@@ -40,7 +40,8 @@ class UserEditForm(FlaskForm):
         FileAllowed(images, 'Только картинки!')
     ])
 
-
+class TagsForm(FlaskForm):
+    name = StringField('Тег', widget=TextArea())
 
 class PostForm(FlaskForm):
     title = StringField('Заголовок', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])
@@ -48,6 +49,19 @@ class PostForm(FlaskForm):
     file = FileField('Фото',  validators=[
         FileAllowed(images, 'Только картинки!')
     ])
+    tags = FieldList(FormField(TagsForm), min_entries=3, validators = [Optional()])
+
+
+class EditPostForm(FlaskForm):
+    title = StringField('Заголовок', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])
+    body = StringField('Текст', [validators.Length(min = 5, max=2500, message="Длина текста должна быть от 5 до 2500 символов")], widget=TextArea())
+    file = FileField('Фото',  validators=[
+        FileAllowed(images, 'Только картинки!')
+    ])
+
+
+
+
 
 
 
@@ -79,3 +93,8 @@ class ProductForm(FlaskForm):
     ])
     description = StringField('Описание*', [validators.Length(min = 5, max=1500, message="Длина описания должна быть от 5 до 1500 символов")], widget=TextArea())
 
+
+
+
+class SearchForm(FlaskForm):
+    search = StringField('search', validators = [DataRequired()])
