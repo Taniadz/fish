@@ -34,10 +34,10 @@ all comment to post on page "single_post"
                                 </h4>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#"
-                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_prod_comment');">
+                                           onclick="edit_comment(event, {{ comment.id }}, '/edit_post_comment');">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>редактировать</a></li>
                                     <li><a href="#"
-                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_prod_comment');">
+                                           onclick="delete_comment(event, {{ comment.id }}, '/delete_post_comment');">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                         удалить
                                     </a>
@@ -539,12 +539,12 @@ generate product_boxes
                                 {% endif %}
                             {% else %}
                                 <img class="unliked" src="{{ url_for('static',filename="image/not-reaction.png" ) }}"
-                                     url="like_product" obj_id={{ product.id }}/>
+                                     url="like_product" obj_id={{ product.id }} />
 
                             {% endif %}
                         {% else %}
                             <img class="like-not-login"
-                                 src="{{ url_for('static',filename="image/not-reaction.png" ) }}"/>
+                                 src="{{ url_for('static',filename="image/not-reaction.png" ) }}" />
 
                         {% endif %}
                     </li>

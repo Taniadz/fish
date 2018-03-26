@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-
+from flask_security import current_user
 from wtforms import StringField, HiddenField, validators, FieldList, FormField
 from wtforms.widgets import TextArea
 from wtforms.validators import Required, Length, DataRequired, Optional
@@ -33,8 +33,14 @@ class ExtendedRegisterForm(RegisterForm):
 class UserEditForm(FlaskForm):
     class Meta:
         model = User
+    def validate_email(self, field):  # here is where the magic is
+        if User.query.filter_by(username=field.data).first():  # check if in database
+            if current_user.username != field.data:
 
-    username = StringField('Никнейм', validators = [Length(min=4, max=25), Unique] )
+                raise ValidationError("Уже существует профиль с таким никнеймом")
+    username = StringField('Никнейм', validators = [Length(min=4, max=25),validate_email ] )
+
+
     about_me = StringField('О себе', widget=TextArea(), validators = [Length(min = 0, max = 1000)])
     file = FileField('Изображение', validators=[
         FileAllowed(images, 'Только картинки!')

@@ -177,8 +177,8 @@ class Post(db.Model):
 
 
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(200))
-    body = db.Column(db.String(1000))
+    title = db.Column(db.String(300))
+    body = db.Column(db.String(2500))
     published_at = db.Column('published_at', db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
@@ -245,7 +245,7 @@ class Product(db.Model):
     __searchable__ = ['description']
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), unique=True)
+    title = db.Column(db.String(300), unique=True)
     description = db.Column(db.String(1500), nullable=True)
     price = db.Column(db.String(200), nullable=True)
     published_at = db.Column(db.DateTime)

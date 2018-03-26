@@ -576,10 +576,15 @@ def delete_product_cache(id):
     cache.delete_memoized(get_or_abort_product, Product, code=404, id = id)
     cache.delete_memoized(get_products_ordering)
 
-@event.listens_for(User, 'after_update')
+@event.listens_for(User, 'after_insert')
 def after_update_user(mapper, connection, target):
+    print("ussssssssssser insert")
     delete_user_cache(target.username)
 
+@event.listens_for(User, 'after_update')
+def after_update_user(mapper, connection, target):
+    print("useeeeer update")
+    delete_user_cache(target.username)
 
 @event.listens_for(Post, 'after_update')
 def after_update_post(mapper, connection, target):

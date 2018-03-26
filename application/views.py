@@ -38,6 +38,11 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
 @app.route('/confirm_email')
 def confirm_email():
     return render_template('confirm_email.html')
@@ -661,6 +666,7 @@ def edit_post_comment(comment_id=None):
 @app.route('/delete_post_comment', methods=['POST'])
 def delete_post_comment():
     comment = get_one_obj(Comment, id = request.form.get("id"))
+    print(comment, request.form.get("id"), "hhhhhhhhhhhhhheeeeeeeeeelp")
     if not check_com_editable(comment):
         data = {'nodelet': "No deletable"}
     else:

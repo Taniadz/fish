@@ -1,5 +1,17 @@
 
 {% for t in tags %}
-<li><a href="#"><i >#</i>{{ t.name }}</a></li>
+<li class="selected-tag"><i >#</i>{{ t.name }}</li>
 <li class="divider"></li>
 {% endfor %}
+
+<script>
+    $(".selected-tag").on("click", function () {
+        var par_id = $(this).parent().prop("id");
+        var text_li = $(this).text();
+        var text_without_first_char = text_li.substring(1, text_li.length);
+        $("#"+ par_id +"-name").val(text_without_first_char);
+
+
+        
+    })
+</script>

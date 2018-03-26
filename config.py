@@ -6,7 +6,6 @@ TEMPLATE_DIR = os.path.join(basedir, 'templates')
 STATIC_DIR= os.path.join(basedir, "static")
 
 SQLALCHEMY_DATABASE_URI = "mysql://apps:apps@localhost/test"
-# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://apps:XXXXXXXX@localhost/apps'
 
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -54,7 +53,7 @@ SECURITY_EMAIL_SENDER = 'contact.me@aqua.name'
 SECURITY_REGISTERABLE = True
 SECURITY_REGISTER_URL = '/create_account'
 SECURITY_POST_REGISTER_VIEW = "/confirm_email"
-SECURITY_PASSWORD_SALT = ''
+SECURITY_PASSWORD_SALT = 'ddddsdv123jjjhhhhhhgffffffkkk679099gygynn'
 SECURITY_POST_LOGIN = '/'
 SECURITY_RESET_URL = "/reset_password"
 
@@ -68,7 +67,7 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_DEBUG = True
 MAIL_USERNAME = 'contact.me@aqua.name'
-MAIL_PASSWORD = 'XXXXXXXXXXXXXXXXXXXXXx'
+MAIL_PASSWORD = 'Gfhjksot11041988'
 
 
 # celery settings

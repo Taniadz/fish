@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+
+{% block navbar %}
+    <div class="ct-maintenanceNav">
+    <div class="container">
+        <div class="ct-u-paddingBoth40">
+<a href="{{ url_for('index') }}">
+                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" width="49px">
+                            </a>        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block body %}
+
+    <section class="ct-sectionMaintenance">
+        <div class="ct-sectionMaintenance-inner">
+
+            <div class="container">
+
+                <h3 class="ct-maintenanceHeader">Сайт находится на обслуживании</h3>
+                <p class="ct-u-motiveBody text-center">
+                В настоящее время на сайте ведутся технические работы. Но очень скоро мы все поправим) Зайдите, пожалуйста, через несколько
+                    минут.
+                </p>
+
+
+            </div>
+        </div>
+
+
+    </section>
+
+{% endblock %}

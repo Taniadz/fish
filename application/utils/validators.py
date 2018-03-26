@@ -14,13 +14,4 @@ class Unique(object):
             raise ValidationError(self.message)
 
 
-class ImageOnly(object):
-    def __init__(self,  message='Has to be an image.'):
-        self.message = message
-
-    def __call__(self, form, field):
-        if not '.' in field.data or not field.data.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:
-            raise ValidationError(self.message)
-
-
 

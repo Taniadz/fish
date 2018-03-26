@@ -118,7 +118,7 @@ security = Security(app, user_datastore,
 #     # Create two Users for testing purposes -- unless they already exists.
 #     # In each case, use Flask-Security utility function to encrypt the password.
 #     encrypted_password = flask_security.utils.encrypt_password('password')
-
+#
 #     if not user_datastore.get_user('tetianarabota@gmail.com'):
 #         user_datastore.create_user(username ="Admin", email='tetianarabota@gmail.com', password=encrypted_password)
 #
@@ -127,7 +127,7 @@ security = Security(app, user_datastore,
 #
 #     # Give one User has the "end-user" role, while the other has the "admin" role. (This will have no effect if the
 #     # Users already have these Roles.) Again, commit any database changes.
-#     user_datastore.add_role_to_user('tetianarabota@gmail.com', 'admin')
+#     user_datastore.add_role_to_user('etianarabota@gmail.com', 'admin')
 #     db.session.commit()
 admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
