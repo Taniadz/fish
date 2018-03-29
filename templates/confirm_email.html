@@ -1,13 +1,23 @@
 
 {% extends "base.html" %}
 {% block body %}
-<section class="ct-errorText text-center text-uppercase  ct-u-paddingTop0 ct-u-paddingBottom100">
+<section class="ct-errorText text-center ct-u-paddingTop0 ct-u-paddingBottom100">
     <div class="container">
 
-        <p class="ct-u-size20 ct-u-paddingTop20 ct-u-paddingBottom40">
-            На ваш Е-mail было отправилено письмо с подтверждением.
-            Пожалуйста, кликните на ссылку в письме, чтобы завершить регистрацию
+        <p class="ct-u-size18 text-uppercase ct-u-paddingTop20 ct-u-paddingBottom40">
+
+            Спасибо за регистрацию, {{ current_user.username }}. На ваш електронный адрес {{ current_user.email }} было отправлено письмо
+            с инструкциями по
+            активации вашего аккаунта.
         </p>
+        <p>
+Пожалуйста, кликните на ссылку, указанную в письме, чтобы подтвердить електронную почту и активировать ваш аккаунт.
+
+
+        </p>
+        <a href="{{ url_for('index') }}" class="btn btn-motive">
+           <span>назад на главную страницу  <i class="fa fa-location-arrow"> </i></span>
+       </a>
 
     </div>
 </section>

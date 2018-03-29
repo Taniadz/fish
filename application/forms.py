@@ -47,7 +47,7 @@ class UserEditForm(FlaskForm):
     ])
 
 class TagsForm(FlaskForm):
-    name = StringField('Тег', widget=TextArea())
+    name = StringField('Тег', validators = [Length(min = 1,max = 32)], widget=TextArea())
 
 class PostForm(FlaskForm):
     title = StringField('Заголовок', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])

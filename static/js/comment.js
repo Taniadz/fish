@@ -113,7 +113,6 @@ function edit_comment(event, id, url) {
 
 $(".edit_comment").submit(function(event) {
     var id = $(this).attr("id");
-    alert(id);
     var formData = new FormData($(this)[0]);
     $.ajax({
         type: "POST",

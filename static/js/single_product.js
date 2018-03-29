@@ -74,9 +74,7 @@ function product_comment(product_id, sort, event) {
 }
 
 function ShowProdCommentForm() {
-    $("#hiden_form1.product-form").slideToggle(400);
-    $("form#form1.comment_form textarea").val("Добавьте свой комментарий");
-    $("form#form1.comment_form textarea").focus(function(){$("form#form1.comment_form textarea").val("");});
+    $("#hiden_form1.product-form").slideToggle(200);
 
 }
 

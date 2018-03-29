@@ -72,3 +72,7 @@ deps/lua/src/liblua.a
 .prerequisites
 *.dSYM
 Makefile.dep
+config.py
+uploads/
+application/test.py
+migrations/

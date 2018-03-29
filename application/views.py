@@ -105,14 +105,11 @@ def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.is_xhr:
         tags = get_tags_name(request.form.get("letter"))
-        print(tags, "taaaaaaaaaaaaaaags")
         data = {'tags_menu': render_template('tags_menu.html',
                                             tags=tags)}
-        print(data, "data")
         return jsonify(data)
 
     if request.method == 'POST' and form.validate_on_submit():
-        print(form.body.data.strip())
         filename = create_filename(form.file.data)
         post = create_obj(Post,
                           title=form.title.data.strip(),
@@ -121,13 +118,13 @@ def add_post():
                           image=filename)
 
         for t in form.tags.data:
-            tag = get_or_create(Tag, name = t["name"])
-
-
-            post.tags.append(tag[0])
-            db.session.commit()
+            tag_name = t["name"][:32]
+            if tag_name:
+                tag = get_or_create(Tag, name = tag_name)
+                if tag[1]: # if tag created
+                    post.tags.append(tag[0])
+                    db.session.commit()
         return redirect(url_for('singlepost', postid=post.id))
-
     return render_template("add_post.html", form=form)
 
 
