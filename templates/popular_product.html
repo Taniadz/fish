@@ -8,12 +8,21 @@
 
     <section class=" ct-blogGrid ct-u-paddingBottom20">
 
-        <div class="ct-pageSectionHeader ct-u-paddingBottom20">
+        <div class="ct-pageSectionHeader ">
             <h3 class="text-uppercase ct-u-size50 text-center">Каталог</h3>
         </div>
 
-        <div class="container">
+        <div class="container ">
             <div class="row">
+            <div class="ct-iconBox ct-u-paddingBoth0">
+                <p class=" ct-u-marginBottom0">
+                    Здесь вы можете продать любой
+                    товар, связанный с аквариумным делом. Также вы можете отдать аквариум даром хорошие руки, или отдать аквариум с рыбками. Для того,
+                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог. Учитывайте, что для того, чтобы добавлять посты и продукты,
+                    вы должны быть зарегистрированным на нашем форуме аквариумистики
+                </p>
+               <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
+            </div>
                 <div class="sort_box">
                     {% if sort == "rating" %}
                         <div class="sort-left col-md-6 col-sm-6">
@@ -41,7 +50,9 @@
                             </a>
                         </div>
                     {% endif %}
+
                 </div>
+
                 <div id="product_container">
                     <div class="ct-product">
                         {% for product in products %}
@@ -54,6 +65,7 @@
                     </div>
 
                 </div>
+
 
             </div>
 

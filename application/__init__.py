@@ -3,10 +3,14 @@ from celery import Celery
 from flask import Flask, url_for, request
 from flask_mail import Mail
 import flask_security
+
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_sqlalchemy import SQLAlchemy
 from social_flask.routes import social_auth
-import babel
+
+from flask_babel import Babel
+
+import flask_babel
 from social_flask_sqlalchemy.models import init_social
 #from .extentions import db
 from flask_uploads import UploadSet, IMAGES, configure_uploads
@@ -34,7 +38,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'memcached', 'CACHE_MEMCACHED_SERVERS':
 cache.init_app(app)
 init_social(app, db.session)
 
-
+babel = Babel(app)
 
 
 
@@ -55,6 +59,7 @@ def register_before_requests(app):
 
     def global_from():
         g.search_form = SearchForm()
+
     app.before_request(global_user)
     app.before_request(global_from)
 
@@ -157,16 +162,14 @@ celery = make_celery(app)
 
 
 
+from .utils.filters import format_datetime,  momentjs, uk_timezone
 
 
-def format_datetime(value, format='medium'):
-    if format == 'full':
-        format="EEEE, d. MMMM y 'at' HH:mm"
-    elif format == 'medium':
-        format="dd.MM.y HH:mm"
-    return babel.dates.format_datetime(value, format)
 
+app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.filters['datetime'] = format_datetime
+app.jinja_env.filters['timezone'] = uk_timezone
+
 import application.views
 import application.models
 

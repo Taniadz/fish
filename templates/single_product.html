@@ -49,7 +49,7 @@
 
                             <a href="{{ url_for('user', username =product_author.username ) }}">{{ product_author.username }}</a>
 
-                            {{ product.published_at|datetime }}
+                            {{ product.published_at|timezone }}
 
 
                         </p>
@@ -307,7 +307,7 @@
                                 <p class="ct-fw-600 ct-u-size18">{{product.title|truncate(50, True) }}</p>
 
 
-                                 <p class="ct-mediaList-date">{{ product.published_at|datetime }}</p>
+                                 <p class="ct-mediaList-date">{{ product.published_at|timezone }}</p>
 
 
                             </div>

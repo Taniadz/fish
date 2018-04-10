@@ -121,6 +121,8 @@ class User(db.Model, UserMixin):
     last_seen = db.Column(db.DateTime)
     avatar = db.Column(db.String(3000), nullable=True)
     avatar_min = db.Column(db.String(3000), nullable=True)
+    social= db.Column(db.Boolean, default=False, nullable=False)
+
     about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post')

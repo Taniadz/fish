@@ -41,7 +41,7 @@
 
                             <a href="{{ url_for('user', username =post_author.username ) }}">{{ post_author.username }}</a>
 
-                            {{ post.published_at|datetime }}
+                            {{ post.published_at|timezone }}
 
                         </p>
                         <p class="text-line">
@@ -308,7 +308,7 @@
                                 <p class="ct-fw-600 ct-u-size18">{{post.title|truncate(50, True) }}</p>
 
 
-                                 <p class="ct-mediaList-date">{{ post.published_at|datetime }}</p>
+                                 <p class="ct-mediaList-date">{{ post.published_at|timezone }}</p>
 
 
                             </div>

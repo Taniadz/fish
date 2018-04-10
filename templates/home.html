@@ -14,7 +14,7 @@
                         <img id="ct-js-logo"
                              src="{{ url_for('static',filename="image/logo-gray.png") }}"
                              alt="FISHtank"
-                             width="49px"   >
+                             width="49px">
                     </a>
                 </div>
                 <ul class="nav navbar-nav">
@@ -55,12 +55,11 @@
 {% block body %}
     <div class="section"></div>
 
-    {{ datetime }}
     <section class="ct-mediaSection">
         <div class="flexslider ct-flexslider--fw ct-flexslider--controls3 ct-flexslider--mainSlider ct-u-marginBoth0 ct-js-flexslider"
-             data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="100%"
+             data-pauseonaction="false" data-directionnav="true" data-animations="true" data-height="70%"
              data-controlnav="true" data-animationloop="true" data-controlscontainer="ct-containerAbsolute"
-             data-slideshow="true" style="max-height: 30%; height: 345px;">
+             data-slideshow="true" style="max-height: 30%; height: 250px;">
 
             <div class="ct-flexslider-progress">
                 <div class="ct-flexslider-progressBar" , style="width: 0px;">
@@ -69,19 +68,23 @@
             </div>
             <ul class="slides">
                 <li style="background-image: url({{ url_for('static',filename="image/flexslider/carusel1.jpg") }}); min-height: 100%; height: 30%; width: 1149px; float: left; display: block;
-                        class=" ">
+                        class="
+                ">
 
                 </li>
                 <li style="background-image: url({{ url_for('static',filename="image/flexslider/carusel2.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                        class="">
+                        class="
+                ">
 
                 </li>
                 <li style="background-image: url({{ url_for('static',filename="image/flexslider/carusel3.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                        class="">
+                        class="
+                ">
 
                 </li>
                 <li style="background-image: url({{ url_for('static',filename="image/flexslider/carusel4.jpg") }}); min-height: 100%; height: 100%; width: 1149px; float: left; display: block;
-                        class="">
+                        class="
+                ">
 
                 </li>
 
@@ -95,51 +98,37 @@
 
 
 
-    <div class="container ct-u-positionRelative">
-    <div class="ct-u-positionRelative">
-        <div class="ct-pageSectionHeader ct-offsetTop25 ct-u-borderBottomGrayLighter">
-            <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">Узнайте больше о любимом хобби -  <span>Аквариумистике</span></h4>
 
-                    <p>
-
-Почему аквариумное дело так интересно? Ответов много, ведь это действительно многогранное искусство,
-                и каждый может найти в нем что-то для своего развития и удовлетворения.
-            </p>
-
-    <p>
-Для некоторых аквариумистика - это любимое и интересное хобби, для других же - профессиональное дело. Форум аквариумистики - это место, где собираются и знатоки, и любители.
-
-            </p>
-        <p>
-Добавляйте посты и продукты, обменивайтесь своим опытом, узнайте много нового.
-            Вам сюда, если вы хотите развиваться как специалист.
-            Но если для вас аквариумистика - не род занятий, а удивительное и интересное искусство,
-            то на этом форуме вы сможете пообщаться с людьми, которых объединяет с вами любимое дело.
-            Форум аквариумистики - это сообщество, где вы сможете найти друзей и соратников.
-
-                </p>
-
-            </div>
-        </div>
     </div>
-</div>
+    <div class="container">
+    <h4 class="ct-fw-300 ct-u-size40 ">Узнайте больше о любимом хобби - <span>Аквариумистике</span></h4>
+    </div>
 
-    <section class="ct-u-paddingBoth30">
-        <div class="container">
-            <a href="{{url_for("last_posts")}}" class="blue-hover">
+    <section class="ct-u-paddingBottom30">
+        <div class="container  ct-u-borderBottomGrayLighter">
+        <div class="col-md-12" style="float: none">
 
-        <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Последние посты</h4>
+            <a href="{{ url_for("last_posts") }}" class="blue-hover">
 
-</a>
-            <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20 ">
-                        {% for post in posts%}
-                            {% if not post.deleted %}
-                                <div class="col-sm-6 ct-js-blogMasonry-item home-post-grid" >
+                <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">
+                    Новые посты</h4>
 
-                                    {{ posts_macro(post, posts_relationship) }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+            </a>
+        </div>
+            <div class="ct-blog ct-js-blogMasonry ct-u-paddingBottom20 ">
+                {% for post in posts %}
+                    {% if not post.deleted %}
+                        <div class="col-sm-6 ct-js-blogMasonry-item home-post-grid">
+
+                            {{ posts_macro(post, posts_relationship) }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        <div class="col-md-12">
+        <h4 class="text-center ct-fw-600 ct-u-size22" >
+            <a class="" href="{{ url_for("last_posts") }}" style="text-decoration:none"><span>Читать еще  <i class="fa fa-location-arrow"></i></span></a>
+        </h4>
             </div>
         </div>
 
@@ -148,70 +137,106 @@
 
     <section class="ct-u-motiveLight2--bg ct-u-paddingBottom10">
         <div class="container">
+        <div class="ct-iconBox">
+                <p class=" ct-u-marginBottom0">
+                    Здесь вы можете продать любой
+                    товар, связанный с аквариумным делом. Также вы можете отдать аквариум даром хорошие руки, или отдать аквариум с рыбками. Для того,
+                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог. Учитывайте, что для того, чтобы добавлять посты и продукты,
+                    вы должны быть зарегистрированным на нашем форуме аквариумистики
+                </p>
+               <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
+            </div>
 
-        <a href="{{url_for("popular_product")}}" class="blue-hover">
+            <a href="{{ url_for("popular_product") }}" class="blue-hover">
 
-        <h4 class="ct-fw-600 ct-u-size28 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">Популярные продукты</h4>
+                <h4 class="ct-fw-600 ct-u-size28 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">
+                    Популярные продукты</h4>
 
-</a>
+            </a>
 
 
             <div id="product_container" class="row">
-        <div class="ct-product">
-            {% for product in products %}
+                <div class="ct-product">
+                    {% for product in products %}
 
-                {% if not product.deleted %}
-                    <div class="col-md-4 col-xs-12 ct-u-paddingTop15 one-product">
+                        {% if not product.deleted %}
+                            <div class="col-md-4 col-xs-12 ct-u-paddingTop15 one-product">
 
-                    {{ products_macro(product, products_relationship) }}
+                                {{ products_macro(product, products_relationship) }}
 
-                    </div>
-                {% endif %}
-            {% endfor %}
-         </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
 
-    </div>
+            </div>
         </div>
-
-
 
 
     </section>
 
     <div class="container">
-    <p>
+        <div class="ct-pageSectionHeader ct-offsetTop25 ct-u-borderBottomGrayLighter">
+            <h4 class="ct-fw-300 ct-u-size40 ct-u-paddingBottom20">Узнайте больше о любимом хобби -
+                <span>Аквариумистике</span></h4>
 
-Конечно, для начинающего аквариумиста самым сложным на первых этапах будет запуск аквариума, ведь это сложная маленькая
-        экосистема, в которые все связано между собою до мельчайших деталей.
-        Если вы ищете совет, или у вас есть какие то сомнения - достаточно написать об этом пост с вопросом.
+            <p>
+
+                Почему аквариумное дело так интересно? Ответов много, ведь это действительно многогранное искусство,
+                и каждый может найти в нем что-то для своего развития и удовлетворения.
             </p>
+
+            <p>
+                Для некоторых аквариумистика - это любимое и интересное хобби, для других же - профессиональное дело.
+                Форум аквариумистики - это место, где собираются и знатоки, и любители.
+
+            </p>
+            <p>
+                Добавляйте посты и продукты, обменивайтесь своим опытом, узнайте много нового.
+                Вам сюда, если вы хотите развиваться как специалист.
+                Но если для вас аквариумистика - не род занятий, а удивительное и интересное искусство,
+                то на этом форуме вы сможете пообщаться с людьми, которых объединяет с вами любимое дело.
+                Форум аквариумистики - это сообщество, где вы сможете найти друзей и соратников.
+
+            </p>
+
+        </div>
+        <p>
+
+            Конечно, для начинающего аквариумиста самым сложным на первых этапах будет запуск аквариума, ведь это
+            сложная маленькая
+            экосистема, в которые все связано между собою до мельчайших деталей.
+            Если вы ищете совет, или у вас есть какие то сомнения - достаточно написать об этом пост с вопросом.
+        </p>
 
 
         <p>
-Что, как не создание аквариума может позволить вам ощутить себя творцом нового собственного мира. Кроме того, как утверждают многие психологи, аквариум в доме способствует созданию особой атмосферы, в которой царит гармония и  спокойствие. Для некоторых аквариумистика интересна й тем,  что наблюдение за красивыми рыбками благотворно влияет на психику, помогает снять напряжение.
+            Что, как не создание аквариума может позволить вам ощутить себя творцом нового собственного мира. Кроме
+            того, как утверждают многие психологи, аквариум в доме способствует созданию особой атмосферы, в которой
+            царит гармония и спокойствие. Для некоторых аквариумистика интересна й тем, что наблюдение за красивыми
+            рыбками благотворно влияет на психику, помогает снять напряжение.
 
 
-                </p>
-</div>
+        </p>
+    </div>
 
-<script>
-$(document).ready(function() {
-   var $bodyel = jQuery("body");
-   $bodyel.addClass("cssAnimate ct-js-navbarMakeSmaller ct-navbar-isTransparent-toDefault");
-});
+    <script>
+        $(document).ready(function () {
+            var $bodyel = jQuery("body");
+            $bodyel.addClass("cssAnimate ct-js-navbarMakeSmaller ct-navbar-isTransparent-toDefault");
+        });
 
-jQuery(window).on("load",function () {
-
-
-        if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
-            $('.ct-js-blogMasonry').masonry({
-                itemSelector: '.ct-js-blogMasonry-item',
-                masonry: {
-                }
-            });
-        }
-     });
+        jQuery(window).on("load", function () {
 
 
-</script>
+            if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {
+                $('.ct-js-blogMasonry').masonry({
+                    itemSelector: '.ct-js-blogMasonry-item',
+                    masonry: {}
+                });
+            }
+        });
+
+
+    </script>
 {% endblock %}

@@ -9,15 +9,22 @@ from werkzeug.exceptions import abort
 from application  import UPLOAD_FOLDER, app, db, cache
 from .models import User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag
 
+from social.apps.flask_app.default.models  import UserSocialAuth
 
 from sqlalchemy import event, update
+
+def check_is_social(user):
+    return db.session.query(UserSocialAuth).filter_by(user_id =user.id).first()
+
+import re
+
+
+
 
 def count_user_rating(user):
     rating =0
     posts = Post.query.filter_by(user_id=user.id).all()
     comments = Comment.query.filter_by(user_id=user.id).all()
-
-
     for p in posts:
         rating_by_post = p.like_count + p.funny_count*2 - p.unlike_count
         rating=rating+rating_by_post
@@ -36,10 +43,21 @@ def get_posts_by_tagname(name):
     posts = Post.query.filter(Post.tags.any(name=name)).all()
     return posts
 
-def get_tags_name(query):
-    result = db.session.query(Tag).filter(Tag.name.op('regexp')(r'{}\w*'.format(query))).all()
-
+@cache.memoize(timeout=500)
+def get_tags_all():
+    result = db.session.query(Tag).all()
     return result
+
+def filter_tags(tags, query):
+    tags_list = []
+    for tag in tags:
+        if (re.match(query, tag.name)):
+            tags_list.append(tag)
+    print(tags_list, "llllllllllllllllllllllllllllllliist")
+    return tags_list
+
+
+
 
 
 def get_posts_search(query):
@@ -401,10 +419,12 @@ def update_product_rows(product, description, title, price):
     return
 
 
-def update_user_rows(user, avatar, username, avatar_min=None, about_me=None, ):
+def update_user_rows(user, avatar, username, social=None, avatar_min=None, about_me=None):
     user.about_me = about_me
     user.avatar = avatar
     user.username = username
+    if social:
+        user.social = True
     db.session.add(user)
     db.session.commit()
     return
@@ -565,6 +585,7 @@ def get_all_comments_by_product_id(id):
     return CommentProduct.query.filter_by(product_id = id).all()
 
 def delete_user_cache(username):
+
     cache.delete_memoized(get_or_abort_user, User, code=404, username=username)
 
 
@@ -628,3 +649,8 @@ def after_insert_comment(mapper, connection, target):
     # cache.delete_memoized(get_all_comments_by_product_id, target.product_id)
     cache.delete_memoized(get_last_comments_for_products)
 
+
+@event.listens_for(Tag, 'after_insert')
+def after_insert_tag(mapper, connection, target):
+    print("insert tags")
+    cache.delete_memoized(get_tags_all)

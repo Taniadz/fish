@@ -8,10 +8,9 @@ from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
-import re
 POSTS_PER_PAGE = 6
 
-
+import pytz
 
 from .helpers import *
 from PIL import Image, ImageDraw
@@ -22,6 +21,18 @@ def uploaded_file(filename):
                                filename)
 
 
+@app.before_request
+def before_request():
+
+    if current_user.is_authenticated:
+        current_time = datetime.now()
+        delta = timedelta(minutes=10)
+        if current_user.last_seen:
+            if current_time - current_user.last_seen > delta:
+                current_user.last_seen = datetime.utcnow()
+                db.session.add(current_user)
+                db.session.commit()
+
 def save_profile(backend, user, response, *args, **kwargs):
    if backend.name == 'facebook':
         user = get_one_obj(User, id=user.id)
@@ -31,7 +42,7 @@ def save_profile(backend, user, response, *args, **kwargs):
         fout = open(UPLOAD_FOLDER +"/" + filename , "wb")  # filepath is where to save the image
         fout.write(avatar)
         fout.close()
-        update_user_rows(user, username = response.get('name'), avatar = filename )
+        update_user_rows(user, username = response.get('name'), avatar = filename, social = True )
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -104,9 +115,10 @@ def last_posts(page=1):
 def add_post():
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.is_xhr:
-        tags = get_tags_name(request.form.get("letter"))
+        tags = get_tags_all()
+        filtered_tags =  filter_tags(tags, request.form.get("letter"))
         data = {'tags_menu': render_template('tags_menu.html',
-                                            tags=tags)}
+                                            tags=filtered_tags)}
         return jsonify(data)
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -136,14 +148,14 @@ def add_post():
 def user(username):
     page = 1
     user = get_or_abort_user(User, username=username)
+    # check_is_social(user)
+
     rating = count_user_rating(user)
     POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
-
-
     side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
 
     # show posts, written by profile owner(default), others container rendered by ajax
-    # with def user_contain_* functions. This part is showed by included user_contain_post.html
+    # with def user0_contain_* functions. This part is showed by included user_contain_post.html
     posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
     print(posts)
     posts_relationships = get_posts_relationship(posts, current_user)
@@ -239,8 +251,7 @@ def singlepost(postid=None):
         posts = get_posts_ordering(Post.published_at.desc(), 1, POSTS_PER_PAGE) # posts for side box
         editable = check_post_editable(post)  # check if user can edit post
         comments = get_all_comments_by_post_id(post.id)
-        print(1111111111111111111111111)
-        print(comments, "commenooooooots")
+
         post_author = get_one_obj(User, id=post.user_id)
         if_favorite = check_if_post_favourite(current_user, post)  # check if post added to favourite by user, False for not login too
         comments_relationships = get_post_comment_relationships(comments, current_user)

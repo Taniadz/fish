@@ -4,21 +4,27 @@ all comment to post on page "single_post"
         {% if comment.deleted %}
             <p>Комментарий был удален</p>
         {% else %}
-
-
             <div class="left-image">
-                {% if comments_relationships[comment.id]["author"].avatar_min %}
-                    <img class="img-inherited"
-                         src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
-                {% else %}
-                    <img src="{{ url_for('static',filename= "image/min_icon-user-default.png") }}" width="40px"/>
-                {% endif %}
+                <a class="ct-u-paddingBoth0" href="{{ url_for("user", username = comments_relationships[comment.id]["author"].username) }}">
+
+                    {% if comments_relationships[comment.id]["author"].avatar_min %}
+
+                        <img class="img-inherited"
+                             src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
+                    {% else %}
+                        <img src="{{ url_for('static',filename= "image/min_icon-user-default.png") }}" width="40px"/>
+                    {% endif %}
+                </a>
             </div>
             <div class="description">
                 <div class="ct-u-floatLeft">
                        <p class="ct-u-paddingBottom5">
-                    <span>{{ comments_relationships[comment.id]["author"].username }} </span>
-                    - {{ comment.timestamp|datetime }}
+                           <a class="hoover-blue ct-u-paddingBoth0" href="{{ url_for("user", username = comments_relationships[comment.id]["author"].username) }}">
+                              <span>{{ comments_relationships[comment.id]["author"].username }} </span>
+
+                    -
+                               {{comment.timestamp|timezone}}
+                                </a>
                 </p>
 
                 </div>
@@ -166,18 +172,24 @@ all comment to product on page "single_product"
 
         {% else %}
             <div class="left-image">
+                            <a class="ct-u-paddingBoth0" href="{{ url_for("user", username = comments_relationships[comment.id]["author"].username) }}">
+
                 {% if  comments_relationships[comment.id]["author"].avatar_min %}
                     <img class="img-inherited"
                          src="{{ url_for('uploaded_file',filename= comments_relationships[comment.id]["author"].avatar_min) }}"/>
                 {% else %}
                     <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}" />
                 {% endif %}
+                            </a>
             </div>
             <div class="description">
                 <div class="ct-u-floatLeft">
                        <p class="ct-u-paddingBottom5">
+                           <a class="hoover-blue ct-u-paddingBoth0" href="{{ url_for("user", username = comments_relationships[comment.id]["author"].username) }}">
+
                     <span>{{ comments_relationships[comment.id]["author"].username }} </span>
-                    - {{ comment.timestamp|datetime }}
+                              - {{comment.timestamp|timezone}}
+                           </a>
                 </p>
 
                 </div>
@@ -366,12 +378,12 @@ all comment to product on page "single_product"
 
 {% macro posts_macro(post, posts_relationships) -%}
     <article class="ct-articleBox">
-        <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size34">{{ post.title }}</h5></a>
+        <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size30">{{ post.title }}</h5></a>
         <p class="ct-u-motiveLight">
 
             <a href="{{ url_for('user', username=posts_relationships[post.id]["author"].username) }}">{{ posts_relationships[post.id]["author"].username }}</a>
 
-            {{ post.published_at|datetime }}
+            {{ post.published_at|timezone }}
 
         </p>
 

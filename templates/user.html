@@ -32,30 +32,31 @@
                 {% else %}
                     <img src="{{ url_for('static',filename="image/icon-user-default.png") }}" width="60"/>
                 {% endif %}
-                <div class="avatar-edit">
-                    <a href="{{ url_for('user_edit', username = user.username ) }}">
-                        <i class="fa fa-camera" aria-hidden="true"></i> редактировать аватарку
-                    </a>
-                </div>
+                {% if current_user == user %}
+                    <div class="avatar-edit">
+                        <a href="{{ url_for('user_edit', username = user.username ) }}">
+                            <i class="fa fa-camera" aria-hidden="true"></i> редактировать аватарку
+                        </a>
+                    </div>
+                {% endif %}
             </div>
 
 
 
         <div class="col-xs-12 col-sm-6" id=user_about>
          {% if current_user == user %}
-             {% if not user.confirmed_at %}
+             {% if not user.confirmed_at and not  user.social %}
                  <p>
                  На ваш електронный адрес {{ current_user.email }} было отправлено письмо
             с инструкциями по активации вашего аккаунта.
 
 Пожалуйста, кликните на ссылку, указанную в письме, чтобы подтвердить електронную почту и активировать ваш аккаунт.
-
                  </p>
              {% endif %}
         {% endif %}
 
             {% if user.last_seen %}
-                <p><i>Был онлайн: {{ user.last_seen }}</i></p>
+                <p><i>Был онлайн: {{momentjs(user.last_seen).calendar()}}</i></p>
             {% endif %}
             <p class="ct-u-paddingBottom5">
                 <span>Дата регистрации</span>

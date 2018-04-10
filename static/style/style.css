@@ -3941,3 +3941,17 @@ a {
 li.selected-tag{
     cursor: pointer;
 }
+
+.ct-iconBox {
+    background-color: #ffffff;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    padding: 25px;
+    border-bottom: 3px solid #eeeeee;
+}
+
+a.hoover-blue:hover{
+    text-decoration: none;
+    color: #1f8bf3;
+
+}
