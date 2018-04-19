@@ -1,13 +1,17 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
-from application import celery, UPLOAD_FOLDER, security, cache, db
-from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm
+from application import celery, UPLOAD_FOLDER, security, cache, db, mail
+from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm
 from werkzeug import secure_filename
 from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
+from flask_mail import Message
+
+import facebook
+
 POSTS_PER_PAGE = 6
 
 import pytz
@@ -21,17 +25,49 @@ def uploaded_file(filename):
                                filename)
 
 
+
+
+def publish_post_facebook(text):
+    graph = facebook.GraphAPI("")
+    graph.put_object("", "feed", message=text, link="https://aqua.name/")
+    return
+
+
+@app.route('/contact_us', methods=['GET', 'POST'])
+def contact_us():
+    form = ContactForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        msg = Message(form.title.data,
+                      sender="contact.me@aqua.name",
+                      recipients=form.email.data)
+        msg.body = form.message.data
+        mail.send(msg)
+    if current_user.is_authenticated:
+        if current_user.email:
+            form.email.data = current_user.email
+
+    return render_template("contact_us.html", form=form)
+
+
+
 @app.before_request
 def before_request():
 
     if current_user.is_authenticated:
-        current_time = datetime.now()
-        delta = timedelta(minutes=10)
         if current_user.last_seen:
+            current_time = datetime.utcnow()
+            delta = timedelta(minutes=10)
             if current_time - current_user.last_seen > delta:
                 current_user.last_seen = datetime.utcnow()
-                db.session.add(current_user)
-                db.session.commit()
+
+        else:
+                current_user.last_seen = datetime.utcnow()
+
+        db.session.add(current_user)
+        db.session.commit()
+
+
+
 
 def save_profile(backend, user, response, *args, **kwargs):
    if backend.name == 'facebook':
@@ -136,6 +172,9 @@ def add_post():
                 if tag[1]: # if tag created
                     post.tags.append(tag[0])
                     db.session.commit()
+        if form.facebook_post.data:
+            publish_post_facebook(post.body)
+
         return redirect(url_for('singlepost', postid=post.id))
     return render_template("add_post.html", form=form)
 

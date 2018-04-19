@@ -1,13 +1,13 @@
 from flask_wtf import FlaskForm
 from flask_security import current_user
-from wtforms import StringField, HiddenField, validators, FieldList, FormField
+from wtforms import StringField, HiddenField, validators, FieldList, FormField, BooleanField
 from wtforms.widgets import TextArea
 from wtforms.validators import Required, Length, DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_security.forms import RegisterForm, ConfirmRegisterForm
 from .models import User
 from .utils.validators import Unique
-from wtforms.validators import ValidationError
+from wtforms.validators import ValidationError, Email
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 from application import images
@@ -56,6 +56,7 @@ class PostForm(FlaskForm):
         FileAllowed(images, 'Только картинки!')
     ])
     tags = FieldList(FormField(TagsForm), min_entries=3, validators = [Optional()])
+    facebook_post = BooleanField("", default=True )
 
 
 class EditPostForm(FlaskForm):
@@ -104,3 +105,10 @@ class ProductForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     search = StringField('search', validators = [DataRequired()])
+
+class ContactForm(FlaskForm):
+    email = StringField("Email*", validators=[Email("Введите правильный email")])
+    title = StringField('Тема*', [validators.Length(min =1, max=300, message="Длина темы должна быть от 1 до 1000 символов")])
+
+    message = StringField('Сообщение*', [validators.Length(min=1, max=3000,  message="Длина сообщения должна быть от одного до 3000 символов")], widget=TextArea())
+

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+
+{% block body %}
+
+    <section class="ct-u-paddingBoth40">
+        <div class="container">
+            <div class="ct-sectionHeader ct-u-paddingBoth20">
+                <h2 class="text-uppercase ct-u-marginBottom0 ct-u-size40">Свяжитесь с нами</h2>
+                <h5 class="ct-u-motiveLight ct-fw-300 ct-u-size30">Мы очень скоро ответим вам</h5>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
+                    <form action="" method="post" class="form-horizontal" enctype=multipart/form-data >
+                        <div class="form-group">
+                            {{ form.hidden_tag() }}
+                            {{ render_field_with_errors(form.email, class="form-control") }}
+
+                            {{ render_field_with_errors(form.title, class="form-control") }}
+                            {{ render_field_with_errors(form.message, class="form-control", rows=5) }}
+
+
+                            </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="submit" class="btn btn-motive btn-form">Отправить <i class="fa fa-location-arrow"></i></button>
+                            </div>
+                                            <p class=" text-center ct-fw-600 ct-u-marginBoth0">Наша команда доступна для вас 24 часа в сутки</p>
+
+                        </div>
+
+
+                    </form>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+<script>
+$(".tags textarea").on("input",function () {
+    var menu_id = $(this).parent().parent().parent().parent().prop("id");
+
+    $("body").on("click", function () {
+        $('.dropdown-menu').hide();
+    });
+    var letter = $(this).val();
+    $.post($SCRIPT_ROOT + '/add_post', {letter: letter}, function (data) {
+        $('#' + menu_id + '.dropdown-menu').html(data.tags_menu);
+        console.log('#' + menu_id + '.dropdown-menu');
+        $('#' + menu_id + '.dropdown-menu').show();
+
+        });
+
+
+})
+</script>
+
+{% endblock %}

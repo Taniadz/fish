@@ -12,11 +12,12 @@ from .models import User, Post, Comment, CommentProduct, Product, PostReaction, 
 from social.apps.flask_app.default.models  import UserSocialAuth
 
 from sqlalchemy import event, update
-
 def check_is_social(user):
     return db.session.query(UserSocialAuth).filter_by(user_id =user.id).first()
 
 import re
+
+
 
 
 
