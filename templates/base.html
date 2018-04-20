@@ -63,7 +63,11 @@
 
 
 	</head>
+
 	<body class="">
+
+
+
     <!-- :mobile Menu: -->
     <div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
                                             <button type="button" class="close" data-dismiss="alert">
@@ -214,6 +218,22 @@
             </nav>
             {% endblock %}
             <main>
+            {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+            <div class="ct-iconBox-flash ct-iconBox-motive ct-iconBox--rightIcon">
+                <i class="fa fa-window-close ct-u-motive ct-u-size20 close-flash"></i>
+                        <i class="ct-u-motive ct-u-size50 fa fa-envelope"></i>
+                        <h4 class="text-uppercase ct-fw-600 ct-u-size18">Уведомление</h4>
+
+                    <ul class=flashes>
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                      </div>
+                  {% endif %}
+                {% endwith %}
+
 
                 {% block body %}
                 {% endblock %}
@@ -262,6 +282,7 @@
             $('.smile').on("click", AddReaction);
             ShowReactionDiv();
         });
+
     </script>
 
 </html>

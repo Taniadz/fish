@@ -169,4 +169,10 @@ text = text.replace(/\r?\n/g, '<br />');
 $('.text-line').html(text);
 
 
+$(".ct-iconBox-flash").delay(5000).hide(1);
+
+$(".close-flash").on("click", function () {
+    $(".ct-iconBox-flash").hide();
+})
+
 });

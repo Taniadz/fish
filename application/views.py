@@ -26,22 +26,35 @@ def uploaded_file(filename):
 
 
 
-
-def publish_post_facebook(text):
+@celery.task
+def publish_async_facebook(text):
     graph = facebook.GraphAPI("")
     graph.put_object("", "feed", message=text, link="https://aqua.name/")
-    return
+    return True
 
+
+
+
+@celery.task
+def send_async_email(title, message):
+    """Background task to send an email with Flask-Mail."""
+    msg = Message(title,
+                  sender="contact.me@aqua.name",
+                  recipients=["contact.me@aqua.name"])
+    msg.body = message
+    mail.send(msg)
+    return True
 
 @app.route('/contact_us', methods=['GET', 'POST'])
 def contact_us():
     form = ContactForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        msg = Message(form.title.data,
-                      sender="contact.me@aqua.name",
-                      recipients=form.email.data)
-        msg.body = form.message.data
-        mail.send(msg)
+
+        send_async_email.delay(form.email.data, form.message.data)
+        flash("Ваше сообщеие было отправлено")
+
+        return redirect(url_for('index'))
+
     if current_user.is_authenticated:
         if current_user.email:
             form.email.data = current_user.email
@@ -173,7 +186,8 @@ def add_post():
                     post.tags.append(tag[0])
                     db.session.commit()
         if form.facebook_post.data:
-            publish_post_facebook(post.body)
+            publish_async_facebook(post.body)
+        flash("Ваш пост был опубликован на фейбсук")
 
         return redirect(url_for('singlepost', postid=post.id))
     return render_template("add_post.html", form=form)

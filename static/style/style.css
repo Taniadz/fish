@@ -4020,3 +4020,51 @@ a.hoover-blue:hover{
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+
+
+.ct-iconBox-flash {
+    background-color: #ffffff;
+
+    padding: 25px;
+    border: 3px solid #eeeeee;
+    position: fixed;
+    width: 500px;
+    height: 200px;
+    margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+    left: 0;
+    right: 0;
+    z-index: 10000;
+}
+.ct-iconBox--rightIcon i {
+    float: right;
+    padding-left: 20px;
+    margin-top: 3px;
+}
+.ct-iconBox-flash i, .ct-iconBox-flash p {
+    display: table-cell;
+    vertical-align: top;
+}
+.ct-iconBox-flash h4 {
+    padding-bottom: 5px;
+}
+
+.close-flash{
+    color: #1f8bf3;
+    cursor: pointer;
+}
+
+.dropdown-menu li.comment_block {
+
+    display: block;
+    padding: 2px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.dropdown-menu li.comment_block:hover {
+    background-color: gainsboro;
+}

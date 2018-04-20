@@ -37,9 +37,15 @@
             {% endfor %}
          </div>
 {% else %}
-    <p>You have not product yet</p>
-    <p>Could you add one?</p>
-    <a href="{{url_for('add_product')}}">Add_product</a>
+        {% if current_user == user %}
+
+    <p>Вы  пока н добавили в каталог ни одноо продукта</p>
+    <p>У ва есть что-нибудь для
+    <a href="{{url_for('add_product')}}">продать или отдать?</a>
+            </p>
+            {% else %}
+        <p>Этот форумчанин еще не добавил продукты</p>
+    {% endif %}
             {% endif %}
 
 <script>

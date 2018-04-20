@@ -100,7 +100,7 @@
                         <ul class="ct-simpleList list-unstyled ct-u-paddingBottom30">
                             {% for comment in comments %}
                                 <li><i class="fa fa-chevron-right"></i>{{ comments_rel[comment.id]["author"].username }}
-                                    on <a href="#"><span>{{ comments_rel[comment.id]["post"].title }}</span></a></li>
+                                    on <a href="{{ url_for("singlepost", postid=comments_rel[comment.id]["post"].id) }}"><span>{{ comments_rel[comment.id]["post"].title }}</span></a></li>
                             {% endfor %}
                         </ul>
                     </div>
