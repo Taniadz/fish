@@ -1,14 +1,14 @@
 
 from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
 from application import celery, UPLOAD_FOLDER, security, cache, db, mail
-from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm
+from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm, MessageForm
 from werkzeug import secure_filename
-from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag
+from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag, Message
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
-from flask_mail import Message
+from flask_mail import Message as FlaskMessage
 
 import facebook
 
@@ -18,6 +18,65 @@ import pytz
 
 from .helpers import *
 from PIL import Image, ImageDraw
+
+
+@app.route('/dialogs/<int:user_id>', methods = ['POST', 'GET'])
+@login_required
+def dialogs(user_id):
+    dialogs = get_dialogs_by_user_id(current_user.id)
+    users_dict  = get_users_for_dialog(dialogs, current_user)
+    return render_template("dialogs.html", dialogs = dialogs, users_dict=users_dict)
+
+@app.route('/send_message', methods = ['POST'])
+@login_required
+def send_message():
+    form = MessageForm(CombinedMultiDict((request.files, request.form)))
+    if form.validate_on_submit():
+        print(form.data)
+        dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
+        filename = create_filename(form.file.data)
+        message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
+        create_notification(form.receiver_id.data, "message", message.id, )
+        update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at)
+
+        return jsonify({"user_id" : current_user.id})
+
+
+
+@app.route('/messages_box', methods = ['POST', "GET"])
+@login_required
+def messages_box():
+    form = MessageForm(CombinedMultiDict((request.files, request.form)))
+    if request.method == 'GET':
+        messages = get_ordered_list(Message, Message.sent_at, dialog_id=request.args.get("dialog_id"))
+
+        # form.receiver_id.data = \
+        message_was_read(messages, current_user)
+        dialog = get_one_obj(Dialog, id = request.args.get("dialog_id"))
+
+        dialog_was_read(dialog, current_user.id)
+        form.receiver_id.data = get_other_participant(dialog, current_user.id)
+
+        data = {'messages': render_template('messages_box.html',
+                                            form=form, messages=messages)}
+
+
+    if request.method == 'POST' and form.validate_on_submit():
+        dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
+        filename = create_filename(form.file.data)
+        message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
+        create_notification(form.receiver_id.data, "message", message.id, )
+        updated_dialog = update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed=False)
+        messages = get_ordered_list(Message, Message.sent_at, dialog_id=dialog.id)
+
+        data = {'messages': render_template('messages_box.html',
+                                        form=form, messages=messages),
+            "dialog_text" : updated_dialog.short_text,
+                "dialog_id" : updated_dialog.id}
+
+    return jsonify(data)
+
+
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -38,7 +97,7 @@ def publish_async_facebook(text):
 @celery.task
 def send_async_email(title, message):
     """Background task to send an email with Flask-Mail."""
-    msg = Message(title,
+    msg = FlaskMessage(title,
                   sender="contact.me@aqua.name",
                   recipients=["contact.me@aqua.name"])
     msg.body = message
@@ -201,7 +260,8 @@ def add_post():
 def user(username):
     page = 1
     user = get_or_abort_user(User, username=username)
-    # check_is_social(user)
+    form = MessageForm(CombinedMultiDict((request.files, request.form)))
+    form.receiver_id.data = user.id
 
     rating = count_user_rating(user)
     POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
@@ -213,7 +273,7 @@ def user(username):
     print(posts)
     posts_relationships = get_posts_relationship(posts, current_user)
     return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(),
-                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating)
+                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form)
 
 
 
@@ -793,24 +853,14 @@ def delete_post():
 def edit_post():
     form = EditPostForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        print("geeeeet")
         post = get_one_obj(Post, id=request.args.get("id"))
         if not check_post_editable(post):
             return redirect(url_for('singlepost', postid=request.args.get("id")))
         form.body.data=post.body
         form.title.data=post.title
         return render_template("edit_post.html", form=form, id=request.args.get("id"))
-    # elif request.method == 'POST':
-    #     print("nnnnnnnnnnnn")
-    #     print(form.data, "ffffffffffffffffffffff")
-    #     for errorMessages in form.errors.items():
-    #         for err in errorMessages:
-    #             print(err, "err")
-    #     return render_template("edit_post.html", form=form, id=request.args.get("id"))
 
     elif request.method == 'POST' and form.validate_on_submit():
-        print("poooooooooooooooo")
-        print(form.data, "ffffffffffffffffffffff")
         post = get_one_obj(Post, id=request.args.get("id"))
         if form.file.data:
             filename = create_filename(form.file.data)
@@ -837,8 +887,6 @@ def search_results(query):
     # if search only by tagname
     if only_tag:
         posts= get_posts_by_tagname(query)
-        print(query)
-        print(posts, "only tag")
 
     else:    #if use tagname search and full text search
         posts = get_posts_search(query)

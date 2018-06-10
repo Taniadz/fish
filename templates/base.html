@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Форум аквариумистов">
+    <meta name="description" content="Форум аквариумистов - все для простого и удобного общения">
   <meta name="keywords" content="форум Аквариумистов, форум аквариумистики, сайт аквариумистики, аквариум форум, морские аквариумисты, аквариумистика,
 морская аквариумистика">
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -17,7 +17,7 @@
 </script>
             <title>{% block title %}{% endblock %} Форум Аквариумистов</title>
 
-        <link rel="icon" type="image/ico" href="{{ url_for('static',filename="image/my_favicon.ico") }}" />
+        <link rel="icon" type="image/png" href="{{ url_for('static',filename="image/my_favicon.png") }}" />
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
@@ -135,7 +135,7 @@
 
         <div class="ct-navbarMobile">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" alt="FISHtank", width=49px/>
+                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" alt="FISHtank", width=49px/>
             </a>
 
             <button type="button"  id = "listener" class="navbar-toggle">
@@ -148,6 +148,8 @@
             </button>
 
         </div>
+
+
 
         <div class="ct-navbarMobile ct-navbarMobile--header">
             {% if current_user.is_authenticated %}
@@ -177,7 +179,7 @@
                         <div class="navbar-header">
 
                             <a class="navbar-brand" href="{{ url_for('index') }}">
-                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" width="49px">
+                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" width="49px">
                             </a>
                         </div>
                         <ul class="nav navbar-nav">
@@ -199,6 +201,22 @@
                                 <li>
                                     <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
                                 </li>
+                                <li>
+                                    <a href="{{ url_for('dialogs', user_id = current_user.id) }}">
+                                    {% if current_user.notifications %}
+                                        {% for n in current_user.notifications %}
+                                            {% if n.source_model == "message" %}
+
+                                                <i class="mesage-logo fa fa-envelope ct-u-size35 ct-fw-400"></i>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <i class=" fa fa-envelope ct-u-size35 ct-fw-400"></i>
+                                     {% endif %}
+                                    </a>
+                                </li>
+
                                 <li>
                                     <a href="{{ url_for('security.logout') }}">Выйти</a>
                                 </li>

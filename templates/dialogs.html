@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-xs-12"  id="dialogs-container">
+                {% for dialog in dialogs %}
+                    <div class="one-dialog" id = {{ dialog.id }}>
+
+             <div class="left-image">
+
+                    {% if users_dict[dialog.id].avatar_min %}
+
+                        <img class="img-inherited"
+                             src="{{ url_for('uploaded_file',filename= users_dict[dialog.id].avatar_min) }}"/>
+                    {% else %}
+                        <img src="{{ url_for('static',filename= "image/min_icon-user-default.png") }}" />
+                    {% endif %}
+            </div>
+            <div class="description">
+                <div class="ct-u-floatLeft">
+                    <p class="ct-u-marginBottom0">
+
+                              <span>{{users_dict[dialog.id].username }} </span>
+
+                    -
+                        <span id="date{{ dialog.id }}">{{dialog.last_massage_date}}</span>
+                </p>
+                    <div style="clear: both;"></div>
+
+
+<div class="textbox">
+                <p class="ct-u-floatLeft" id="text{{ dialog.id }}"> {{ dialog.short_text }}</p>
+    {% if not dialog.readed %}
+
+                   <p>
+                       {% if current_user.id == dialog.last_receiver %}
+                       <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read-self"></i>
+                        {% else %}
+                       <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read"></i>
+
+                           {% endif %}
+                   </p>
+{% endif %}
+
+
+    </div>
+                    <div style="clear: both;"></div>
+
+            </div>
+            </div>
+
+                     <div class="ct-messageMobile">
+                    <div class="ct-messageNavbarMobile ct-messageNavbarMobile--header">
+                        ggggggggg
+
+
+
+                    </div>
+
+                    </div>
+                    </div>
+            {% endfor %}
+            </div>
+
+            <div class="col-md-7">
+
+                <div id="messages_box">
+
+                </div>
+
+            </div>
+
+    </div>
+    </div>
+
+<script>
+    $(".one-dialog").on("click", function () {
+        var dialog_id = $(this).attr("id");
+        if ($( window ).width() <= 768 ) {
+            $(".ct-messageMobile").show();
+            $(".ct-navbarMobile.ct-navbarMobile--header").hide();
+        }
+        $.get($SCRIPT_ROOT + '/messages_box', {dialog_id: dialog_id}, function (data) {
+            $("#messages_box").html(data.messages);
+            $("#" + dialog_id+ ".one-dialog .textbox p i").attr("class", "");
+
+        });
+    });
+    var $deviceheight = (window.innerHeight > 0) ? window.innerHeight : screen.height;
+
+$("#dialogs-container").css("min-height",  $deviceheight *0.8 + "px");
+
+</script>
+{% endblock %}

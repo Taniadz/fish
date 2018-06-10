@@ -109,6 +109,12 @@ class SearchForm(FlaskForm):
 class ContactForm(FlaskForm):
     email = StringField("Email*", validators=[Email("Введите правильный email")])
     title = StringField('Тема*', [validators.Length(min =1, max=300, message="Длина темы должна быть от 1 до 1000 символов")])
-
     message = StringField('Сообщение*', [validators.Length(min=1, max=3000,  message="Длина сообщения должна быть от одного до 3000 символов")], widget=TextArea())
+
+class MessageForm(FlaskForm):
+    text = StringField('Text', [validators.Length(min = 1, max=3000, message="Длина сообщения должна быть от 1 до 3000 символов")], widget=TextArea())
+    file = FileField('image', validators=[
+        FileAllowed(images, 'Только картинки!')
+    ])
+    receiver_id = HiddenField()
 

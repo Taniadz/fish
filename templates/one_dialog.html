@@ -1,0 +1,21 @@
+
+
+
+<div class="textbox">
+                <p class="ct-u-floatLeft" id="text{{ dialog.id }}"> {{ dialog.short_text }}</p>
+    {% if not dialog.readed %}
+
+                   <p>
+                       {% if current_user.id == dialog.last_receiver %}
+                       <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read-self"></i>
+                        {% else %}
+                       <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read"></i>
+
+                           {% endif %}
+                   </p>
+{% endif %}
+
+
+    </div>
+                    <div style="clear: both;"></div>
+

@@ -10,7 +10,12 @@
     <div class="ct-pageSectionHeader ct-u-paddingBoth20">
 
                     <h3 class="text-uppercase ct-u-size40 text-center">{{ user.username }}</h3>
-                    <h3 class="text-center"> <i type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+
+
+            </div>
+        <div class="col-md-offset-4 col-md-4">
+            <div class="ct-u-floatLeft">
+                 <i type="button" data-container="body" data-toggle="popover" data-placement="bottom"
                                                  data-content="Рейтинговая система основывается на ваших голосах,которые вы получили за посты и комментарии к постам.
                                                  За голос нравится плюс 1 балл;
                                                  за голос ха-ха плюс 2 балла;
@@ -18,9 +23,59 @@
                          class="fa fa-question-circle-o informer-button" >
 
                         </i>Рейтинг  {{ rating }}<i class="fa fa-star star-rating"></i>
-                    </h3>
 
             </div>
+            <div class="ct-u-floatRight">
+                Сообщение  {{ rating }}<i class="fa fa-envelope"></i>
+            </div>
+        </div>
+
+    <div id="message_box">
+        <div class="message_nav">
+            <div class="ct-u-floatLeft">
+                {% if current_user.avatar_min %}
+                    <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}"  width=49px />
+                {% else %}
+                    <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}"  width=49px />
+                {% endif %}
+            </div>
+            <div class="ct-u-floatRight">
+                <i class="fa fa-window-close ct-u-motive ct-u-size20"></i>
+            </div>
+
+        </div>
+    <form action="{{ url_for('send_message', postid=post_id, parent=parent_id) }}" method="post" enctype="multipart/form-data" class="user_message_form">
+    {{ form.hidden_tag() }}
+    <div class="form-group col-xs-9 col-sm-10 answer-textarea">
+        {{ form.text(class_="form-control", rows="3") }}
+    </div>
+    <div id="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
+        <label class="hand-cursor">
+            {{ form.file(class="comment-file") }}
+            <span class="fa fa-camera"></span>
+            <span class="photo_text hidden-xs">Фото</span>
+        </label>
+
+    </div>
+ <div class="control-group">
+                            <div class="controls">
+
+                                <button type="submit" class="btn btn-motive btn-form ct-u-size16 ct-u-lineHeight30">отправить</button>
+                            </div>
+                        </div>
+
+
+    {% if form.errors %}
+        <ul class=errors>
+            {% for error in form.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</form>
+
+    </div>
         <div class="col-sm-9">
 
 
@@ -306,5 +361,88 @@ $(document).ready(function() {
 $(".informer-button").on("click", function () {
     $(".informer-button").popover('show');
 })
+
+$(".user_message_form").submit(function (event) {
+        var formData = new FormData($(this)[0]);
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $("#comments").html(data.comments);
+
+
+                    bootbox.confirm({
+                            message: "Ваше сообщение отправлено. Перейти в Мои диалоги",
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-times"></i> Остаться'
+                                },
+                                confirm: {
+                                    label: '<i class="fa fa-check"></i> перейти'
+                                }
+                            },
+                            callback: function (result) { /* result is a boolean; true = OK, false = Cancel*/
+
+                            if(result){
+
+                                window.location.href =  $SCRIPT_ROOT + '/dialogs/' + data.user_id;
+
+
+                        }
+                    else
+                        {
+                            console.log("no changes")
+                        }
+                    }
+                        })
+
+
+
+
+
+
+            },
+            error: function (xhr, str) {
+                alert('Mistake ' + xhr.responseCode);
+            }
+        });
+        event.preventDefault();
+    });
+
+var mousePosition;
+var offset = [0,0];
+var div;
+var isDown = false;
+div = document.getElementById("message_box");
+div.addEventListener('mousedown', function(e) {
+    isDown = true;
+    offset = [
+        div.offsetLeft - e.clientX,
+        div.offsetTop - e.clientY
+    ];
+}, true);
+
+document.addEventListener('mouseup', function() {
+    isDown = false;
+}, true);
+
+document.addEventListener('mousemove', function(event) {
+    event.preventDefault();
+    if (isDown) {
+        mousePosition = {
+
+            x : event.clientX,
+            y : event.clientY
+
+        };
+        div.style.left = (mousePosition.x + offset[0]) + 'px';
+        div.style.top  = (mousePosition.y + offset[1]) + 'px';
+    }
+}, true);
+
 </script>
 {% endblock %}

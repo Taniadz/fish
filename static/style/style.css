@@ -4,7 +4,7 @@
     }
 }
 @media (min-width: 768px) {
-    .ct-navbarMobile, .ct-menuMobile {
+    .ct-navbarMobile, .ct-menuMobile, .ct-messageMobile {
         display: none;
     }
 }
@@ -3253,7 +3253,7 @@ div.one-product:hover{
 /*my forms---------------------------------------------------------------------------------------*/
 .btn-form{
     margin-left: 35%;
-    width: 31%;
+    min-width: 31%;
     font-size: 24px;
 }
 
@@ -4067,4 +4067,129 @@ a.hoover-blue:hover{
 }
 .dropdown-menu li.comment_block:hover {
     background-color: gainsboro;
+}
+.ct-navbar--fixedTop--is-small #ct-js-logo{
+    max-height: 35px;
+}
+#message_box{
+    background-color: #ffffff;
+
+    left: 30%;
+    top: 30%;
+    border: 3px solid #eeeeee;
+    position: fixed;
+    width: 40%;
+    height: 200px;
+    cursor: pointer;
+    z-index: 10000;
+
+}
+
+.message_nav{
+    background-color: #1f8bf3;
+    min-height: 50px;
+}
+
+.ct-u-lineHeight30{
+    line-height: 30px !important;
+}
+
+@media (max-width: 767px){
+#message_box {
+    width: 90%;
+    left: 5%;
+}}
+
+#dialogs-container{
+    border-right: 5px solid #eeeeee;;
+}
+
+#dialogs-container .left-image img{
+    width: 55px;
+}
+
+.circle-not-read{
+    color: #939393;
+
+}
+
+.circle-not-read-self{
+    color: #1f8bf3;
+
+}
+
+.mesage-logo::after{
+   content: '';
+   display: inline-block;
+   width: 10px;
+   height: 10px;
+   -moz-border-radius: 7.5px;
+   -webkit-border-radius: 7.5px;
+   border-radius: 7.5px;
+   background-color: #69b6d5;
+}
+
+.one-dialog{
+    cursor: pointer;
+}
+.one-dialog:hover{
+    background-color: #bdbdbd;
+}
+
+#message-container{
+    overflow: scroll;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+.ct-messageMobile{
+    background-color: rgb(34, 34, 34);
+    position: fixed;
+    top:70px;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 100%;
+    z-index: 1000;
+
+
+}
+.ct-messageMobile{
+    background-color: rgb(31, 139, 243);
+    color: #ffffff;
+    display: none;
+
+}
+@media (max-width: 769px) {
+     #messages_box{
+        display: none;
+    }
+}
+
+.ct-messageNavbarMobile {
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #ffffff;
+}
+
+.ct-messageNavbarMobile--header{
+    z-index: 999;
+    font-size: 18px;
+    line-height: 70px;
+    position: absolute;
+    background-color: #4c505e;
+    height: 70px
+}
+.ct-messageNavbarMobile--header img{
+    margin-left: 10%;
+    max-height: 100%;
+
 }

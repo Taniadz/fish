@@ -7,11 +7,12 @@ from werkzeug.exceptions import abort
 
 # from .extentions import db
 from application  import UPLOAD_FOLDER, app, db, cache
-from .models import User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag
+from .models import Dialog, User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification
 
 from social.apps.flask_app.default.models  import UserSocialAuth
 
 from sqlalchemy import event, update
+
 def check_is_social(user):
     return db.session.query(UserSocialAuth).filter_by(user_id =user.id).first()
 
@@ -655,3 +656,62 @@ def after_insert_comment(mapper, connection, target):
 def after_insert_tag(mapper, connection, target):
     print("insert tags")
     cache.delete_memoized(get_tags_all)
+
+def get_or_create_dialog(receiver_id, sender_id):
+    dialog = Dialog.query.filter(Dialog.participants[str(receiver_id)] == "").filter(Dialog.participants[str(sender_id)] == "").first()
+    string1 = str(receiver_id)
+    string2 = str(sender_id)
+    if not dialog:
+        dialog = Dialog(participants={string1: "", string2 : ""})
+        db.session.add(dialog)
+        db.session.commit()
+    return dialog
+
+
+def get_dialogs_by_user_id(user_id):
+    dialog = Dialog.query.filter(Dialog.participants[str(user_id)] == "").all()
+    return dialog
+
+def update_dialog(dialog, short_text, last_receiver, last_massage_date, readed):
+    dialog.short_text = short_text
+    dialog.last_receiver = last_receiver
+    dialog.last_massage_date = last_massage_date
+    dialog.readed = readed
+    db.session.add(dialog)
+    db.session.commit()
+    return dialog
+
+def get_users_for_dialog(dialogs, user):
+    users_dict={}
+    for dialog in dialogs:
+        for participant in dialog.participants:
+            if participant != str(user.id):
+                users_dict[dialog.id] = get_one_obj(User, id = int(participant))
+    return users_dict
+
+def create_notification(user_id, source_model, source_id, short_description=None):
+    create_obj(Notification, user_id=user_id, source_model=source_model, source_id=source_id, short_description=short_description)
+
+
+# make all messeges read by current user after dialog had opened and return receiver
+def message_was_read(messages, user_id):
+    for m in messages:
+        if m.receiver_id == user_id and not m.readed:
+            m.readed = True
+            db.session.add(m)
+
+    db.session.commit()
+
+def dialog_was_read(dialog, user):
+
+    if user == dialog.last_receiver:
+        dialog.readed = True
+        db.session.add(dialog)
+        db.session.commit()
+    return
+
+def get_other_participant(dialog, user_id):
+    for p in dialog.participants:
+        if int(p) != user_id:
+            print(int(p))
+            return int(p)

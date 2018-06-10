@@ -164,7 +164,6 @@ $(document).ready(function () {
     autosize($('textarea'));
 
 var text = $('.text-line').text();
-console.log(text);
 text = text.replace(/\r?\n/g, '<br />');
 $('.text-line').html(text);
 

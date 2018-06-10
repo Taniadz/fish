@@ -126,6 +126,8 @@ class User(db.Model, UserMixin):
     about_me = db.Column(db.String(1000), nullable=True)
 
     posts = db.relationship('Post')
+    notifications = db.relationship('Notification')
+
     comments = db.relationship('Comment', backref='com_author')
     products = db.relationship('Product')
     com_products = db.relationship('CommentProduct', backref='com_author')
@@ -408,4 +410,46 @@ class ProductAdmin(sqla.ModelView):
     # Prevent administration of Roles unless the currently logged-in user has the "admin" role
     def is_accessible(self):
         return current_user.has_role('admin')
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    closeable = db.Column(db.Boolean, default=True)
+    closed = db.Column(db.Boolean, default=False)
+    source_model = db.Column(db.String(30))
+    source_id = db.Column(db.Integer)
+    short_description = db.Column(db.String(300))
+
+
+class Dialog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    short_text = db.Column(db.String(150))
+    readed = db.Column(db.Boolean, default=False)
+    last_massage_date = db.Column(db.DateTime)
+    last_receiver = db.Column(db.Integer, db.ForeignKey('user.id'))
+    participants = db.Column(db.JSON)
+
+
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(3000))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    participants = db.Column(db.JSON)
+    dialog_id = db.Column(db.Integer, db.ForeignKey('dialog.id'))
+    readed = db.Column(db.Boolean, default=False)
+    sent_at  = db.Column(db.DateTime)
+    file = db.Column(db.String(3000), nullable=True)
+    def __init__(self, text, sender_id, receiver_id, file, dialog_id, participants):
+        self.text = text
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+        self.sent_at = datetime.now()
+        self.file = file
+        self.dialog_id = dialog_id
+        self.participants=participants
+
+
 
