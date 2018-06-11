@@ -713,5 +713,16 @@ def dialog_was_read(dialog, user):
 def get_other_participant(dialog, user_id):
     for p in dialog.participants:
         if int(p) != user_id:
-            print(int(p))
             return int(p)
+
+
+
+def get_notification(user_id):
+    return get_all_obj(Notification, user_id=user_id, closed=False)
+
+def close_notification(**kwargs):
+    notifications = get_all_obj(Notification, **kwargs)
+    for n in notifications:
+        n.closed = True
+        db.session.add(n)
+    db.session.commit()

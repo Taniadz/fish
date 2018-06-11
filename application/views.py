@@ -25,6 +25,8 @@ from PIL import Image, ImageDraw
 def dialogs(user_id):
     dialogs = get_dialogs_by_user_id(current_user.id)
     users_dict  = get_users_for_dialog(dialogs, current_user)
+    close_notification(user_id = current_user.id, source_model = "message", closed=False)
+
     return render_template("dialogs.html", dialogs = dialogs, users_dict=users_dict)
 
 @app.route('/send_message', methods = ['POST'])
@@ -49,8 +51,7 @@ def messages_box():
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
         messages = get_ordered_list(Message, Message.sent_at, dialog_id=request.args.get("dialog_id"))
-
-        # form.receiver_id.data = \
+        print(messages)
         message_was_read(messages, current_user)
         dialog = get_one_obj(Dialog, id = request.args.get("dialog_id"))
 
@@ -124,7 +125,6 @@ def contact_us():
 
 @app.before_request
 def before_request():
-
     if current_user.is_authenticated:
         if current_user.last_seen:
             current_time = datetime.utcnow()
@@ -134,7 +134,10 @@ def before_request():
 
         else:
                 current_user.last_seen = datetime.utcnow()
-
+        g.notifications = get_notification(current_user.id)
+        for n in g.notifications:
+            if n.source_model == "message":
+                g.have_message = True
         db.session.add(current_user)
         db.session.commit()
 

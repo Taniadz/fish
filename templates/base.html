@@ -1,307 +1,326 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Форум аквариумистов - все для простого и удобного общения">
-  <meta name="keywords" content="форум Аквариумистов, форум аквариумистики, сайт аквариумистики, аквариум форум, морские аквариумисты, аквариумистика,
+    <meta name="keywords" content="форум Аквариумистов, форум аквариумистики, сайт аквариумистики, аквариум форум, морские аквариумисты, аквариумистика,
 морская аквариумистика">
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-114849975-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114849975-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'UA-114849975-1');
-</script>
-            <title>{% block title %}{% endblock %} Форум Аквариумистов</title>
+        function gtag() {
+            dataLayer.push(arguments);
+        }
 
-        <link rel="icon" type="image/png" href="{{ url_for('static',filename="image/my_favicon.png") }}" />
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/snap.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font.css') }}">
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/magnific-popup.css') }}">
+        gtag('js', new Date());
 
-            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
+        gtag('config', 'UA-114849975-1');
+    </script>
+    <title>{% block title %}{% endblock %} Форум Аквариумистов</title>
 
-        <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static',filename="image/my_favicon.png") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/cropper.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/snap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/flexslider.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/magnific-popup.css') }}">
 
-            <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
-                <script type="text/javascript" src="{{ url_for ('static', filename= "js/moment.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
+
+    <script src="{{ url_for ('static', filename= "js/cropper.js") }}"></script>
+
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/my.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/moment.min.js") }}"></script>
 
 
-
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootstrap.min.js") }}"></script>
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/snap.js") }}"></script>
-            <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
-                    <script type="text/javascript" src="{{ url_for ('static', filename= "js/masonry.pkgd.js") }}" acync></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/bootbox.min.js") }}"></script>
-<script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.flexslider.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/masonry.pkgd.js") }}" acync></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_post.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/single_product.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery.magnific-popup.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/bootbox.min.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/comment.js") }}" acync></script>
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}" acync></script>
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/autosize.min.js") }}" acync></script>
+    <script type="text/javascript" src="{{ url_for ('static', filename= "js/autosize.min.js") }}" acync></script>
 
-
-<script>
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    $(document).ready(function(){
-
-  $('.flexslider').flexslider({
-    animation: "slide"
-  });
-});
-</script>
-
-
-
-
-	</head>
-
-	<body class="">
-
-
-
-    <!-- :mobile Menu: -->
-    <div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Закрыть</span>
-                                            </button>
-                                            <strong>Oх нет!</strong>
-
-                                            <p>
-                                                Вы не можете добавлять посты и продукты в свое избранное. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
-                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
-                                                и все получится!
-                                            </p>
-
-
-            </div>
-
-                <div class="alert alert-danger alert-dismissable like-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Закрыть</span>
-                                            </button>
-                                            <strong>О нет!</strong>
-
-                                            <p>
-                                                Вы не можете пока ставить лайки. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
-                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
-                                                и все получится!
-                                            </p>
-
-
-            </div>
-
-
-                <div class="alert alert-danger alert-dismissable comment-alert" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span aria-hidden="true">×</span>
-                                                <span class="sr-only">Закрыть</span>
-                                            </button>
-                                            <strong>О нет!</strong>
-
-                                            <p>
-                                                Вы не можете пока коментировать. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
-                                                или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
-                                                и все получится!
-                                            </p>
-
-
-            </div>
-   <div class="ct-menuMobile">
-                <ul class="ct-menuMobile-navbar">
-
-
-                    <li> <a href="{{ url_for('index') }}"><i class="fa fa-home"></i> ГЛАВНАЯ</a></li>
-                    <li> <a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> КАТАЛОГ</a></li>
-                    <li> <a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> БЛОГ</a></li>
-
-                    {% if current_user.is_authenticated %}
-                        <li> <a href="{{ url_for('add_post') }}"><i class="fa fa-pencil-square"></i> СОЗДАТЬ ПОСТ</a></li>
-                        <li> <a href="{{ url_for('add_product') }}"><i class="fa fa-pencil-square"></i> ДОБАВИТЬ ПРОДУКТ</a></li>
-                    {% endif %}
-                </ul>
-
-        </div>
-
-        <div class="ct-navbarMobile">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" alt="FISHtank", width=49px/>
-            </a>
-
-            <button type="button"  id = "listener" class="navbar-toggle">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-
-
-            </button>
-
-        </div>
-
-
-
-        <div class="ct-navbarMobile ct-navbarMobile--header">
-            {% if current_user.is_authenticated %}
-
-                {% if current_user.avatar_min %}
-                    <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}"  width=49px />
-                {% else %}
-                    <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}"  width=49px />
-                {% endif %}
-                <a href="{{ url_for('user', username = current_user.username) }}">{{current_user.username}}</a>
-                <a class="right" href="{{ url_for('security.logout') }}">Выйти</a>
-            {% else %}
-                 <a class="not-auth" href="{{ url_for('security.login') }}">Войти</a>
-
-            <a href="{{ url_for('security.register') }}">Регистрация</a>
-
-            {% endif %}
-
-
-        </div>
-		<div id="ct-js-wrapper" class="ct-pageWrapper">
-
-            {% block navbar %}
-			<nav class="navbar ct-navbar navbar-default yamm ct-navbar--fadeIn" role="navigation">
-                <div class="container">
-                    <div class="ct-navbarContainer">
-                        <div class="navbar-header">
-
-                            <a class="navbar-brand" href="{{ url_for('index') }}">
-                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" width="49px">
-                            </a>
-                        </div>
-                        <ul class="nav navbar-nav">
-                            <li> <a href="{{ url_for('index') }}">Главная</a></li>
-                            <li> <a href="{{ url_for('popular_product') }}">Каталог</a></li>
-                            <li> <a href="{{ url_for('last_posts') }}">Блог</a></li>
-                        </ul>
-                        <ul class="nav navbar-nav yamm ct-navbar--right">
-                            {% if current_user.is_authenticated %}
-                                <li>
-                                    <a id="navbar-avatar" href="{{ url_for('user', username = current_user.username) }}">
-                                        {% if current_user.avatar_min %}
-                                            <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}" />
-                                        {% else %}
-                                            <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}" />
-                                        {% endif %}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ url_for('dialogs', user_id = current_user.id) }}">
-                                    {% if current_user.notifications %}
-                                        {% for n in current_user.notifications %}
-                                            {% if n.source_model == "message" %}
-
-                                                <i class="mesage-logo fa fa-envelope ct-u-size35 ct-fw-400"></i>
-
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <i class=" fa fa-envelope ct-u-size35 ct-fw-400"></i>
-                                     {% endif %}
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="{{ url_for('security.logout') }}">Выйти</a>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a href="{{ url_for('security.login') }}">Войти</a>
-                                </li>
-                                <li>
-                                    <a href="{{ url_for('security.register') }}">Регистрация</a>
-                                </li>
-                            {% endif %}
-
-                        </ul>
-                    </div>
-                </div>
-
-            </nav>
-            {% endblock %}
-            <main>
-            {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-            <div class="ct-iconBox-flash ct-iconBox-motive ct-iconBox--rightIcon">
-                <i class="fa fa-window-close ct-u-motive ct-u-size20 close-flash"></i>
-                        <i class="ct-u-motive ct-u-size50 fa fa-envelope"></i>
-                        <h4 class="text-uppercase ct-fw-600 ct-u-size18">Уведомление</h4>
-
-                    <ul class=flashes>
-                    {% for message in messages %}
-                      <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                      </div>
-                  {% endif %}
-                {% endwith %}
-
-
-                {% block body %}
-                {% endblock %}
-
-			</main>
-
-
-
-			<footer>
-                <section class="ct-footer-list ct-u-paddingBoth50">
-    <div class="container">
-        <div class="row">
-
-
-            <div class="col-sm-6 col-xs-12">
-                <div class="ct-list ct-list--dark">
-                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Найдите нас</h5>
-                    <ul class="ct-u-paddingTop10">
-                        <li><a href="https://www.facebook.com/AquariumForum/"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-facebook"></i></div></div><span>Facebook</span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xs-12">
-                <div class="ct-list ct-list--dark">
-                    <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Свяжитесь с нами</h5>
-                    <ul class="ct-u-paddingTop10">
-                        <li><a href="{{ url_for("contact_us") }}"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div></div><span>обратная связь</span></a></li>
-
-                        <li><a href="#"><div class="ct-listTable"><div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div></div><span>contact.me@aqua.name</span></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-			</footer>
-		</div>
-	</body>
-        <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
 
     <script>
-{#    script for activate likes and reactions in my.js #}
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         $(document).ready(function () {
-            $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
-            $('.smile').on("click", AddReaction);
-            ShowReactionDiv();
-        });
 
+            $('.flexslider').flexslider({
+                animation: "slide"
+            });
+        });
     </script>
+
+
+</head>
+
+<body class="">
+
+
+<!-- :mobile Menu: -->
+<div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">×</span>
+        <span class="sr-only">Закрыть</span>
+    </button>
+    <strong>Oх нет!</strong>
+
+    <p>
+        Вы не можете добавлять посты и продукты в свое избранное. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+        или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+        и все получится!
+    </p>
+
+
+</div>
+
+<div class="alert alert-danger alert-dismissable like-alert" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">×</span>
+        <span class="sr-only">Закрыть</span>
+    </button>
+    <strong>О нет!</strong>
+
+    <p>
+        Вы не можете пока ставить лайки. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+        или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+        и все получится!
+    </p>
+
+
+</div>
+
+
+<div class="alert alert-danger alert-dismissable comment-alert" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">×</span>
+        <span class="sr-only">Закрыть</span>
+    </button>
+    <strong>О нет!</strong>
+
+    <p>
+        Вы не можете пока коментировать. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+        или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+        и все получится!
+    </p>
+
+
+</div>
+<div class="ct-menuMobile">
+    <ul class="ct-menuMobile-navbar">
+
+
+        <li><a href="{{ url_for('index') }}"><i class="fa fa-home"></i> ГЛАВНАЯ</a></li>
+        <li><a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> КАТАЛОГ</a></li>
+        <li><a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> БЛОГ</a></li>
+
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('add_post') }}"><i class="fa fa-pencil-square"></i> СОЗДАТЬ ПОСТ</a></li>
+            <li><a href="{{ url_for('add_product') }}"><i class="fa fa-pencil-square"></i> ДОБАВИТЬ ПРОДУКТ</a></li>
+        {% endif %}
+    </ul>
+
+</div>
+
+<div class="ct-navbarMobile">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+        <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" alt="FISHtank" , width=49px/>
+    </a>
+
+    <button type="button" id="listener" class="navbar-toggle">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+
+
+    </button>
+
+</div>
+
+
+<div class="ct-navbarMobile ct-navbarMobile--header">
+    {% if current_user.is_authenticated %}
+
+        {% if current_user.avatar_min %}
+            <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}" width=49px/>
+        {% else %}
+            <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}" width=49px/>
+        {% endif %}
+        <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
+        <a class="right" href="{{ url_for('security.logout') }}">Выйти</a>
+    {% else %}
+        <a class="not-auth" href="{{ url_for('security.login') }}">Войти</a>
+
+        <a href="{{ url_for('security.register') }}">Регистрация</a>
+
+    {% endif %}
+
+
+</div>
+<div id="ct-js-wrapper" class="ct-pageWrapper">
+
+    {% block navbar %}
+        <nav class="navbar ct-navbar navbar-default yamm ct-navbar--fadeIn" role="navigation">
+            <div class="container">
+                <div class="ct-navbarContainer">
+                    <div class="navbar-header">
+
+                        <a class="navbar-brand" href="{{ url_for('index') }}">
+                            <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" width="49px">
+                        </a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ url_for('index') }}">Главная</a></li>
+                        <li><a href="{{ url_for('popular_product') }}">Каталог</a></li>
+                        <li><a href="{{ url_for('last_posts') }}">Блог</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav yamm ct-navbar--right">
+                        {% if current_user.is_authenticated %}
+                            <li>
+                                <a id="navbar-avatar" href="{{ url_for('user', username = current_user.username) }}">
+                                    {% if current_user.avatar_min %}
+                                        <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}"/>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('user', username = current_user.username) }}">{{ current_user.username }}</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('dialogs', user_id = current_user.id) }}">
+{#                                    {% if g.notifications %}#}
+{#                                        {% for n in g.notifications %}#}
+{#                                        {% if n.source_model == "message"%}#}
+{#                                            {% set message = True %}#}
+{##}
+{##}
+{##}
+{#                                        {% endif %}#}
+{#                                        {% endfor %}#}
+{#
+{#                                    {% endif %}#}
+
+                                     {% if g.have_message %}
+                                            <i class="mesage-logo fa fa-envelope ct-u-size35 ct-fw-400"></i>
+
+
+                                        {% else %}
+                                        <i class=" fa fa-envelope ct-u-size35 ct-fw-400"></i>
+                                            {% endif %}
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ url_for('security.logout') }}">Выйти</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ url_for('security.login') }}">Войти</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('security.register') }}">Регистрация</a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+
+        </nav>
+    {% endblock %}
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="ct-iconBox-flash ct-iconBox-motive ct-iconBox--rightIcon">
+                    <i class="fa fa-window-close ct-u-motive ct-u-size20 close-flash"></i>
+                    <i class="ct-u-motive ct-u-size50 fa fa-envelope"></i>
+                    <h4 class="text-uppercase ct-fw-600 ct-u-size18">Уведомление</h4>
+
+                    <ul class=flashes>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+
+        {% block body %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer>
+        <section class="ct-footer-list ct-u-paddingBoth50">
+            <div class="container">
+                <div class="row">
+
+
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="ct-list ct-list--dark">
+                            <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Найдите нас</h5>
+                            <ul class="ct-u-paddingTop10">
+                                <li><a href="https://www.facebook.com/AquariumForum/">
+                                    <div class="ct-listTable">
+                                        <div class="ct-ListDiamond"><i class="fa fa-facebook"></i></div>
+                                    </div>
+                                    <span>Facebook</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="ct-list ct-list--dark">
+                            <h5 class="text-uppercase ct-fw-600 ct-u-motiveBody">Свяжитесь с нами</h5>
+                            <ul class="ct-u-paddingTop10">
+                                <li><a href="{{ url_for("contact_us") }}">
+                                    <div class="ct-listTable">
+                                        <div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div>
+                                    </div>
+                                    <span>обратная связь</span></a></li>
+
+                                <li><a href="#">
+                                    <div class="ct-listTable">
+                                        <div class="ct-ListDiamond"><i class="fa fa-envelope"></i></div>
+                                    </div>
+                                    <span>contact.me@aqua.name</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </footer>
+</div>
+</body>
+<script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
+
+<script>
+    {#    script for activate likes and reactions in my.js #}
+    $(document).ready(function () {
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+    });
+
+</script>
 
 </html>
 
