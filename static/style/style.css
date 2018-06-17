@@ -1,8 +1,4 @@
-@media (min-width:768px ) {
-    .yamm .nav, .yamm .collapse, .yamm .dropup, .yamm .dropdown {
-        position: static;
-    }
-}
+
 @media (min-width: 768px) {
     .ct-navbarMobile, .ct-menuMobile, .ct-messageMobile {
         display: none;
@@ -4073,7 +4069,7 @@ a.hoover-blue:hover{
 }
 #message_box{
     background-color: #ffffff;
-
+    display: none;
     left: 30%;
     top: 30%;
     border: 3px solid #eeeeee;
@@ -4084,7 +4080,9 @@ a.hoover-blue:hover{
     z-index: 10000;
 
 }
-
+#open_mesage{
+    cursor: pointer;
+}
 .message_nav{
     background-color: #1f8bf3;
     min-height: 50px;
@@ -4121,14 +4119,24 @@ a.hoover-blue:hover{
 .mesage-logo::after{
    content: '';
    display: inline-block;
-   width: 10px;
-   height: 10px;
+   width: 12px;
+   height: 12px;
    -moz-border-radius: 7.5px;
    -webkit-border-radius: 7.5px;
    border-radius: 7.5px;
-   background-color: #69b6d5;
+   background-color: #1f8bf3;
 }
 
+.ct-menuMobile-navbar .mesage-logo::after {
+   background-color: #FFFFFF;
+
+}
+.ct-menuMobile-navbar  .divider {
+    height: 1px;
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #ffffff;
+}
 .one-dialog{
     cursor: pointer;
 }
@@ -4137,9 +4145,9 @@ a.hoover-blue:hover{
 }
 
 #message-container{
-    overflow: scroll;
-    overflow-y:auto;
-    overflow-x:hidden;
+    /*overflow: scroll;*/
+    /*overflow-y:auto;*/
+    /*overflow-x:hidden;*/
 
 }
 
@@ -4155,23 +4163,87 @@ a.hoover-blue:hover{
 
 }
 .ct-messageMobile{
-    background-color: rgb(31, 139, 243);
+    background: url(/static/image/message_mobile_background.jpg);
     color: #ffffff;
     display: none;
 
 
+}
+.talk-bubble{
+    max-width: 70%;
+}
+.talk-bubble{
+    word-wrap: break-word;
+}
+
+
+.talk-bubble.right-in{
+    padding-right: 10px;
 }
 @media (max-width: 769px) {
      #messages_box{
         display: none;
     }
     #message-container{
-            margin-bottom: 23%;
+            margin-bottom: 20%;
 
     }
     .message_form{
-        padding-left: 10%;
+        padding-left: 5%;
+        max-width: 95%;
     }
+    .talk-bubble {
+	margin: 40px;
+  display: inline-block;
+  position: relative;
+	width: 200px;
+	height: auto;
+
+}
+.talk-bubble.right-in{
+    background-color: #ffffff;
+
+}
+
+.talk-bubble.left-in{
+    background-color: #e1e1e1;
+
+}
+
+.round{
+  border-radius: 30px;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+
+}
+
+.tri-right.right-in:after{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+  left: auto;
+	right: -15px;
+  top: 10px;
+	bottom: auto;
+	border: 12px solid;
+	border-color: #ffffff transparent transparent #ffffff;
+}
+
+.tri-right.left-in:after{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+  left: -15px;
+	right: auto;
+  top: 10px;
+	bottom: auto;
+	border: 12px solid;
+	border-color: #e1e1e1 #e1e1e1 transparent transparent;
+}
+
+
 }
 
 .ct-messageNavbarMobile {
@@ -4205,12 +4277,15 @@ a.hoover-blue:hover{
     margin-left: 10%;
 
 }
+#messages_box{
+    overflow: scroll;
+    position: relative;
+}
 .messages_box_mobile{
      overflow: scroll;
 
     position: absolute;
     top: 75px;
-    right: 5%;
     bottom: 0;
     width: 100%;
     max-height: 100%;
@@ -4221,4 +4296,48 @@ a.hoover-blue:hover{
 }
 .messages_box_mobile li.ct-u-floatLeft {
     padding-left: 30px;
+}
+
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+.dropdown-menu > li > a:hover, .dropdown-menu a:hover, .dropdown-menu > li > a:focus, .dropdown-menu a:focus, .dropdown-menu > li > a:active, .dropdown-menu a:active {
+    color: #1f8bf3;
+    background-color: transparent;
+}
+.dropdown-menu > li > a, .dropdown-menu a {
+    color: #4c505e;
+    font-weight: 600;
+    line-height: 33px;
+    display: block;
+}
+a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+.message_form{
+    position: static;
+    bottom:1%;
 }

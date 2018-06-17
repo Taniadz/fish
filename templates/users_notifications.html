@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+
+{% block body %}
+
+
+    <section class="ct-u-paddingBoth30">
+        <div class="container">
+            <div class="ct-sectionHeader ct-u-paddingBoth20">
+                <h2 class="ct-u-size34">Уведомления</h2>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
+                    {%  for notification in notifications %}
+                        {% if notification.name == "comment_on_post" %}
+                        <p>{{ info[notification.id]["sender_name"] }} ответила на ваш пост
+                            <a href="{{ url_for("singlepost", postid = info[notification.id]["post_id"]) }}">{{ info[notification.id]["post_title"] }}</a>
+                        on {{ notification.timestamp }}
+                        </p>
+                        {%  endif %}
+                   {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

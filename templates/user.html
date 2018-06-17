@@ -25,7 +25,7 @@
                         </i>Рейтинг  {{ rating }}<i class="fa fa-star star-rating"></i>
 
             </div>
-            <div class="ct-u-floatRight">
+            <div class="ct-u-floatRight" id ="open_mesage">
                 Сообщение  {{ rating }}<i class="fa fa-envelope"></i>
             </div>
         </div>
@@ -40,7 +40,7 @@
                 {% endif %}
             </div>
             <div class="ct-u-floatRight">
-                <i class="fa fa-window-close ct-u-motive ct-u-size20"></i>
+                <i class="fa fa-window-close ct-u-motive ct-u-size20" id="close_message_box"></i>
             </div>
 
         </div>
@@ -360,7 +360,16 @@ $(document).ready(function() {
  });
 $(".informer-button").on("click", function () {
     $(".informer-button").popover('show');
-})
+});
+
+$("#open_mesage").on("click", function () {
+    $("#message_box").show();
+
+});
+$("#close_message_box").on("click", function () {
+    $("#message_box").hide();
+
+});
 
 $(".user_message_form").submit(function (event) {
         var formData = new FormData($(this)[0]);

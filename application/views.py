@@ -9,7 +9,7 @@ from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
 from flask_mail import Message as FlaskMessage
-
+from collections import defaultdict
 import facebook
 
 POSTS_PER_PAGE = 6
@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw
 def dialogs(user_id):
     dialogs = get_dialogs_by_user_id(current_user.id)
     users_dict  = get_users_for_dialog(dialogs, current_user)
-    close_notification(user_id = current_user.id, source_model = "message", closed=False)
+    close_notification(user_id = current_user.id, name = "message", closed=False)
 
     return render_template("dialogs.html", dialogs = dialogs, users_dict=users_dict)
 
@@ -38,40 +38,49 @@ def send_message():
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
-        create_notification(form.receiver_id.data, "message", message.id, )
+        create_notification(form.receiver_id.data, "message", {"message_id": message.id} )
         update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at)
 
         return jsonify({"user_id" : current_user.id})
 
 
 
-@app.route('/messages_box', methods = ['POST', "GET"])
+@app.route('/messages_box/', methods = ['POST', "GET"])
 @login_required
 def messages_box():
+    page = request.args.get("page")
+    if not page:
+        page = 1
+    else:
+        page =  int(page) + 1
+
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
-        messages = get_ordered_list(Message, Message.sent_at, dialog_id=request.args.get("dialog_id"))
-        print(messages)
-        message_was_read(messages, current_user)
-        dialog = get_one_obj(Dialog, id = request.args.get("dialog_id"))
+        messages = get_paginated_mesages(request.args.get("dialog_id"), page)
+        message_was_read(messages.items, current_user)
 
+        dialog = get_one_obj(Dialog, id = request.args.get("dialog_id"))
         dialog_was_read(dialog, current_user.id)
+
         form.receiver_id.data = get_other_participant(dialog, current_user.id)
 
-        data = {'messages': render_template('messages_box.html',
-                                            form=form, messages=messages)}
-
+        data = {'messages': render_template('messages_box.html', page = page,
+                                            form=form, messages=messages, dialog_id = request.args.get("dialog_id")),
+                "page": page}
 
     if request.method == 'POST' and form.validate_on_submit():
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
+
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
-        create_notification(form.receiver_id.data, "message", message.id, )
+        create_notification(form.receiver_id.data, "message", {"message":message.id} )
+        create_notification(form.receiver_id.data, "message", {"message":message.id} )
         updated_dialog = update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed=False)
-        messages = get_ordered_list(Message, Message.sent_at, dialog_id=dialog.id)
+        messages = get_paginated_mesages(dialog.id, page)
+        print(messages, "message")
 
         data = {'messages': render_template('messages_box.html',
-                                        form=form, messages=messages),
+                                        form=form, messages=messages, page =1, dialog_id = dialog.id),
             "dialog_text" : updated_dialog.short_text,
                 "dialog_id" : updated_dialog.id}
 
@@ -134,10 +143,16 @@ def before_request():
 
         else:
                 current_user.last_seen = datetime.utcnow()
-        g.notifications = get_notification(current_user.id)
-        for n in g.notifications:
-            if n.source_model == "message":
-                g.have_message = True
+        notifications = get_notification(current_user.id) #cashed notification
+        print(notifications, "nnnnnnnnnnnnnn")
+        for n in notifications:
+            if n.name == "message":
+                print("yeeeeeeeeeeeees")
+
+                g.have_message = True  #check if user has new messages
+
+            else:
+                g.new_notification = True
         db.session.add(current_user)
         db.session.commit()
 
@@ -280,6 +295,21 @@ def user(username):
 
 
 
+@app.route('/user_notification/<int:user_id>')
+def user_notification(user_id):
+    notifications = get_all_notifications(user_id)
+    info = {}
+    for n in notifications:
+        info[n.id] = n.get_data()
+    close_notification(user_id = user_id, closed = False)
+    print(info)
+    # notifications_relationships = defaultdict(dict)
+    # get_many_sender(notifications, notifications_relationships)
+    # get_notifications_sources(user_id, notifications_relationships)
+
+    return render_template('users_notifications.html', notifications = notifications, info = info)
+                           # notifications_relationships=notifications_relationships)
+
 @celery.task
 def async_crop(data_image, username):
     user = get_for_update(User, username=username)
@@ -382,13 +412,25 @@ def singlepost(postid=None):
                                post_liked=post_liked, comment_tree=get_comment_dict(comments))
 
     if request.method == 'POST' and form.validate_on_submit():
+        post = get_or_abort_post(Post, id=postid)
+
         filename = create_filename(form.file.data)
         parent = request.args.get('parent')
         if request.args.get('parent') is None:
             parent = 0
-        print(parent, "parent")
-        create_obj(Comment, text=form.text.data, user_id=current_user.id,
+
+        comment = create_obj(Comment, text=form.text.data, user_id=current_user.id,
                    post_id=postid, image=filename, parent=parent)
+        if comment.parent == 0:
+            create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
+        else:
+            parent_comment = get_one_obj(Comment, id = parent)
+            create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
+                                                                           current_user.username))  # notification for comment on post
+
+            create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
+
+
         comments = get_all_comments_by_post_id(postid)
         comments_relationships = get_post_comment_relationships(comments, current_user)
 

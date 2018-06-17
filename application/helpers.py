@@ -1,13 +1,14 @@
 import os
 from collections import OrderedDict
 from datetime import datetime, timedelta
-
+import json
 from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 
 # from .extentions import db
 from application  import UPLOAD_FOLDER, app, db, cache
-from .models import Dialog, User, Post, Comment, CommentProduct, Product, PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification
+from .models import Dialog, User, Post, Comment, CommentProduct, Product,\
+    PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification, Message
 
 from social.apps.flask_app.default.models  import UserSocialAuth
 
@@ -475,6 +476,35 @@ def get_post_for_comments(comments, posts_dict):
     return posts_dict
 
 
+
+def get_notifications_sources(user_id, rel_dict):
+    posts_set_id=set()
+    posts_instances = []
+    comments_instances = []
+    notifications = Notification.query.filter(Notification.source_model != "mesage").all()
+    for notification in notifications:
+        if notification.source_model == "post":
+            posts_set_id.add(notification.source_id)
+        if notification.source_model == "post_comment":
+            comments_instances.append(notification.source_id)
+    for id in posts_set_id:
+        posts_instances.append(get_one_obj(Post, id=id))
+
+    for notification in notifications:
+        for post in posts_instances:
+            if notification.source_id == post.id and notification.source_model == "post":
+                rel_dict[notification.id]['post'] = post
+        for comment in comments_instances:
+            if notification.source_id == comment.id and notification.source_model == "post_comment":
+                rel_dict[notification.id]['comment'] = comment
+
+    print(rel_dict)
+    return rel_dict
+
+
+
+
+
 def count_all_posts():
     return db.session.query(Post).count()
 
@@ -515,6 +545,23 @@ def get_many_authors(checked, auth_dict):
             if c.user_id == a.id:
                 auth_dict[c.id] = {}
                 auth_dict[c.id]['author'] = a
+    return auth_dict
+
+
+def get_many_sender(checked, auth_dict):
+    authors_id = []
+    authors_objects=[]
+    for c in checked:
+        authors_id.append(c.sender_id)
+    uniq_set_id = set(authors_id)   #get only unique authors
+    for id in uniq_set_id:
+        authors_objects.append(get_one_obj(User, id = id))
+
+    for c in checked:
+        for a in authors_objects:
+            if c.sender_id == a.id:
+                auth_dict[c.id] = {}
+                auth_dict[c.id]['sender'] = a
     return auth_dict
 
 
@@ -689,8 +736,6 @@ def get_users_for_dialog(dialogs, user):
                 users_dict[dialog.id] = get_one_obj(User, id = int(participant))
     return users_dict
 
-def create_notification(user_id, source_model, source_id, short_description=None):
-    create_obj(Notification, user_id=user_id, source_model=source_model, source_id=source_id, short_description=short_description)
 
 
 # make all messeges read by current user after dialog had opened and return receiver
@@ -699,7 +744,6 @@ def message_was_read(messages, user_id):
         if m.receiver_id == user_id and not m.readed:
             m.readed = True
             db.session.add(m)
-
     db.session.commit()
 
 def dialog_was_read(dialog, user):
@@ -720,9 +764,27 @@ def get_other_participant(dialog, user_id):
 def get_notification(user_id):
     return get_all_obj(Notification, user_id=user_id, closed=False)
 
+
+def get_all_notifications(user_id):
+    return get_all_obj(Notification, user_id=user_id)
+
 def close_notification(**kwargs):
     notifications = get_all_obj(Notification, **kwargs)
     for n in notifications:
         n.closed = True
         db.session.add(n)
     db.session.commit()
+
+def create_notification(user_id, name, data):
+    n = Notification(name=name, payload_json=json.dumps(data), user_id=user_id)
+    db.session.add(n)
+    db.session.commit()
+    return n
+
+
+def json_data(post_id, post_title, comment_id, sender_name):
+    return {"post_id" : post_id, "post_title":post_title, "comment_id":comment_id, "sender_name":sender_name}
+
+
+def get_paginated_mesages(dialog_id, page):
+    return Message.query.filter_by(dialog_id=dialog_id).order_by(Message.sent_at.desc()).paginate(page, 5, False)

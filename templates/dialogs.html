@@ -50,17 +50,15 @@
                             </div>
                         </div>
 
-                        <div class="ct-messageMobile">
+
+                    </div>
+                {% endfor %}
+            </div>
+        <div class="ct-messageMobile">
                             <div class="ct-messageNavbarMobile ct-messageNavbarMobile--header">
                             <i class="fa fa-arrow-left ct-u-size25 ct-fw-300" id="hide-messages"></i>
 
-                                {% if users_dict[dialog.id].avatar_min %}
 
-                                <img class="img-inherited"
-                                     src="{{ url_for('uploaded_file',filename= users_dict[dialog.id].avatar_min) }}"/>
-                            {% else %}
-                                <img src="{{ url_for('static',filename= "image/min_icon-user-default.png") }}"/>
-                            {% endif %}
 
                             </div>
                             <div class="messages_box_mobile">
@@ -68,19 +66,12 @@
                             </div>
 
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
 
-            <div class="col-md-7">
+            <div class="col-md-8">
                 <div id="messages_box">
 
                 </div>
 
-
-<div id="messages_box">
-
-                            </div>
 
             </div>
 
@@ -88,28 +79,38 @@
     </div>
 
     <script>
-        $(".one-dialog").on("click", function () {
+        $(".one-dialog").on("click", function (event) {
+                        event.preventDefault();
+
+            console.log(3333);
             var dialog_id = $(this).attr("id");
             if ($(window).width() <= 768) {
                 $(".ct-messageMobile").show();
                 $(".ct-navbarMobile.ct-navbarMobile--header").hide();
             }
             $.get($SCRIPT_ROOT + '/messages_box', {dialog_id: dialog_id}, function (data) {
-                $("#messages_box").html(data.messages);
                  if ($(window).width() <= 768) {
                 $(".messages_box_mobile").html(data.messages);
                 $('.messages_box_mobile').animate({
                 scrollTop: $('#message-container')[0].scrollHeight}, 2000);
             }
+            else{
+                                     $("#messages_box").html(data.messages);
+
+                 }
 
 
 
             });
+            event.preventDefault();
         });
         $(".ct-messageNavbarMobile i").on("click", function () {
+            $(".one-dialog").on('click');
             console.log(11111111111);
             $(".ct-messageMobile").fadeToggle();
-            {#$(".ct-navbarMobile.ct-navbarMobile--header").show();#}
+            $(".ct-navbarMobile.ct-navbarMobile--header").show();
+
+
 
         });
         var $deviceheight = (window.innerHeight > 0) ? window.innerHeight : screen.height;

@@ -1,60 +1,120 @@
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
 
-<div id="message-container">
-{% for message in messages %}
+<div id="message-container" class="{{ page }}" dialog_id = {{ dialog_id }}>
+{% if messages.has_next %}
+    <i id="has" class="has_next"></i>
+{% endif %}
 
-    <ul class="ct-mediaList list-unstyled">
+  <ul class="ct-mediaList list-unstyled">
+
+{% for message in messages.items | reverse %}
+
+
     {% if message.sender_id == current_user.id %}
-        <li class="ct-u-marginTop5 ct-u-paddingBoth10 ct-u-floatRight" >{{ message.text }}</li>
+        <li class="ct-u-marginTop5 ct-u-paddingBoth10 ct-u-floatRight talk-bubble tri-right round right-in" >
+
+        <span class="ct-u-size14 ct-fw-300 ct-u-floatRight">{{ message.sent_at }}</span>
+             <div style="clear: both;"></div>
+
+           <p>{{ message.text }}</p>
+        </li>
                             <div style="clear: both;"></div>
 
     {% else %}
-                <li class="ct-u-marginTop5 ct-u-paddingBoth10 ct-u-floatLeft" >{{ message.text }}</li>
+                <li class="ct-u-marginTop5 ct-u-paddingBoth10 ct-u-floatLeft talk-bubble tri-right round left-in" >
+                <span class="ct-u-size14 ct-fw-300">{{ message.sent_at }}</span>
+
+                    <p> {{ message.text }}</p>
+
+                </li>
                             <div style="clear: both;"></div>
 
 
     {% endif %}
 
 
-    </ul>
+
 
 
 {% endfor %}
+  </ul>
 
-<div>
-    aaaaaaaaaaaaaaaaaaaaa
-<form action="{{ url_for("messages_box") }}" class="message_form" method="post" enctype="multipart/form-data">
+
+{%  if page ==1 %}
+<form action="{{ url_for("messages_box") }}" class="message_form" id = {{ page }} method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
+    {{ form.receiver_id }}
 <div class="input-group">
     <span id="hide" class="input-group-btn">
         <label>
                         {{form.file(id="file", class="inputfile")}}
-                                <span class="photo_text hidden-xs ct-u-size24"><i class="fa fa-camera" aria-hidden="true"></i></span>
+                                <span class="photo_text ct-u-size30"><i class="fa fa-camera" aria-hidden="true"></i></span>
 </label>
 
 
-{##}
-{#        <button class="btn btn-motive" type="submit">Go!</button>#}
-      </span>
+</span>
     {{ render_field(form.text, class="form-control") }}
       <span class="input-group-btn">
           <button class="btn btn-motive" type="submit" title="Отправить"><i class="fa fa-send"></i></button>
       </span>
     </div><!-- /input-group -->
 </form>
-</div>
+{% endif %}
 </div>
 
 <script>
 
+$('#messages_box').on('scroll', function(event) {
+    event.preventDefault();
+
+    console.log("11111111111111111111111111111");
+    var dialog_id = $(this).children().first().attr("dialog_id");
+    var page = $(this).children().first().attr("class");
+    console.log(page, "page");
+    var scrollTop = $(this).scrollTop();
+    var div_height = $(this).prop('scrollHeight');
+    if (scrollTop <= 0) {
+        $.get($SCRIPT_ROOT + '/messages_box/', {dialog_id: dialog_id, page: page}, function (data) {
+
+
+            $("#messages_box").prepend(data.messages);
+            var dear = $("#message-container." + (data.page) + " ul").height();
+            console.log("#message-container." + (data.page) + " ul");
+            console.log(dear, "dear");
+            $("#messages_box").scrollTop(dear);
+
+
+        });
+
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    });
+
 $(document).ready(function () {
 
-    $("#message-container").css('height', $(window).height() * 0.7);
-    document.getElementById('message-container').scrollTop = 9999999;
+if ($(window).width() >= 768) {
+    $("#messages_box").css('height', $(window).height() * 0.7);
+}
+        var page = $("#messages_box").children().first().attr("class");
+
+if (page == "1"){
+    console.log("we will scroll");
+
+    $("#messages_box").scrollTop(9999999);
+
+
+}
+
 });
 
 
-$(".message_form").submit(function(event) {
+$(".message_form#1").submit(function(event) {
+
+
+        event.preventDefault();
+console.log(22222222222222222333);
     var formData = new FormData($(this)[0]);
     $.ajax({
         type: "POST",
@@ -65,10 +125,11 @@ $(".message_form").submit(function(event) {
 
         success: function (data) {
             $("#messages_box").html(data.messages);
+            console.log(data.messages);
+            console.log(data.dialog_text);
             $("#text" + data.dialog_id).text(data.dialog_text);
 
             $(".one-dialog#"+ data.dialog_id + " textbox p i").addClass("");
-            console.log(data.dialog_text);
             $("textarea#text").val("");
 
         },
@@ -77,5 +138,6 @@ $(".message_form").submit(function(event) {
         }
     });
     event.preventDefault();
+    event.stopImmediatePropagation()
 });
 </script>

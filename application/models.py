@@ -5,8 +5,8 @@ from flask_security import UserMixin, RoleMixin
 import flask_security
 from wtforms import PasswordField
 from flask_admin.contrib import  sqla
-
-
+from time import time
+import json
 
 
 from flask_security import current_user
@@ -125,11 +125,12 @@ class User(db.Model, UserMixin):
 
     about_me = db.Column(db.String(1000), nullable=True)
 
-    posts = db.relationship('Post')
+    posts = db.relationship('Post', backref='author')
     notifications = db.relationship('Notification')
 
     comments = db.relationship('Comment', backref='com_author')
     products = db.relationship('Product')
+
     com_products = db.relationship('CommentProduct', backref='com_author')
 
 
@@ -151,7 +152,11 @@ class User(db.Model, UserMixin):
         self.active = active
         self.registered_on = datetime.now()
 
-
+    def add_notification(self, name, data):
+        self.notifications.filter_by(name=name).delete()
+        n = Notification(name=name, payload_json=json.dumps(data), user=self)
+        db.session.add(n)
+        return n
 
     def get_security_payload(self):
         return {
@@ -412,13 +417,19 @@ class ProductAdmin(sqla.ModelView):
         return current_user.has_role('admin')
 
 class Notification(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     closeable = db.Column(db.Boolean, default=True)
     closed = db.Column(db.Boolean, default=False)
-    source_model = db.Column(db.String(30))
-    source_id = db.Column(db.Integer)
-    short_description = db.Column(db.String(300))
+    payload_json = db.Column(db.JSON)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
+
+
+    def get_data(self):
+        return json.loads(str(self.payload_json))
+
 
 
 class Dialog(db.Model):
