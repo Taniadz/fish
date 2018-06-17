@@ -14,9 +14,15 @@
                     {%  for notification in notifications %}
                         {% if notification.name == "comment_on_post" %}
                         <p>{{ info[notification.id]["sender_name"] }} ответила на ваш пост
-                            <a href="{{ url_for("singlepost", postid = info[notification.id]["post_id"]) }}">{{ info[notification.id]["post_title"] }}</a>
+                            <a href="{{ url_for("singlepost", postid = info[notification.id]["post_id"], _anchor='comment' + info[notification.id]["comment_id"]|string )}}">{{ info[notification.id]["post_title"] }}</a>
                         on {{ notification.timestamp }}
                         </p>
+                        {% elif notification.name == "comment_on_post_comment"  %}
+                            <p>{{ info[notification.id]["sender_name"] }} ответила на ваш комментарий к посту
+                            <a href="{{ url_for("singlepost", postid = info[notification.id]["post_id"], _anchor='comment' + info[notification.id]["comment_id"]|string )}}">{{ info[notification.id]["post_title"] }}</a>
+                        on {{ notification.timestamp }}
+                        </p>
+
                         {%  endif %}
                    {% endfor %}
                 </div>

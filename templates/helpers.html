@@ -1,6 +1,6 @@
 all comment to post on page "single_post"
 {% macro post_comment_macro(comment, comments_relationships) -%}
-    <div id="comment{{ comment.id }}">
+    <div id="comment{{ comment.id }}" class="anchored_comment">
         {% if comment.deleted %}
             <p>Комментарий был удален</p>
         {% else %}

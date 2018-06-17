@@ -4180,6 +4180,16 @@ a.hoover-blue:hover{
 .talk-bubble.right-in{
     padding-right: 10px;
 }
+
+.message_form{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-left: 5px;
+    margin-right: 25px;
+    z-index: 3500;
+}
 @media (max-width: 769px) {
      #messages_box{
         display: none;
@@ -4191,6 +4201,7 @@ a.hoover-blue:hover{
     .message_form{
         padding-left: 5%;
         max-width: 95%;
+        position: static;
     }
     .talk-bubble {
 	margin: 40px;
@@ -4279,11 +4290,10 @@ a.hoover-blue:hover{
 }
 #messages_box{
     overflow: scroll;
-    position: relative;
+
 }
 .messages_box_mobile{
-     overflow: scroll;
-
+    overflow: scroll;
     position: absolute;
     top: 75px;
     bottom: 0;
@@ -4337,7 +4347,22 @@ a:hover, a:focus {
 }
 
 
-.message_form{
+button#load_messages{
+    top: 30%;
+    margin-left: 15%;
+    width: 70%;
+        background-color: rgb(31, 139, 243);
+
+
+}
+#load_messages{
+
+    text-align: center;
     position: static;
-    bottom:1%;
+    top:30%;
+}
+
+.anchored_comment:target{
+        background-color: rgba(31, 149, 255, 0.1);
+
 }

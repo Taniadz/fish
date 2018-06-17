@@ -2,6 +2,8 @@
 
 <div id="message-container" class="{{ page }}" dialog_id = {{ dialog_id }}>
 {% if messages.has_next %}
+    <button id ="load_messages">Загрузить больше</button>
+
     <i id="has" class="has_next"></i>
 {% endif %}
 
@@ -64,24 +66,65 @@
 
 <script>
 
+
+$("#load_messages").on("click", function (event) {
+        var my_button = $(this);
+        var dialog_id = $(".messages_box_mobile").children().first().attr("dialog_id");
+        var page = $(".messages_box_mobile").children().first().attr("class");
+        var scrollTop = $(window).scrollTop();
+        console.log(scrollTop);
+        console.log(dialog_id, page);
+
+            $.get($SCRIPT_ROOT + '/messages_box/', {dialog_id: dialog_id, page: page}, function (data) {
+
+                $(".messages_box_mobile").prepend(data.messages);
+                var dear = $("#message-container." + (data.page) + " ul").height();
+
+
+                $(".messages_box_mobile").scrollTop(dear);
+                console.log(my_button);
+                my_button.css("opacity", "0"); {# don't show button for load on previous div #}
+                $("#message-container." + (data.page) ).css("margin-bottom", "0");
+
+            });
+
+
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+
+    });
+
+
+
+
+
 $('#messages_box').on('scroll', function(event) {
     event.preventDefault();
-
-    console.log("11111111111111111111111111111");
     var dialog_id = $(this).children().first().attr("dialog_id");
     var page = $(this).children().first().attr("class");
-    console.log(page, "page");
     var scrollTop = $(this).scrollTop();
-    var div_height = $(this).prop('scrollHeight');
+
     if (scrollTop <= 0) {
         $.get($SCRIPT_ROOT + '/messages_box/', {dialog_id: dialog_id, page: page}, function (data) {
+            if ($(window).width() >= 768) {
+                $("#messages_box").prepend(data.messages);
+            }
+            else{
+                $("#messages_box_mobile").prepend(data.messages);
 
 
-            $("#messages_box").prepend(data.messages);
+            }
             var dear = $("#message-container." + (data.page) + " ul").height();
-            console.log("#message-container." + (data.page) + " ul");
-            console.log(dear, "dear");
-            $("#messages_box").scrollTop(dear);
+            if ($(window).width() >= 768) {
+                $("#messages_box").scrollTop(dear);
+            }
+            else{
+                $("#messages_box_mobile").scrollTop(dear);
+            }
+
+
 
 
         });
@@ -114,7 +157,6 @@ $(".message_form#1").submit(function(event) {
 
 
         event.preventDefault();
-console.log(22222222222222222333);
     var formData = new FormData($(this)[0]);
     $.ajax({
         type: "POST",
@@ -124,12 +166,19 @@ console.log(22222222222222222333);
         contentType: false,
 
         success: function (data) {
+            if ($(window).width() >= 768) {
+
             $("#messages_box").html(data.messages);
-            console.log(data.messages);
-            console.log(data.dialog_text);
+
             $("#text" + data.dialog_id).text(data.dialog_text);
 
             $(".one-dialog#"+ data.dialog_id + " textbox p i").addClass("");
+            }
+            else{
+                 $(".messages_box_mobile").html(data.messages);
+
+            }
+
             $("textarea#text").val("");
 
         },
