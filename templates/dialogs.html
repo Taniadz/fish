@@ -35,11 +35,17 @@
 
                                         <p>
                                             {% if current_user.id == dialog.last_receiver %}
-                                                <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read-self"></i>
+                                                <i id = "circle{{ dialog.id }}" class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read-self"></i>
                                             {% else %}
-                                                <i class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read"></i>
+                                                <i id = "circle{{ dialog.id }}" class="fa fa-circle ct-u-floatRight ct-u-size14 ct-u-marginTop10 circle-not-read"></i>
 
                                             {% endif %}
+
+                                        </p>
+                                     {% else %}
+                                        <p>
+                                            <i id = "circle{{ dialog.id }}" class="ct-u-floatRight ct-u-size14 ct-u-marginTop10"></i>
+
                                         </p>
                                     {% endif %}
 
@@ -81,7 +87,7 @@
     <script>
         $(".one-dialog").on("click", function (event) {
                         event.preventDefault();
-
+                        var this_dialog = $(this);
             var dialog_id = $(this).attr("id");
             if ($(window).width() <= 768) {
                 $(".ct-messageMobile").show();
@@ -94,7 +100,13 @@
                 scrollTop: $('#message-container')[0].scrollHeight}, 2000);
             }
             else{
-                                     $("#messages_box").html(data.messages);
+                     $("#messages_box").html(data.messages);
+                     console.log(".one-dialog#"+ data.dialog_id + " textbox p i");
+                     {# id dialog wasn't read by the user, delete cicrle not-read #}
+                      if ($("#circle"+ data.dialog_id).hasClass("circle-not-read-self")){
+            $("#circle"+ data.dialog_id).removeClass("circle-not-read-self fa fa-circle");
+
+                }
 
                  }
 

@@ -768,7 +768,14 @@ def get_notification(user_id):
 def get_all_notifications(user_id):
     return get_all_obj(Notification, user_id=user_id)
 
-def close_notification(**kwargs):
+
+def close_notification(notifications):
+    for n in notifications:
+        n.closed = True
+        db.session.add(n)
+    db.session.commit()
+
+def get_and_close_notification(**kwargs):
     notifications = get_all_obj(Notification, **kwargs)
     for n in notifications:
         n.closed = True

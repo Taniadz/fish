@@ -18,7 +18,7 @@
 
                     if (fileName) {
                         console.log(fileName);
-                        $('span').html(fileName);
+                        $('span.photo_text').html(fileName);
                     }
                     else
                         label.innerHTML = labelVal;

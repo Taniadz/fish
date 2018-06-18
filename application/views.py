@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw
 def dialogs(user_id):
     dialogs = get_dialogs_by_user_id(current_user.id)
     users_dict  = get_users_for_dialog(dialogs, current_user)
-    close_notification(user_id = current_user.id, name = "message", closed=False)
+    get_and_close_notification(user_id = current_user.id, name = "message", closed=False)
 
     return render_template("dialogs.html", dialogs = dialogs, users_dict=users_dict)
 
@@ -66,7 +66,8 @@ def messages_box():
 
         data = {'messages': render_template('messages_box.html', page = page,
                                             form=form, messages=messages, dialog_id = request.args.get("dialog_id")),
-                "page": page}
+                "page": page,
+                "dialog_id": dialog.id}
 
     if request.method == 'POST' and form.validate_on_submit():
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
@@ -103,6 +104,11 @@ def publish_async_facebook(text):
 
 
 
+@celery.task
+def close_async_notification(notifications):
+    """Background task to make user's notifications closed."""
+    close_notification(notifications)
+    return True
 
 @celery.task
 def send_async_email(title, message):
@@ -144,11 +150,8 @@ def before_request():
         else:
                 current_user.last_seen = datetime.utcnow()
         notifications = get_notification(current_user.id) #cashed notification
-        print(notifications, "nnnnnnnnnnnnnn")
         for n in notifications:
             if n.name == "message":
-                print("yeeeeeeeeeeeees")
-
                 g.have_message = True  #check if user has new messages
 
             else:
@@ -264,7 +267,7 @@ def add_post():
                     db.session.commit()
         if form.facebook_post.data:
             publish_async_facebook(post.body)
-        flash("Ваш пост был опубликован на фейбсук")
+            flash("Ваш пост был опубликован на фейбсук")
 
         return redirect(url_for('singlepost', postid=post.id))
     return render_template("add_post.html", form=form)
@@ -301,8 +304,9 @@ def user_notification(user_id):
     info = {}
     for n in notifications:
         info[n.id] = n.get_data()
-    close_notification(user_id = user_id, closed = False)
-    print(info)
+
+    close_async_notification.delay(notifications)
+
     # notifications_relationships = defaultdict(dict)
     # get_many_sender(notifications, notifications_relationships)
     # get_notifications_sources(user_id, notifications_relationships)

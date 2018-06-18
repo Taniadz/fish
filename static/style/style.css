@@ -4355,6 +4355,12 @@ button#load_messages{
 
 
 }
+@media (min-width: 768px) {
+    #load_messages {
+        display: none;
+    }
+}
+
 #load_messages{
 
     text-align: center;
@@ -4362,7 +4368,15 @@ button#load_messages{
     top:30%;
 }
 
+
+
 .anchored_comment:target{
         background-color: rgba(31, 149, 255, 0.1);
 
 }
+.notificationFalse{
+            background-color: rgba(31, 149, 255, 0.1);
+
+
+}
+

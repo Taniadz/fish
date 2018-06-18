@@ -80,7 +80,6 @@ $("#load_messages").on("click", function (event) {
                 $(".messages_box_mobile").prepend(data.messages);
                 var dear = $("#message-container." + (data.page) + " ul").height();
 
-
                 $(".messages_box_mobile").scrollTop(dear);
                 console.log(my_button);
                 my_button.css("opacity", "0"); {# don't show button for load on previous div #}
@@ -171,8 +170,19 @@ $(".message_form#1").submit(function(event) {
             $("#messages_box").html(data.messages);
 
             $("#text" + data.dialog_id).text(data.dialog_text);
+                                 {# make dialog not read by reciever#}
 
-            $(".one-dialog#"+ data.dialog_id + " textbox p i").addClass("");
+                if ($("#circle"+ data.dialog_id).hasClass("fa-circle")){
+                     $("#circle"+ data.dialog_id).addClass("circle-not-read");
+
+                }
+                else{
+                    $("#circle"+ data.dialog_id).addClass("fa fa-circle circle-not-read");
+
+
+                }
+
+
             }
             else{
                  $(".messages_box_mobile").html(data.messages);
