@@ -39,7 +39,7 @@ def send_message():
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
         create_notification(form.receiver_id.data, "message", {"message_id": message.id} )
-        update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at)
+        update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed = False)
 
         return jsonify({"user_id" : current_user.id})
 
@@ -95,7 +95,7 @@ def uploaded_file(filename):
                                filename)
 
 
-
+#
 @celery.task
 def publish_async_facebook(text):
     graph = facebook.GraphAPI("")
@@ -105,9 +105,9 @@ def publish_async_facebook(text):
 
 
 @celery.task
-def close_async_notification(notifications):
+def close_async_notification(user_id):
     """Background task to make user's notifications closed."""
-    close_notification(notifications)
+    get_and_close_notification(user_id = user_id, closed=False)
     return True
 
 @celery.task
@@ -126,7 +126,7 @@ def contact_us():
     if request.method == 'POST' and form.validate_on_submit():
 
         send_async_email.delay(form.email.data, form.message.data)
-        flash("Ваше сообщеие было отправлено")
+        flash("Ваше сообщение было отправлено")
 
         return redirect(url_for('index'))
 
@@ -213,6 +213,23 @@ def popular_product(page=1):
                             products = products, pagination=pagination,)
 
 
+@app.route('/all_users', methods=['GET', 'POST'])
+@app.route('/all_users/<int:page>', methods=['GET', 'POST'])
+def all_users(page=1):
+    form = MessageForm(CombinedMultiDict((request.files, request.form)))
+    users = get_paginated_user(page)
+    rating_dict = {}
+    for user in users.items:
+        rating_dict[user.id] = count_user_rating(user)
+
+    return render_template('all_users.html',
+                           rating_dict=rating_dict,
+                           page =page,
+                           form=form,
+
+                            users = users)
+
+
 @app.route('/last_posts', methods=['GET', 'POST'])
 @app.route('/last_posts/<int:page>', methods=['GET', 'POST'])
 def last_posts(page=1):
@@ -266,7 +283,7 @@ def add_post():
                     post.tags.append(tag[0])
                     db.session.commit()
         if form.facebook_post.data:
-            publish_async_facebook(post.body)
+            publish_async_facebook.delay(post.body)
             flash("Ваш пост был опубликован на фейбсук")
 
         return redirect(url_for('singlepost', postid=post.id))
@@ -305,7 +322,7 @@ def user_notification(user_id):
     for n in notifications:
         info[n.id] = n.get_data()
 
-    close_async_notification.delay(notifications)
+    close_async_notification.delay(user_id)
 
     # notifications_relationships = defaultdict(dict)
     # get_many_sender(notifications, notifications_relationships)
@@ -425,14 +442,17 @@ def singlepost(postid=None):
 
         comment = create_obj(Comment, text=form.text.data, user_id=current_user.id,
                    post_id=postid, image=filename, parent=parent)
-        if comment.parent == 0:
-            create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
-        else:
-            parent_comment = get_one_obj(Comment, id = parent)
-            create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
-                                                                           current_user.username))  # notification for comment on post
+        if post.user_id != current_user.id:  # not to notify about your own comments
 
-            create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
+            if comment.parent == 0:
+                create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
+            else:
+                parent_comment = get_one_obj(Comment, id = parent)
+
+                create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
+                                                                               current_user.username))  # notification for comment on post
+
+                create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
 
 
         comments = get_all_comments_by_post_id(postid)

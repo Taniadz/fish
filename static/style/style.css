@@ -404,6 +404,9 @@ form .fa.fa-camera, form .photo_text{
 .ct-clear-both{
     clear: both;
 }
+.ct-clear-none{
+    clear: none !important;
+}
 
 .btn-motive:hover, .btn-motive:disabled:hover,
 .btn-motive:active, .btn-motive:disabled:active, .btn-motive:focus,
@@ -2964,10 +2967,10 @@ img:hover + .avatar-edit{
 
 
 
-.one-product {
+.one-product, .one-user {
     border: 1px solid #b3b3b3 !important;
 }
-div.one-product:hover{
+div.one-product:hover, div.one-user:hover{
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
 
@@ -4380,3 +4383,6 @@ button#load_messages{
 
 }
 
+.ct-u-width-50{
+    width: 50px !important;
+}

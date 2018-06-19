@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Каталог{% endblock %}
+
+{% block body %}
+    {% from 'helpers.html' import products_macro with context %}
+    {% from 'helpers.html' import render_pagination with context %}
+
+
+    <section class=" ct-blogGrid ct-u-paddingBottom20">
+
+        <div class="ct-pageSectionHeader ">
+            <h3 class="text-uppercase ct-u-size34 text-center">Форумчане</h3>
+        </div>
+
+        <div class="container ">
+            <div class="row">
+
+
+                {% for user in users.items %}
+                    <div class="col-md-6 col-xs-12 ct-u-paddingTop20 one-user">
+                        <div class="row">
+                                            <a href="{{ url_for("user", username = user.username) }}">
+
+                            <div class="col-md-4 ct-u-paddingBottom5">
+
+                                {% if user.avatar %}
+                                    <img src="{{ url_for('uploaded_file',filename= user.avatar) }}"/>
+                                {% else %}
+                                    <img src="{{ url_for('static',filename="image/icon-user-default.png") }}"/>
+                                {% endif %}
+
+                            </div>
+                                                                </a>
+
+                            <div class="col-md-8">
+                                <div class="ct-u-floatLeft">
+                                                                                <a href="{{ url_for("user", username = user.username) }}">
+
+                                                                                    <h3>{{ user.username }}</h3></a>
+
+                                    Рейтинг {{ rating_dict[user.id] }}<i class="fa fa-star star-rating"></i>
+                                </div>
+                                <button class="btn btn-motive ct-u-floatRight ct-clear-none ct-u-lineHeight30"
+                                        id="open_mesage" receiver_id= {{ user.id }}>Написать
+                                </button>
+
+                                <div id="message_box">
+                                    <div class="message_nav">
+                                        <div class="ct-u-floatLeft">
+                                            {% if user.avatar_min %}
+                                                <img src="{{ url_for('uploaded_file',filename= current_user.avatar_min) }}" class="ct-u-width-50" />
+                                            {% else %}
+                                                <img src="{{ url_for('static',filename="image/min_icon-user-default.png") }}" class="ct-u-width-50" />
+                                            {% endif %}
+                                        </div>
+                                        <div class="ct-u-floatRight">
+                                            <i class="fa fa-window-close ct-u-motive ct-u-size20"
+                                               id="close_message_box"></i>
+                                        </div>
+
+                                    </div>
+                                    <form action="{{ url_for('send_message') }}" method="post"
+                                          enctype="multipart/form-data" class="user_message_form">
+                                        {{ form.hidden_tag() }}
+                                        <div class="form-group col-xs-9 col-sm-10 answer-textarea">
+                                            {{ form.text(class_="form-control", rows="3") }}
+                                        </div>
+                                        <div id="hide" class="form-group col-xs-3 col-sm-2 mobile-form-group">
+                                            <label class="hand-cursor">
+                                                {{ form.file(class="comment-file") }}
+                                                <span class="fa fa-camera"></span>
+                                                <span class="photo_text hidden-xs">Фото</span>
+                                            </label>
+
+                                        </div>
+                                        <div class="control-group">
+                                            <div class="controls">
+
+                                                <button type="submit"
+                                                        class="btn btn-motive btn-form ct-u-size16 ct-u-lineHeight30">
+                                                    отправить
+                                                </button>
+                                            </div>
+                                        </div>
+
+
+                                        {% if form.errors %}
+                                            <ul class=errors>
+                                                {% for error in form.errors %}
+                                                    <li>{{ error }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+
+                                    </form>
+
+                                </div>
+
+
+                                <div class="ct-clear-both"></div>
+                                <span>Дата регистрации</span>
+                                - {{ user.registered_on|timezone }}
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+
+
+            </div>
+
+            <div class="ct-u-marginBoth20 ct-pagination">
+                <ul class="pagination pagination-lg ">
+                    {% if users.has_prev %}
+
+                        <li class="right"><a href="{{ url_for("all_users", page = users.prev_num) }}"><i
+                                class="fa fa-chevron-left"></i></a></li>
+                    {% endif %}
+
+                    <li class="active"><a href="#">{{ page }}</a></li>
+
+
+                    {% if users.has_next %}
+                        <li class="right"><a href="{{ url_for("all_users", page=users.nex_num) }}"><i
+                                class="fa fa-chevron-right"></i></a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </section>
+    <script>
+        $("#open_mesage").on("click", function () {
+            var receiver_id = $(this).attr("receiver_id");
+            console.log(receiver_id);
+            $("#message_box").show();
+            $("input[name=receiver_id]").val(receiver_id);
+
+
+        });
+        $("#close_message_box").on("click", function () {
+            $("#message_box").hide();
+
+        });
+
+        $(".user_message_form").submit(function (event) {
+            var formData = new FormData($(this)[0]);
+
+
+            $.ajax({
+                type: "POST",
+                url: $(this).attr("action"),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("#comments").html(data.comments);
+
+
+                    bootbox.confirm({
+                        message: "Ваше сообщение отправлено. Перейти в Мои диалоги",
+                        buttons: {
+                            cancel: {
+                                label: '<i class="fa fa-times"></i> Остаться'
+                            },
+                            confirm: {
+                                label: '<i class="fa fa-check"></i> перейти'
+                            }
+                        },
+                        callback: function (result) { /* result is a boolean; true = OK, false = Cancel*/
+
+                            if (result) {
+
+                                window.location.href = $SCRIPT_ROOT + '/dialogs/' + data.user_id;
+
+
+                            }
+                            else {
+                                console.log("no changes")
+                            }
+                        }
+                    })
+
+
+                },
+                error: function (xhr, str) {
+                    alert('Mistake ' + xhr.responseCode);
+                }
+            });
+            event.preventDefault();
+        });
+
+        var mousePosition;
+        var offset = [0, 0];
+        var div;
+        var isDown = false;
+        div = document.getElementById("message_box");
+        div.addEventListener('mousedown', function (e) {
+            isDown = true;
+            offset = [
+                div.offsetLeft - e.clientX,
+                div.offsetTop - e.clientY
+            ];
+        }, true);
+
+        document.addEventListener('mouseup', function () {
+            isDown = false;
+        }, true);
+
+        document.addEventListener('mousemove', function (event) {
+            event.preventDefault();
+            if (isDown) {
+                mousePosition = {
+
+                    x: event.clientX,
+                    y: event.clientY
+
+                };
+                div.style.left = (mousePosition.x + offset[0]) + 'px';
+                div.style.top = (mousePosition.y + offset[1]) + 'px';
+            }
+        }, true);
+
+    </script>
+
+
+{% endblock %}
+
+
+

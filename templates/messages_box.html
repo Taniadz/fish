@@ -169,6 +169,11 @@ $(".message_form#1").submit(function(event) {
 
             $("#messages_box").html(data.messages);
 
+            }
+            else{
+                 $(".messages_box_mobile").html(data.messages);
+
+            }
             $("#text" + data.dialog_id).text(data.dialog_text);
                                  {# make dialog not read by reciever#}
 
@@ -181,13 +186,6 @@ $(".message_form#1").submit(function(event) {
 
 
                 }
-
-
-            }
-            else{
-                 $(".messages_box_mobile").html(data.messages);
-
-            }
 
             $("textarea#text").val("");
 

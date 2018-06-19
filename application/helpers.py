@@ -795,3 +795,10 @@ def json_data(post_id, post_title, comment_id, sender_name):
 
 def get_paginated_mesages(dialog_id, page):
     return Message.query.filter_by(dialog_id=dialog_id).order_by(Message.sent_at.desc()).paginate(page, 5, False)
+
+def get_paginated_user(page):
+    return User.query.order_by(User.registered_on.desc()).paginate(page, 10, False)
+
+
+
+
