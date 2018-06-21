@@ -4386,3 +4386,35 @@ button#load_messages{
 .ct-u-width-50{
     width: 50px !important;
 }
+
+
+.ct-u-width-200{
+    width: 200px !important;
+}
+
+
+
+.ct-u-doubleBorderTop {
+    position: relative;
+    border-top: 1px solid #eeeeee;
+}
+
+.ct-verticalRoundedImage img {
+    width: 100%;
+}
+.text-right {
+    text-align: right !important;
+}
+
+
+.topic{
+    height: 250px;
+}
+
+.ct-u-color-text-hoover{
+    color: #4c505e;
+}
+
+.ct-u-color-text-hoover:hover{
+    color: #1f8bf3;
+}

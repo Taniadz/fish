@@ -39,7 +39,6 @@ def count_user_rating(user):
 
 def get_last_tags():
     tag =  Tag.query[:7]
-    print(tag)
     return tag
 
 def get_posts_by_tagname(name):
@@ -56,7 +55,6 @@ def filter_tags(tags, query):
     for tag in tags:
         if (re.match(query, tag.name)):
             tags_list.append(tag)
-    print(tags_list, "llllllllllllllllllllllllllllllliist")
     return tags_list
 
 
@@ -323,9 +321,11 @@ def get_products_ordering(order, page, post_per_page, user_id = None):
 
 
 @cache.memoize(500)
-def get_posts_ordering(order, page, post_per_page, user_id = None):
+def get_posts_ordering(order, page, post_per_page, user_id = None, topic_id = None):
     begin = (page - 1) * post_per_page
-    if user_id:
+    if topic_id:
+        posts = Post.query.filter_by(topic_id=topic_id).filter_by(deleted=False).order_by(order)[begin: begin + post_per_page]
+    elif user_id:
         posts = Post.query.filter_by(user_id=user_id).filter_by(deleted=False).order_by(order)[begin: begin + post_per_page]
     else:
         posts = Post.query.order_by(order).filter_by(deleted=False)[begin: begin + post_per_page]
@@ -760,9 +760,21 @@ def get_other_participant(dialog, user_id):
             return int(p)
 
 
-
+@cache.memoize(500)
 def get_notification(user_id):
     return get_all_obj(Notification, user_id=user_id, closed=False)
+
+
+@event.listens_for(Notification, 'after_update')
+def after_update_comment(mapper, connection, target):
+    print("update")
+    cache.delete_memoized(get_notification)
+
+
+@event.listens_for(Notification, 'after_insert')
+def after_insert_comment(mapper, connection, target):
+    print("insert")
+    cache.delete_memoized(get_notification)
 
 
 def get_all_notifications(user_id):

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_security import current_user
-from wtforms import StringField, HiddenField, validators, FieldList, FormField, BooleanField
+from wtforms import StringField, HiddenField, validators, FieldList, FormField, BooleanField, SelectField
 from wtforms.widgets import TextArea
 from wtforms.validators import Required, Length, DataRequired, Optional
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -50,13 +50,16 @@ class TagsForm(FlaskForm):
     name = StringField('Тег', validators = [Length(min = 1,max = 32)], widget=TextArea())
 
 class PostForm(FlaskForm):
-    title = StringField('Заголовок', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])
-    body = StringField('Текст', [validators.Length(min = 5, max=2500, message="Длина текста должна быть от 5 до 2500 символов")], widget=TextArea())
+    title = StringField('Заголовок*', [validators.Length(min = 1,max=300, message="Длина заголовка должна быть от 1 до 300 символов")])
+    body = StringField('Текст*', [validators.Length(min = 5, max=2500, message="Длина текста должна быть от 5 до 2500 символов")], widget=TextArea())
     file = FileField('Фото',  validators=[
         FileAllowed(images, 'Только картинки!')
     ])
     tags = FieldList(FormField(TagsForm), min_entries=3, validators = [Optional()])
+    topic_id = SelectField('Тема', choices=[("", "Без темы"),('1', 'Продать, купить, обменять'), ('2', 'Интересные факты'), ('3', 'Нужна помощь, совет' ), ('4', 'Опознание - идентификации незнакомых рыб') ], default='')
+
     facebook_post = BooleanField("", default=True )
+
 
 
 class EditPostForm(FlaskForm):
@@ -94,7 +97,7 @@ class ProductCommentForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     title = StringField('Название*', [validators.Length(min =1, max=300, message="Длина названия должна быть от 1 до 1000 символов")])
-    price = StringField('Цена', [validators.Length(min=1, max=200)])
+    price = StringField('Цена', [validators.optional()])
     images = FileField('Фото', validators=[
         FileAllowed(images, 'Только картинки!')
     ])

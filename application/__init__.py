@@ -99,7 +99,7 @@ register_teardown_appcontext(app)
 
 # init flask-security
 from .forms import ExtendedConfirmRegisterForm, ExtendedRegisterForm, SearchForm
-from .models import User, Role, Post, Product, Connection, PostAdmin, ProductAdmin, UserAdmin, RoleAdmin
+from .models import User, Role, Post, Product, Connection, PostAdmin, ProductAdmin, UserAdmin, RoleAdmin, Topic, TopicAdmin
 
 
 
@@ -138,6 +138,7 @@ admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
 admin.add_view(PostAdmin(Post, db.session))
 admin.add_view(ProductAdmin(Product, db.session))
+admin.add_view(TopicAdmin(Topic, db.session))
 # Add Flask-Admin views for Users and Roles
 
 admin.add_view(UserAdmin(User, db.session))

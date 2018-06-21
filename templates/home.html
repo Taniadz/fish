@@ -101,20 +101,74 @@
 
     </div>
     <div class="container">
-    <h4 class="ct-fw-300 ct-u-size40 ">Узнайте больше о любимом хобби - <span>Аквариумистике</span></h4>
+        <h4 class="ct-fw-300 ct-u-size40 ">Узнайте больше о любимом хобби - <span>Аквариумистике</span></h4>
     </div>
 
-    <section class="ct-u-paddingBottom30">
-        <div class="container  ct-u-borderBottomGrayLighter">
-        <div class="col-md-12" style="float: none">
 
-            <a href="{{ url_for("last_posts") }}" class="blue-hover">
+    <section class="ct-u-paddingBoth30 ct-u-motiveLight2--bg ">
 
-                <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">
-                    Новые посты</h4>
+        <div class="container">
+            <div class="row">
+                <h4 class="ct-fw-600 ct-u-paddingBottom30 text-uppercase ct-u-size28 text-center ">популярные темы</h4>
+                {% for topic in topics %}
+                    {% if topic.id == 1 %}
+                                            <a href="{{ url_for("popular_product") }}">
 
-            </a>
+                    {% else %}
+                    <a href="{{ url_for("topic", topic = topic.id) }}">
+                    {% endif %}
+                    <div class="col-sm-6 col-xs-12 ct-u-paddingBoth30">
+                        <div class="row">
+
+                            <div class="ct-verticalRoundedImage">
+
+                            {% if loop.index < 3 %}
+                                    <div class="col-sm-6 col-xs-12">
+                                        <img src="{{ url_for('static',filename="image/"+topic.image ) }}"/>
+                                    </div>
+                                    <div class="col-sm-5 col-xs-12 ct-u-doubleBorderTop topic">
+                                        <h4 class="text-uppercase ct-fw-600">{{ topic.name }}</h4>
+
+                                        <p class="ct-u-color-text-hoover">{{ topic.description | truncate(100) }}</p>
+
+                                    </div>
+
+                                {% else %}
+                                 <div class="col-sm-5 col-xs-12 ct-u-doubleBorderTop topic">
+                                        <h4 class="text-uppercase ct-fw-600">{{ topic.name }}</h4>
+
+                                        <p class="ct-u-color-text-hoover">{{ topic.description | truncate(100) }}</p>
+
+                                    </div>
+                                <div class="col-sm-6 col-xs-12">
+                                        <img src="{{ url_for('static',filename="image/"+topic.image ) }}"/>
+                                    </div>
+
+                                {% endif %}
+                        </div>
+                    </div>
+                    </div>
+                    </a>
+
+
+            {% endfor %}
+
+            </div>
         </div>
+    </section>
+
+
+    <section class="ct-u-paddingBoth30">
+        <div class="container  ct-u-borderBottomGrayLighter">
+            <div class="col-md-12" style="float: none">
+
+                <a href="{{ url_for("last_posts") }}" class="blue-hover">
+
+                    <h4 class="ct-fw-600 ct-u-size30 ct-u-paddingBottom10 ct-u-paddingTop5 text-uppercase text-center blue-hover">
+                        Новые посты</h4>
+
+                </a>
+            </div>
             <div class="ct-blog ct-js-blogMasonry ct-u-paddingBottom20 ">
                 {% for post in posts %}
                     {% if not post.deleted %}
@@ -125,10 +179,11 @@
                     {% endif %}
                 {% endfor %}
             </div>
-        <div class="col-md-12">
-        <h4 class="text-center ct-fw-600 ct-u-size22" >
-            <a class="" href="{{ url_for("last_posts") }}" style="text-decoration:none"><span>Читать еще  <i class="fa fa-location-arrow"></i></span></a>
-        </h4>
+            <div class="col-md-12">
+                <h4 class="text-center ct-fw-600 ct-u-size22">
+                    <a class="" href="{{ url_for("last_posts") }}" style="text-decoration:none"><span>Читать еще  <i
+                            class="fa fa-location-arrow"></i></span></a>
+                </h4>
             </div>
         </div>
 
@@ -137,14 +192,16 @@
 
     <section class="ct-u-motiveLight2--bg ct-u-paddingBottom10">
         <div class="container">
-        <div class="ct-iconBox">
+            <div class="ct-iconBox">
                 <p class=" ct-u-marginBottom0">
                     Здесь вы можете продать любой
-                    товар, связанный с аквариумным делом. Также вы можете отдать аквариум даром хорошие руки, или отдать аквариум с рыбками. Для того,
-                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог. Учитывайте, что для того, чтобы добавлять посты и продукты,
+                    товар, связанный с аквариумным делом. Также вы можете отдать аквариум даром хорошие руки, или отдать
+                    аквариум с рыбками. Для того,
+                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог. Учитывайте, что для того,
+                    чтобы добавлять посты и продукты,
                     вы должны быть зарегистрированным на нашем форуме аквариумистики
                 </p>
-               <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
+                <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
             </div>
 
             <a href="{{ url_for("popular_product") }}" class="blue-hover">
@@ -172,7 +229,7 @@
             </div>
         </div>
 
-
+        </div>
     </section>
 
     <div class="container">
@@ -223,15 +280,14 @@
     <script>
         $(document).ready(function () {
             var $bodyel = jQuery("body");
-             var $navel = jQuery("nav");
-             $navel.addClass("ct-navbar-onepage navbar-transparent");
+            var $navel = jQuery("nav");
+            $navel.addClass("ct-navbar-onepage navbar-transparent");
 
-             $navel.removeClass("navbar-default");
+            $navel.removeClass("navbar-default");
             $bodyel.addClass("cssAnimate ct-js-navbarMakeSmaller ct-navbar-isTransparent-toDefault");
         });
 
         jQuery(window).on("load", function () {
-
 
 
             if ($().masonry && ($('.ct-js-blogMasonry').length > 0) && ($devicewidth > 767)) {

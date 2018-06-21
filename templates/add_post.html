@@ -16,14 +16,19 @@
                             {{ form.hidden_tag() }}
                             {{ render_field_with_errors(form.title, class="form-control") }}
                             {{ render_field_with_errors(form.body, class="form-control", contenteditable="true") }}
+                        <div class="ct-u-paddingTop20">
+                           <p class="ct-u-motiveLight">По желанию, Вы можете добавить ваш пост к любой из предложенных тем. </p>
+                                                    {{ render_field_with_errors(form.topic_id, class="form-control") }}
 
 
-
+</div>
 
                             <div id="hide" class="form-group big-form-file">
                                 {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
-                            <p class="ct-fw-300 ct-u-motiveLight">
-                                Выберите несколько тегов к вашему посту (напр."мой аквариум", "аквариум своими руками")
+                                                    <div class="ct-u-paddingTop20">
+
+                            <p class=" ct-u-motiveLight">
+                                По желанию, выберите несколько тегов к вашему посту (напр."мой аквариум", "аквариум своими руками")
 
                             </p>
 
@@ -39,6 +44,7 @@
 
                                     </div>
                                 {% endfor %}
+                                                    </div>
 
                                 <div id="hide" class="form-group big-form-file ct-clear-both">
                                 {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}

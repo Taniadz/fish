@@ -16,6 +16,15 @@ tags = db.Table('tags',
                 )
 
 
+
+class Topic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300), unique=True)
+    description = db.Column(db.String(1000))
+    regional = db.Column(db.Boolean, default = False)
+    image = db.Column(db.String(300), nullable=True)
+
+
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True)
@@ -198,6 +207,8 @@ class Post(db.Model):
     favourites = db.relationship(FavouritePost,passive_deletes=True )
 
     tags = db.relationship('Tag', secondary=tags, backref='posts')
+    topic_id = db.Column(db.Integer, nullable=True)
+
 
     like_count = db.Column(db.Integer, default=0)
     unlike_count = db.Column(db.Integer, default=0)
@@ -205,12 +216,13 @@ class Post(db.Model):
     angry_count = db.Column(db.Integer, default=0)
 
 
-    def __init__(self, title, body, image, user_id):
+    def __init__(self, title, body, image, user_id, topic_id):
         self.title = title
         self.body = body
         self.user_id = user_id
         self.published_at = datetime.now()
         self.image=image
+        self.topic_id = topic_id
 
 
 
@@ -409,6 +421,13 @@ class PostAdmin(sqla.ModelView):
         return current_user.has_role('admin')
 
 
+
+
+# Customized Role model for SQL-Admin
+class TopicAdmin(sqla.ModelView):
+    # Prevent administration of Roles unless the currently logged-in user has the "admin" role
+    def is_accessible(self):
+        return current_user.has_role('admin')
 
 # Customized Role model for SQL-Admin
 class ProductAdmin(sqla.ModelView):

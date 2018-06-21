@@ -3,7 +3,7 @@ from flask import render_template,  flash, redirect, url_for, request, g, send_f
 from application import celery, UPLOAD_FOLDER, security, cache, db, mail
 from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm, MessageForm
 from werkzeug import secure_filename
-from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag, Message
+from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag, Message, Topic
 from flask_json import jsonify
 from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
@@ -191,8 +191,10 @@ def confirm_email():
 def index():
     posts = get_posts_ordering(Post.published_at.desc(), 1, POSTS_PER_PAGE)
     products = get_products_ordering(Product.like_count.desc(), 1, POSTS_PER_PAGE)
+    topics = get_all_obj(Topic)
     return render_template('home.html', user=current_user,
                            posts=posts, products=products,
+                            topics = topics,
                            products_relationship=get_products_relationship(products, current_user),
                            posts_relationship = get_posts_relationship(posts, current_user))
 
@@ -255,10 +257,37 @@ def last_posts(page=1):
 
 
 
+@app.route('/topic/<int:topic>', methods=['GET', 'POST'])
+@app.route('/topic/<int:topic>/<int:page>', methods=['GET', 'POST'])
+def topic(topic, page=1):
+    if request.args.get("sort") == "rating":  # sort by datetime
+        posts = get_posts_ordering(Post.like_count.desc(), page, POSTS_PER_PAGE, topic_id=topic)
+
+
+    else:  # sort by rating
+        posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE, topic_id=topic)
+
+    topic = get_one_obj(Topic, id=topic)
+    count = count_all_posts()
+    pagination = Pagination(page, POSTS_PER_PAGE, count)
+    posts_relationships=get_posts_relationship(posts, current_user)
+
+
+    return render_template('topic.html',
+                           posts=posts,
+                           topic = topic,
+                           posts_relationships = posts_relationships,
+                           pagination=pagination,
+                           sort=request.args.get("sort"))
+
+
+
+
 
 @app.route('/add_post', methods = ['GET', 'POST'])
 @login_required
 def add_post():
+
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.is_xhr:
         tags = get_tags_all()
@@ -269,11 +298,16 @@ def add_post():
 
     if request.method == 'POST' and form.validate_on_submit():
         filename = create_filename(form.file.data)
+        if form.topic_id.data:
+            topic_id = int(form.topic_id.data)
+        else:
+            topic_id = 0
         post = create_obj(Post,
                           title=form.title.data.strip(),
                           body=form.body.data.strip(),
                           user_id=current_user.id,
-                          image=filename)
+                          image=filename,
+                          topic_id = topic_id)
 
         for t in form.tags.data:
             tag_name = t["name"][:32]

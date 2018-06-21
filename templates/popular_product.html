@@ -8,21 +8,35 @@
 
     <section class=" ct-blogGrid ct-u-paddingBottom20">
 
-        <div class="ct-pageSectionHeader ">
-            <h3 class="text-uppercase ct-u-size50 text-center">Каталог</h3>
-        </div>
 
         <div class="container ">
-            <div class="row">
-            <div class="ct-iconBox ct-u-paddingBoth0">
-                <p class=" ct-u-marginBottom0">
-                    Здесь вы можете продать любой
+        <div class="ct-verticalRoundedImage">
+        <div class="row">
+            <div class="ct-u-marginTop30">
+                <div class="col-sm-2 col-xs-7 ct-u-doubleBorderTop">
+                    <h3 class="ct-u-size34 text-uppercase">Каталог</h3>
+                </div>
+                <div class="col-sm-7 col-xs-12 ct-u-doubleBorderTop ct-u-paddingBoth10">
+                    <p>
+                     Здесь вы можете продать любой
                     товар, связанный с аквариумным делом. Также вы можете отдать аквариум даром хорошие руки, или отдать аквариум с рыбками. Для того,
-                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог. Учитывайте, что для того, чтобы добавлять посты и продукты,
+                    чтобы разместить ваш продукт на нашем форуме, добавьте его в каталог.
+                    </p>
+                        <p>Учитывайте, что для того, чтобы добавлять посты и продукты,
                     вы должны быть зарегистрированным на нашем форуме аквариумистики
+                                       <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
+
                 </p>
-               <a href="{{ url_for("add_product") }}" style="text-decoration:none"><span class="ct-u-size18 ct-fw-600"> - Добавить продукт</span></a>
+                </div>
+                                <div class="col-sm-3 col-xs-5"><img class="ct-u-width-200" src="{{ url_for("static", filename = "image/handshake.png") }}" alt="Image Rounded"></div>
+
             </div>
+        </div>
+    </div>
+
+{% if products|length >= 1 %}
+            <div class="row">
+
                 <div class="sort_box">
                     {% if sort == "rating" %}
                         <div class="sort-left col-md-6 col-sm-6">
@@ -74,6 +88,11 @@
                     {{ render_pagination(pagination, "popular_product", sort) }}
                 </ul>
             </div>
+        {% else %}
+    <p>
+        Пока нет новых продуктов и товаров. Но вы можете быть первым, кто добавит свой продукт в каталог :)
+    </p>
+        {% endif %}
 
         </div>
     </section>
