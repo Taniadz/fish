@@ -477,30 +477,6 @@ def get_post_for_comments(comments, posts_dict):
 
 
 
-def get_notifications_sources(user_id, rel_dict):
-    posts_set_id=set()
-    posts_instances = []
-    comments_instances = []
-    notifications = Notification.query.filter(Notification.source_model != "mesage").all()
-    for notification in notifications:
-        if notification.source_model == "post":
-            posts_set_id.add(notification.source_id)
-        if notification.source_model == "post_comment":
-            comments_instances.append(notification.source_id)
-    for id in posts_set_id:
-        posts_instances.append(get_one_obj(Post, id=id))
-
-    for notification in notifications:
-        for post in posts_instances:
-            if notification.source_id == post.id and notification.source_model == "post":
-                rel_dict[notification.id]['post'] = post
-        for comment in comments_instances:
-            if notification.source_id == comment.id and notification.source_model == "post_comment":
-                rel_dict[notification.id]['comment'] = comment
-
-    print(rel_dict)
-    return rel_dict
-
 
 
 
@@ -761,31 +737,31 @@ def get_other_participant(dialog, user_id):
 
 
 @cache.memoize(500)
-def get_notification(user_id):
+def get_open_notifications(user_id):
     return get_all_obj(Notification, user_id=user_id, closed=False)
+
+@cache.memoize(500)
+def get_not_message_notifications(user_id):
+    return db.session.query(Notification).filter(Notification.name != "message").filter_by(user_id =user_id).order_by(Notification.timestamp.desc()).all()
+
+
 
 
 @event.listens_for(Notification, 'after_update')
-def after_update_comment(mapper, connection, target):
+def after_update_notification(mapper, connection, target):
     print("update")
-    cache.delete_memoized(get_notification)
+    cache.delete_memoized(get_open_notifications)
+    cache.delete_memoized(get_not_message_notifications)
+
 
 
 @event.listens_for(Notification, 'after_insert')
-def after_insert_comment(mapper, connection, target):
+def after_insert_notification(mapper, connection, target):
     print("insert")
-    cache.delete_memoized(get_notification)
+    cache.delete_memoized(get_open_notifications)
+    cache.delete_memoized(get_not_message_notifications)
 
 
-def get_all_notifications(user_id):
-    return get_all_obj(Notification, user_id=user_id)
-
-
-def close_notification(notifications):
-    for n in notifications:
-        n.closed = True
-        db.session.add(n)
-    db.session.commit()
 
 def get_and_close_notification(**kwargs):
     notifications = get_all_obj(Notification, **kwargs)
@@ -793,6 +769,23 @@ def get_and_close_notification(**kwargs):
         n.closed = True
         db.session.add(n)
     db.session.commit()
+
+
+def close_message_notification(user_id):
+    notifications =  db.session.query(Notification).filter_by(user_id =user_id, closed = False, name ="message").all()
+    for n in notifications:
+        n.closed = True
+        db.session.add(n)
+    db.session.commit()
+
+
+def close_not_message_notification(user_id):
+    notifications =  db.session.query(Notification).filter(Notification.name != "message").filter_by(user_id =user_id, closed = False).all()
+    for n in notifications:
+        n.closed = True
+        db.session.add(n)
+    db.session.commit()
+
 
 def create_notification(user_id, name, data):
     n = Notification(name=name, payload_json=json.dumps(data), user_id=user_id)

@@ -25,8 +25,6 @@ from PIL import Image, ImageDraw
 def dialogs(user_id):
     dialogs = get_dialogs_by_user_id(current_user.id)
     users_dict  = get_users_for_dialog(dialogs, current_user)
-    get_and_close_notification(user_id = current_user.id, name = "message", closed=False)
-
     return render_template("dialogs.html", dialogs = dialogs, users_dict=users_dict)
 
 @app.route('/send_message', methods = ['POST'])
@@ -34,7 +32,6 @@ def dialogs(user_id):
 def send_message():
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     if form.validate_on_submit():
-        print(form.data)
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
@@ -56,6 +53,9 @@ def messages_box():
 
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     if request.method == 'GET':
+
+
+        close_message_notification(current_user.id)
         messages = get_paginated_mesages(request.args.get("dialog_id"), page)
         message_was_read(messages.items, current_user)
 
@@ -75,10 +75,8 @@ def messages_box():
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
         create_notification(form.receiver_id.data, "message", {"message":message.id} )
-        create_notification(form.receiver_id.data, "message", {"message":message.id} )
         updated_dialog = update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed=False)
         messages = get_paginated_mesages(dialog.id, page)
-        print(messages, "message")
 
         data = {'messages': render_template('messages_box.html',
                                         form=form, messages=messages, page =1, dialog_id = dialog.id),
@@ -107,7 +105,7 @@ def publish_async_facebook(text):
 @celery.task
 def close_async_notification(user_id):
     """Background task to make user's notifications closed."""
-    get_and_close_notification(user_id = user_id, closed=False)
+    close_not_message_notification(user_id)
     return True
 
 @celery.task
@@ -146,18 +144,26 @@ def before_request():
             delta = timedelta(minutes=10)
             if current_time - current_user.last_seen > delta:
                 current_user.last_seen = datetime.utcnow()
+                db.session.add(current_user)
+                db.session.commit()
 
         else:
                 current_user.last_seen = datetime.utcnow()
-        notifications = get_notification(current_user.id) #cashed notification
+                db.session.add(current_user)
+                db.session.commit()
+
+        notifications = get_open_notifications(current_user.id) #cashed notification
+        print(notifications)
+
+
         for n in notifications:
+            print(n.closed)
             if n.name == "message":
                 g.have_message = True  #check if user has new messages
 
             else:
                 g.new_notification = True
-        db.session.add(current_user)
-        db.session.commit()
+
 
 
 
@@ -351,16 +357,13 @@ def user(username):
 
 @app.route('/user_notification/<int:user_id>')
 def user_notification(user_id):
-    notifications = get_all_notifications(user_id)
+    notifications = get_not_message_notifications(user_id)
     info = {}
     for n in notifications:
         info[n.id] = n.get_data()
 
     close_async_notification.delay(user_id)
 
-    # notifications_relationships = defaultdict(dict)
-    # get_many_sender(notifications, notifications_relationships)
-    # get_notifications_sources(user_id, notifications_relationships)
 
     return render_template('users_notifications.html', notifications = notifications, info = info)
                            # notifications_relationships=notifications_relationships)
