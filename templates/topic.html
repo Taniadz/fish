@@ -4,13 +4,13 @@
 {% block title %}Блог{% endblock %}
 {% block body %}
     <section class="ct-blogGrid ct-u-paddingBottom20">
-        <div class="ct-pageSectionHeader ct-u-paddingBoth20">
+        <div class="ct-u-paddingBoth20">
             <div class="container">
             <div class="ct-verticalRoundedImage">
         <div class="row">
             <div class="ct-u-marginTop30">
                 <div class="col-sm-5 col-xs-7 ct-u-doubleBorderTop">
-                    <h3 class="ct-u-size34 text-uppercase">{{ topic.name }}</h3>
+                    <h3 class="ct-u-size28 text-uppercase">{{ topic.name }}</h3>
                 </div>
                 <div class="col-sm-4 col-xs-12 ct-u-doubleBorderTop ct-u-paddingBoth30">
                     <p>{{ topic.description }}</p>
@@ -22,35 +22,39 @@
     </div>
 
             <div class="row">
-                <div class="sort_box">
+                <div class="sort_box ct-u-marginBottom10">
+
+                <ul class="list-unstyled list-inline ct-u-paddingTop5">
+                <li><span class="ct-u-motiveDark ct-fw-600">Сортировать по: </span></li>
+
                     {% if sort == "rating" %}
-                        <div class="sort-left col-md-6 col-sm-6">
 
-                            <a href="{{ url_for('topic', topic = topic.id, sort = 'rating') }}">
-                                <h4 class="ct-u-size30 active">популярные </h4>
-                            </a>
+                        <li>
 
-                        </div>
-                        <div class="sort-right col-md-6 col-sm-6">
-                            <a href="{{ url_for('topic', topic = topic.id, sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30">последние</h4>
+                            <a href="{{ url_for('topic', topic = topic.id, sort = 'rating') }}"
+                                 class="active">Популярные
                             </a>
-                        </div>
+</li>
+                        <li>
+                            <a href="{{ url_for('topic', topic = topic.id, sort = 'data') }}"
+                                class="">Последние
+                            </a>
+                        </li>
                     {% else %}
-                        <div class="sort-left col-md-6 col-sm-6">
-
-                            <a href="{{ url_for('topic', topic = topic.id, sort = 'rating') }}">
-                                <h4 class="ct-u-size30">популярные </h4>
+<li>
+                            <a href="{{ url_for('topic', topic = topic.id, sort = 'rating') }}">популярные
                             </a>
-
-                        </div>
-                        <div class="sort-right col-md-6 col-sm-6">
-
-                            <a href="{{ url_for('topic', topic = topic.id, sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30 active">последние </h4>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('topic', topic = topic.id, sort = 'data') }}"
+                                class="active">последние
                             </a>
-                        </div>
-            {% endif %}
+                        </li>
+                    {% endif %}
+                        </ul>
+
+
+
 
                 </div>
 

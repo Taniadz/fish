@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 import json
 from werkzeug import secure_filename
 from werkzeug.exceptions import abort
-
+from flask import render_template
 # from .extentions import db
-from application  import UPLOAD_FOLDER, app, db, cache
+from application  import UPLOAD_FOLDER, app, db, cache, mail
 from .models import Dialog, User, Post, Comment, CommentProduct, Product,\
     PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification, Message
 
@@ -20,7 +20,7 @@ def check_is_social(user):
 import re
 
 
-
+from flask_mail import Message as FlaskMessage
 
 
 
@@ -481,8 +481,12 @@ def get_post_for_comments(comments, posts_dict):
 
 
 
-def count_all_posts():
-    return db.session.query(Post).count()
+def count_all_posts(topic_id = None):
+    if topic_id:
+        return db.session.query(Post).filter(Post.topic_id==topic_id).count()
+
+    else:
+        return db.session.query(Post).count()
 
 def count_all_products():
     return db.session.query(Product).count()
@@ -806,4 +810,17 @@ def get_paginated_user(page):
 
 
 
+def send_mail_notificaion(notification):
+    receiver = get_or_abort_user(User, id = notification.user_id)
 
+    title = "Уведомление от аквафорума aqua.name"
+
+    msg = FlaskMessage(title,
+                               sender="contact.me@aqua.name",
+                               recipients=[receiver.email])
+
+
+    print(receiver.email)
+    msg.body = render_template("mails/notification_mail.html", notification=notification, info=notification.get_data())
+    mail.send(msg)
+    return True

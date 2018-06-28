@@ -111,29 +111,7 @@ security = Security(app, user_datastore,
 
 
 
-# @app.before_first_request
-# def before_first_request():
-#
-#     # Create any database tables that don't exist yet.
-#     db.create_all()
-#
-#     # Create the Roles "admin" and "end-user" -- unless they already exist
-#     user_datastore.find_or_create_role(name='admin', description='Administrator')
-#
-#     # Create two Users for testing purposes -- unless they already exists.
-#     # In each case, use Flask-Security utility function to encrypt the password.
-#     encrypted_password = flask_security.utils.encrypt_password('password')
-#
-#     if not user_datastore.get_user('tetianarabota@gmail.com'):
-#         user_datastore.create_user(username ="Admin", email='tetianarabota@gmail.com', password=encrypted_password)
-#
-#     # Commit any database changes; the User and Roles must exist before we can add a Role to the User
-#     db.session.commit()
-#
-#     # Give one User has the "end-user" role, while the other has the "admin" role. (This will have no effect if the
-#     # Users already have these Roles.) Again, commit any database changes.
-#     user_datastore.add_role_to_user('etianarabota@gmail.com', 'admin')
-#     db.session.commit()
+
 admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
 admin.add_view(PostAdmin(Post, db.session))

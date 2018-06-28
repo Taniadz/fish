@@ -10,37 +10,69 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="sort_box">
+
+                            <div class="sort_box ct-u-marginBottom10">
+                 <ul class="list-unstyled list-inline ct-u-paddingTop5">
+                <li><span class="ct-u-motiveDark ct-fw-600">Сортировать по: </span></li>
+
                     {% if sort == "rating" %}
-                        <div class="sort-left col-md-6 col-sm-6">
 
-                            <a href="{{ url_for('last_posts', sort = 'rating') }}">
-                                <h4 class="ct-u-size30 active">популярные </h4>
-                            </a>
+                        <li>
 
-                        </div>
-                        <div class="sort-right col-md-6 col-sm-6">
-                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30">последние</h4>
+                            <a href="{{ url_for('last_posts', sort = 'rating') }}"
+                                 class="active">Популярные
                             </a>
-                        </div>
+</li>
+                        <li>
+                            <a href="{{ url_for('last_posts', sort = 'data') }}"
+                                class="">Последние
+                            </a>
+                        </li>
                     {% else %}
-                        <div class="sort-left col-md-6 col-sm-6">
-
-                            <a href="{{ url_for('last_posts', sort = 'rating') }}">
-                                <h4 class="ct-u-size30">популярные </h4>
+<li>
+                            <a href="{{ url_for('last_posts', sort = 'rating') }}">популярные
                             </a>
-
-                        </div>
-                        <div class="sort-right col-md-6 col-sm-6">
-
-                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">
-                                <h4 class="ct-u-size30 active">последние </h4>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('last_posts', sort = 'data') }}"
+                                class="active">последние
                             </a>
-                        </div>
-            {% endif %}
+                        </li>
+                    {% endif %}
+                        </ul>
 
                 </div>
+{#                <div class="sort_box">#}
+{#                    {% if sort == "rating" %}#}
+{#                        <div class="sort-left col-md-6 col-sm-6">#}
+{##}
+{#                            <a href="{{ url_for('last_posts', sort = 'rating') }}">#}
+{#                                <h4 class="ct-u-size30 active">популярные </h4>#}
+{#                            </a>#}
+{##}
+{#                        </div>#}
+{#                        <div class="sort-right col-md-6 col-sm-6">#}
+{#                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">#}
+{#                                <h4 class="ct-u-size30">последние</h4>#}
+{#                            </a>#}
+{#                        </div>#}
+{#                    {% else %}#}
+{#                        <div class="sort-left col-md-6 col-sm-6">#}
+{##}
+{#                            <a href="{{ url_for('last_posts', sort = 'rating') }}">#}
+{#                                <h4 class="ct-u-size30">популярные </h4>#}
+{#                            </a>#}
+{##}
+{#                        </div>#}
+{#                        <div class="sort-right col-md-6 col-sm-6">#}
+{##}
+{#                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">#}
+{#                                <h4 class="ct-u-size30 active">последние </h4>#}
+{#                            </a>#}
+{#                        </div>#}
+{#            {% endif %}#}
+{##}
+{#                </div>#}
 
 
                 <div class="ct-blog ct-u-paddingBoth20">

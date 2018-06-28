@@ -890,9 +890,9 @@ body.ct-navbar--is-small .navbar .navbar-brand, body.ct-navbar--fixedTop--is-sma
   font-size: 24px;
   text-align: center;
 }
-.ct-blogGrid img {
-  width: 430px;
-}
+/*.ct-blogGrid img {*/
+  /*width: 430px;*/
+/*}*/
 .ct-blogGrid-imgLeft {
   margin-left: -12px;
 }
@@ -3624,30 +3624,21 @@ div.one-product:hover, div.one-user:hover{
 
 
 }
-
-.sort-left a{
-    float: right;
+.sort_box a{
+    color: #4c505e;
 }
-
-.sort-right a{
-    float: left;
-}
-
 .sort_box a:hover{
     text-decoration: none;
-}
-
-.sort_box h4:hover{
     color: #1f8bf3;
 }
 
-.sort_box h4.active{
-    border-bottom: 3px solid #1f8bf3;
+.sort_box .active{
+    border: 1px solid #1f8bf3;
 }
 
-.sort_box{
-    min-height: 60px;
-}
+/*.sort_box{*/
+    /*min-height: 60px;*/
+/*}*/
 
 .btn.btn-default{
     background-color: #ef4c64;
@@ -4417,4 +4408,26 @@ button#load_messages{
 
 .ct-u-color-text-hoover:hover{
     color: #1f8bf3;
+}
+.sort_box li a {
+    height: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 4px;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+}
+.sort_box li span{
+    padding-left: 10px;
+
+}
+.sort_box{
+        border-bottom: 1px solid #eeeeee;
+        border-top: 1px solid #eeeeee;
+}
+
+
+.post-grid-img{
+    max-width: 100%;
+    max-height: 400px;
 }

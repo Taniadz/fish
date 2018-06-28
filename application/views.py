@@ -122,17 +122,19 @@ def send_async_email(title, message):
 def contact_us():
     form = ContactForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-
         send_async_email.delay(form.email.data, form.message.data)
         flash("Ваше сообщение было отправлено")
-
         return redirect(url_for('index'))
-
     if current_user.is_authenticated:
         if current_user.email:
             form.email.data = current_user.email
-
     return render_template("contact_us.html", form=form)
+
+
+
+
+
+
 
 
 
@@ -274,7 +276,7 @@ def topic(topic, page=1):
         posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE, topic_id=topic)
 
     topic = get_one_obj(Topic, id=topic)
-    count = count_all_posts()
+    count = count_all_posts(topic_id=topic.id)
     pagination = Pagination(page, POSTS_PER_PAGE, count)
     posts_relationships=get_posts_relationship(posts, current_user)
 
@@ -482,14 +484,17 @@ def singlepost(postid=None):
         if post.user_id != current_user.id:  # not to notify about your own comments
 
             if comment.parent == 0:
-                create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
+
+
+                notification = create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
+                send_mail_notificaion(notification)
             else:
                 parent_comment = get_one_obj(Comment, id = parent)
 
-                create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
+                notification = create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
                                                                                current_user.username))  # notification for comment on post
 
-                create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
+                notification = create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
 
 
         comments = get_all_comments_by_post_id(postid)
