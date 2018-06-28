@@ -820,7 +820,8 @@ def send_mail_notificaion(notification):
                                recipients=[receiver.email])
 
 
-    print(receiver.email)
-    msg.body = render_template("mails/notification_mail.html", notification=notification, info=notification.get_data())
+    msg.body = render_template("mails/notification_mail.txt", notification=notification, info=notification.get_data())
+
+    msg.html = render_template("mails/notification_mail.html", notification=notification, info=notification.get_data())
     mail.send(msg)
     return True
