@@ -9,6 +9,7 @@ from .models import User
 from .utils.validators import Unique
 from wtforms.validators import ValidationError, Email
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+from flask_security import current_user
 
 from application import images
 
@@ -121,3 +122,10 @@ class MessageForm(FlaskForm):
     ])
     receiver_id = HiddenField()
 
+
+class ProfileSettingsForm(FlaskForm):
+    show_saved =BooleanField("Показывать другим пользователям избранное на странице вашего профиля", default=True)
+    show_comments = BooleanField("Показывать другим пользователям комментари на странице вашего профиля", default=True)
+    show_posts = BooleanField("Показывать другим пользователям посты на странице вашего профиля", default=True)
+    show_products = BooleanField("Показывать другим пользователям продукты на странице вашего профиля", default=True)
+    allow_mail_notification = BooleanField("Разрешить отправлять на е-мейл уведомления", default=True)

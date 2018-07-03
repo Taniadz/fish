@@ -3965,7 +3965,10 @@ a.hoover-blue:hover{
   opacity: 0;
   cursor: pointer;
 }
-
+label.checkbox-container{
+    padding-left: 35px !important;
+    padding-bottom: 10px !important;
+}
 /* Create a custom checkbox */
 .checkmark {
   position: absolute;
@@ -4397,9 +4400,10 @@ button#load_messages{
     text-align: right !important;
 }
 
-
-.topic{
-    height: 250px;
+@media (min-width: 769px) {
+    .topic {
+        height: 250px;
+    }
 }
 
 .ct-u-color-text-hoover{
@@ -4430,4 +4434,7 @@ button#load_messages{
 .post-grid-img{
     max-width: 100%;
     max-height: 400px;
+}
+.ct-u-overflow-auto{
+    overflow: auto;
 }

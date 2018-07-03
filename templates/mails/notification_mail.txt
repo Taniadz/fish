@@ -1,19 +1,20 @@
 
-
+Уважаемый {{receiver.username}}
 
 
                         {% if notification.name == "comment_on_post" %}
-                        {{ info["sender_name"] }} ответила на ваш пост
+                        {{ info["sender_name"] }} ответил(а) на ваш пост
                             {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}"{{ info["post_title"] }}
                         в {{ notification.timestamp|timezone }}
 
                         {% elif notification.name == "comment_on_post_comment"  %}
-                            {{ info["sender_name"] }} ответила на ваш комментарий к посту
+                            {{ info["sender_name"] }} ответил(а) на ваш комментарий к посту
                             {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}"{{ info["post_title"] }}
                         в {{ notification.timestamp|timezone }}
 
 
 
                         {%  endif %}
+                      С найлучшими пожеланиеми, форум аквариумистики
 
                

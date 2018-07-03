@@ -152,7 +152,8 @@ class User(db.Model, UserMixin):
 
     post_com_react = db.relationship('PostComReaction', passive_deletes=True,
                                     backref='user_like')
-
+    allow_mail_notification = db.Column(db.Boolean, default=True)
+    profile_settings = db.Column(db.JSON)
     def __init__(self, username, email, password="?", roles=[], active=True):
         self.username = username
         self.password = password
@@ -167,12 +168,7 @@ class User(db.Model, UserMixin):
         db.session.add(n)
         return n
 
-    def get_security_payload(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'email': self.email
-        }
+
 
 
 class Connection(db.Model):

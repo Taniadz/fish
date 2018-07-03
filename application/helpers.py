@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 from flask import render_template
 # from .extentions import db
-from application  import UPLOAD_FOLDER, app, db, cache, mail
+from application  import UPLOAD_FOLDER, app, db, cache, mail, celery
 from .models import Dialog, User, Post, Comment, CommentProduct, Product,\
     PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification, Message
 
@@ -798,6 +798,12 @@ def create_notification(user_id, name, data):
     return n
 
 
+def change_settings(user, allow_mail_notification, data):
+    user.allow_mail_notification =allow_mail_notification
+    user.profile_settings = json.dumps(data)
+    db.session.add(user)
+    db.session.commit()
+
 def json_data(post_id, post_title, comment_id, sender_name):
     return {"post_id" : post_id, "post_title":post_title, "comment_id":comment_id, "sender_name":sender_name}
 
@@ -809,19 +815,29 @@ def get_paginated_user(page):
     return User.query.order_by(User.registered_on.desc()).paginate(page, 10, False)
 
 
-
-def send_mail_notificaion(notification):
-    receiver = get_or_abort_user(User, id = notification.user_id)
-
-    title = "Уведомление от аквафорума aqua.name"
-
-    msg = FlaskMessage(title,
-                               sender="contact.me@aqua.name",
-                               recipients=[receiver.email])
-
-
-    msg.body = render_template("mails/notification_mail.txt", notification=notification, info=notification.get_data())
-
-    msg.html = render_template("mails/notification_mail.html", notification=notification, info=notification.get_data())
+@celery.task
+def send_async_notification(subject, sender, recipients, text_body, html_body):
+    """Background task to send an email with Flask-Mail."""
+    msg = FlaskMessage(subject,
+                  sender=sender,
+                  recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
     mail.send(msg)
     return True
+
+def send_mail_notification(notification):
+    receiver = get_or_abort_user(User, id = notification.user_id)
+    text_body = render_template("mails/notification_mail.txt", receiver=receiver, notification=notification,
+                                info=notification.get_data())
+    html_body = render_template("mails/notification_mail.html", receiver=receiver,
+                                notification=notification, info=notification.get_data())
+
+    send_async_notification.delay("Уведомление aqua.name", sender="contact.me@aqua.name",
+                                recipients=[receiver.email],
+                                text_body=text_body,
+                                html_body=html_body
+                                  )
+
+    return True
+

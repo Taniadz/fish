@@ -1,7 +1,7 @@
 
-from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory
+from flask import render_template,  flash, redirect, url_for, request, g, send_from_directory, app
 from application import celery, UPLOAD_FOLDER, security, cache, db, mail
-from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm, MessageForm
+from .forms import PostForm, CommentForm, UserEditForm, ProductForm, EditPostForm, ContactForm, MessageForm, ProfileSettingsForm
 from werkzeug import secure_filename
 from .models import PostComReaction, ProdComReaction, ProductReaction, Pagination, Tag, Message, Topic
 from flask_json import jsonify
@@ -9,16 +9,16 @@ from werkzeug.datastructures import CombinedMultiDict
 from urllib.request import urlopen
 from flask_security import login_required, current_user
 from flask_mail import Message as FlaskMessage
-from collections import defaultdict
 import facebook
-
 POSTS_PER_PAGE = 6
-
-import pytz
+import flask
+import sys
 
 from .helpers import *
 from PIL import Image, ImageDraw
 
+
+sys.path.append(flask)
 
 @app.route('/dialogs/<int:user_id>', methods = ['POST', 'GET'])
 @login_required
@@ -35,7 +35,8 @@ def send_message():
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
-        create_notification(form.receiver_id.data, "message", {"message_id": message.id} )
+        notification = create_notification(form.receiver_id.data, "message", {"message_id": message.id, "sender_name": current_user.username} )
+        send_mail_notification(notification)
         update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed = False)
 
         return jsonify({"user_id" : current_user.id})
@@ -74,7 +75,8 @@ def messages_box():
 
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)
-        create_notification(form.receiver_id.data, "message", {"message":message.id} )
+        notification = create_notification(form.receiver_id.data, "message", {"message":message.id, "sender_name":current_user.username} )
+        send_mail_notification(notification)
         updated_dialog = update_dialog(dialog, short_text=message.text[:30], last_receiver = message.receiver_id, last_massage_date = message.sent_at, readed=False)
         messages = get_paginated_mesages(dialog.id, page)
 
@@ -117,6 +119,8 @@ def send_async_email(title, message):
     msg.body = message
     mail.send(msg)
     return True
+
+
 
 @app.route('/contact_us', methods=['GET', 'POST'])
 def contact_us():
@@ -340,20 +344,146 @@ def add_post():
 def user(username):
     page = 1
     user = get_or_abort_user(User, username=username)
+    print(user.allow_mail_notification, user.profile_settings)
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     form.receiver_id.data = user.id
 
     rating = count_user_rating(user)
     POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
     side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
+    profile_settings = json.loads(str(current_user.profile_settings))
+    col_md = 0
+    for value in profile_settings.values():
+        if value:
+            col_md +=1
 
+    col_md = int(12 /col_md)
+    print(col_md)
     # show posts, written by profile owner(default), others container rendered by ajax
-    # with def user0_contain_* functions. This part is showed by included user_contain_post.html
+    # with def user_contain_* functions. This part is showed by included user_contain_post.html
     posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
-    print(posts)
     posts_relationships = get_posts_relationship(posts, current_user)
-    return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(),
-                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form)
+    return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(), profile_settings=profile_settings,
+                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form, col_md=col_md)
+
+
+
+
+
+# user_contain* - are the views, that render with ajax part of user container(in profile)
+# These are posts, product, comments and favourites written(added) by user
+@app.route('/user_contain_comment', methods=['POST'])
+def user_contain_comment():
+    page =1
+    if request.form.get('contain') == "comment":
+        COMMENTS_PER_PAGE = count_post_comments_by_user_id(request.form.get('user_id'))
+        if request.form.get('sort') == "date":
+            comments = get_post_comments_by_user_id(Comment.timestamp.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
+        else:
+            comments = get_post_comments_by_user_id(Comment.like_count.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
+        comments_relationships = get_post_comment_relationships(comments, current_user)
+
+        data = {'com_container': render_template('/user_container/user_contain_comment.html',
+                                                 comments_relationships=comments_relationships, comments=comments,
+                user_id=request.form.get('user_id')
+                )}
+    else:
+        COMMENTS_PER_PAGE = count_product_comments_by_user_id(request.form.get('user_id'))
+        if request.form.get('sort') == "date":
+            comments = get_product_comments_by_user_id(CommentProduct.timestamp.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
+        else:
+            comments = get_product_comments_by_user_id( CommentProduct.like_count.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
+        print(comments)
+        comments_relationships = get_prod_comment_relationships(comments, current_user)
+        data = {'com_container': render_template('/user_container/user_contain_prod_comment.html',
+                                                comments_relationships=comments_relationships, comments=comments,
+                user_id=request.form.get('user_id')
+        )}
+    return jsonify(data)
+
+
+
+@app.route('/user_contain_product', methods=['POST'])
+def user_contain_product():
+    page = 1
+    PRODUCTS_PER_PAGE = count_product_by_user_id(request.form.get('user_id'))
+    if request.form.get('sort') == "date":
+        products = get_products_ordering(Product.published_at.desc(), page, PRODUCTS_PER_PAGE, request.form.get('user_id'))
+
+    else:
+        products = get_products_ordering(Product.like_count.desc(), page, PRODUCTS_PER_PAGE, request.form.get('user_id'))
+    products_relationship = get_products_relationship(products, current_user)
+
+    data = {'product_container': render_template('/user_container/user_contain_product.html',
+         products_relationship=products_relationship, products=products,
+            user_id=request.form.get('user_id'),
+        )}
+    return jsonify(data)
+
+
+@app.route('/user_contain_post', methods=['POST', 'GET'])
+def user_contain_post():
+    page = 1
+    POSTS_PER_USER_PAGE = count_post_by_user_id(request.form.get('user_id'))
+    if request.form.get('sort') == "date":
+        posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE,  user_id=request.form.get('user_id'))
+    else:
+        posts = get_posts_ordering(Post.like_count.desc(),page, POSTS_PER_USER_PAGE, user_id=request.form.get('user_id'))
+    posts_relationships = get_posts_relationship(posts, current_user)
+    data = {'post_container': render_template('/user_container/user_contain_post.html',
+                                              posts_relationships=posts_relationships,
+            posts=posts,
+            user_id=request.form.get('user_id')
+    )}
+    return jsonify(data)
+
+
+@app.route('/user_contain_favourite', methods=['POST'])
+def user_contain_favourite():
+    id = request.form.get('user_id')
+    if request.form.get('contain') == "product":
+        if request.form.get('sort') == "date":
+            products=get_favourite(id, Product, Product.published_at.desc())
+        else:
+            products = get_favourite(id, Product, Product.like_count.desc())
+
+        data = {'favourite_container': render_template('/user_container/user_contain_prod_saved.html',
+        products_relationships = get_products_relationship(products, current_user),
+                                                   products=products,
+                                                   user_id=request.form.get('user_id')
+                                                   )}
+    if request.form.get('contain') == "post":
+        if request.form.get('sort') == "date":
+            posts = get_favourite(id, Post, Post.published_at.desc(), )
+        else:
+            posts = get_favourite(id, Post, Post.like_count.desc())
+
+        data = {'favourite_container': render_template('/user_container/user_contain_post_saved.html',
+                                                   posts_relationship = get_posts_relationship(posts, current_user),
+                                                   posts=posts,
+                                                   user_id=request.form.get('user_id')
+                                                    )}
+
+    return jsonify(data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -487,15 +617,15 @@ def singlepost(postid=None):
 
 
                 notification = create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id, current_user.username)) # notification for comment on post
-                send_mail_notificaion(notification)
+                send_mail_notification(notification)
             else:
                 parent_comment = get_one_obj(Comment, id = parent)
 
                 notification = create_notification(post.user_id, "comment_on_post", json_data(postid, post.title, comment.id,
                                                                                current_user.username))  # notification for comment on post
-
+                send_mail_notification(notification)
                 notification = create_notification(parent_comment.user_id, "comment_on_post_comment", json_data(postid, post.title, comment.id, current_user.username)) # notification for parent comment on comment
-
+                send_mail_notification(notification)
 
         comments = get_all_comments_by_post_id(postid)
         comments_relationships = get_post_comment_relationships(comments, current_user)
@@ -675,102 +805,6 @@ def product_comment_form():
     return jsonify(data)
 
 
-# user_contain* - are the views, that render with ajax part of user container(in profile)
-# These are posts, product, comments and favourites written(added) by user
-@app.route('/user_contain_comment', methods=['POST'])
-def user_contain_comment():
-    page =1
-    if request.form.get('contain') == "comment":
-        COMMENTS_PER_PAGE = count_post_comments_by_user_id(request.form.get('user_id'))
-        if request.form.get('sort') == "date":
-            comments = get_post_comments_by_user_id(Comment.timestamp.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
-        else:
-            comments = get_post_comments_by_user_id(Comment.like_count.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
-        comments_relationships = get_post_comment_relationships(comments, current_user)
-
-        data = {'com_container': render_template('/user_container/user_contain_comment.html',
-                                                 comments_relationships=comments_relationships, comments=comments,
-                user_id=request.form.get('user_id')
-                )}
-    else:
-        COMMENTS_PER_PAGE = count_product_comments_by_user_id(request.form.get('user_id'))
-        if request.form.get('sort') == "date":
-            comments = get_product_comments_by_user_id(CommentProduct.timestamp.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
-        else:
-            comments = get_product_comments_by_user_id( CommentProduct.like_count.desc(), request.form.get('user_id'), page, COMMENTS_PER_PAGE)
-        print(comments)
-        comments_relationships = get_prod_comment_relationships(comments, current_user)
-        data = {'com_container': render_template('/user_container/user_contain_prod_comment.html',
-                                                comments_relationships=comments_relationships, comments=comments,
-                user_id=request.form.get('user_id')
-        )}
-    return jsonify(data)
-
-
-
-@app.route('/user_contain_product', methods=['POST'])
-def user_contain_product():
-    page = 1
-    PRODUCTS_PER_PAGE = count_product_by_user_id(request.form.get('user_id'))
-    if request.form.get('sort') == "date":
-        products = get_products_ordering(Product.published_at.desc(), page, PRODUCTS_PER_PAGE, request.form.get('user_id'))
-
-    else:
-        products = get_products_ordering(Product.like_count.desc(), page, PRODUCTS_PER_PAGE, request.form.get('user_id'))
-    products_relationship = get_products_relationship(products, current_user)
-
-    data = {'product_container': render_template('/user_container/user_contain_product.html',
-         products_relationship=products_relationship, products=products,
-            user_id=request.form.get('user_id'),
-        )}
-    return jsonify(data)
-
-
-@app.route('/user_contain_post', methods=['POST', 'GET'])
-def user_contain_post():
-    page = 1
-    POSTS_PER_USER_PAGE = count_post_by_user_id(request.form.get('user_id'))
-    if request.form.get('sort') == "date":
-        posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE,  user_id=request.form.get('user_id'))
-    else:
-        posts = get_posts_ordering(Post.like_count.desc(),page, POSTS_PER_USER_PAGE, user_id=request.form.get('user_id'))
-    posts_relationships = get_posts_relationship(posts, current_user)
-    data = {'post_container': render_template('/user_container/user_contain_post.html',
-                                              posts_relationships=posts_relationships,
-            posts=posts,
-            user_id=request.form.get('user_id')
-    )}
-    return jsonify(data)
-
-
-@app.route('/user_contain_favourite', methods=['POST'])
-def user_contain_favourite():
-    id = request.form.get('user_id')
-    if request.form.get('contain') == "product":
-        if request.form.get('sort') == "date":
-            products=get_favourite(id, Product, Product.published_at.desc())
-        else:
-            products = get_favourite(id, Product, Product.like_count.desc())
-
-        data = {'favourite_container': render_template('/user_container/user_contain_prod_saved.html',
-        products_relationships = get_products_relationship(products, current_user),
-                                                   products=products,
-                                                   user_id=request.form.get('user_id')
-                                                   )}
-    if request.form.get('contain') == "post":
-        if request.form.get('sort') == "date":
-            posts = get_favourite(id, Post, Post.published_at.desc(), )
-        else:
-            posts = get_favourite(id, Post, Post.like_count.desc())
-
-        data = {'favourite_container': render_template('/user_container/user_contain_post_saved.html',
-                                                   posts_relationship = get_posts_relationship(posts, current_user),
-                                                   posts=posts,
-                                                   user_id=request.form.get('user_id')
-                                                    )}
-
-    return jsonify(data)
-
 
 @app.route('/add_fav_product', methods=['POST'])
 def add_fav_product():
@@ -898,7 +932,6 @@ def edit_post_comment(comment_id=None):
 @app.route('/delete_post_comment', methods=['POST'])
 def delete_post_comment():
     comment = get_one_obj(Comment, id = request.form.get("id"))
-    print(comment, request.form.get("id"), "hhhhhhhhhhhhhheeeeeeeeeelp")
     if not check_com_editable(comment):
         data = {'nodelet': "No deletable"}
     else:
@@ -1006,3 +1039,32 @@ def search_results(query):
         query = query,
         posts = posts,
                         posts_relationships = get_posts_relationship(posts, current_user))
+
+
+@app.route('/profile_settings/', methods=['GET', 'POST'])
+@login_required
+def profile_settings():
+
+    form = ProfileSettingsForm(request.form)
+    if request.method == 'GET':
+        form.allow_mail_notification.data= current_user.allow_mail_notification
+        if current_user.profile_settings:
+            profile_settings = json.loads(str(current_user.profile_settings))
+            print(profile_settings)
+            form.show_comments.data =  profile_settings["show_comments"]
+            form.show_posts.data = profile_settings["show_posts"]
+            form.show_products.data = profile_settings["show_products"]
+            form.show_saved.data = profile_settings["show_saved"]
+
+    if request.method == 'POST' and form.validate_on_submit():
+        print(form.data)
+        change_settings(current_user, form.allow_mail_notification.data, {"show_comments":form.show_comments.data,
+                                                                  "show_posts":form.show_posts.data,
+                                                                  "show_products":form.show_products.data,
+                                                                  "show_saved":form.show_saved.data} )
+        flash("Настройки были сохранены")
+        return redirect(url_for("user", username=current_user.username))
+
+    return render_template("profile_settings.html", form=form)
+
+

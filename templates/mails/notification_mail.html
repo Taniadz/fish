@@ -1,20 +1,27 @@
 
 
 
-
+<h2>Уважаемый {{receiver.username}}</h2>
                         <div class="notification{{ notification.closed }}">
                         {% if notification.name == "comment_on_post" %}
-                        <p>{{ info["sender_name"] }} ответила на ваш пост
+                        <p>{{ info["sender_name"] }} ответил(а) на ваш пост
                             <a href="{{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}">{{ info["post_title"] }}</a>
                         в {{ notification.timestamp|timezone }}
                         </p>
                         {% elif notification.name == "comment_on_post_comment"  %}
-                            <p>{{ info["sender_name"] }} ответила на ваш комментарий к посту
+                            <p>{{ info["sender_name"] }} ответил(а) на ваш комментарий к посту
                             <a href="{{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}">{{ info["post_title"] }}</a>
                         в {{ notification.timestamp|timezone }}
                         </p>
+                            {% elif notification.name = "message" %}
+                            <p>{{ info["sender_name"] }} отправил(а) вам новое сообщение
+                            <a href="{{ url_for("dialogs", user_id = receiver.id,  _external = True )}}">Посмотреть сообщение</a>
+                        в {{ notification.timestamp|timezone }}
+                        </p>
+
                             </div>
 
                         {%  endif %}
 
 
+<p>   С найлучшими пожеланиеми, форум аквариумистики</p>

@@ -128,10 +128,25 @@
         {% if current_user.is_authenticated %}
             {% if g.new_notification %}
                 <li><a href="{{ url_for('user_notification', user_id = current_user.id) }}"><i class="fa fa-bell"></i> УВЕДОМЛЕНИЯ<i class="mesage-logo"></i></a></li>
-        {% else %}
+            {% else %}
                            <li><a href="{{ url_for('user_notification', user_id = current_user.id) }}"><i class="fa fa-bell"></i> УВЕДОМЛЕНИЯ</a></li>
 
-        {% endif %}
+            {% endif %}
+
+            <li>
+                                <a href="{{ url_for('dialogs', user_id = current_user.id) }}">
+
+
+                                     {% if g.have_message %}
+                                            <i class="mesage-logo fa fa-envelope ct-u-size35 ct-fw-400"></i> СООБЩЕНИЯ
+
+
+                                        {% else %}
+                                        <i class=" fa fa-envelope ct-u-size35 ct-fw-400"></i> СООБЩЕНИЯ
+                                            {% endif %}
+
+                                </a>
+                            </li>
                 <li role="presentation" class="divider"></li>
 
 
@@ -237,6 +252,8 @@
                                                                         <li><a href="{{ url_for('user_notification', user_id = current_user.id) }}">Уведомления</a></li>
 
                                                                     {%  endif %}
+                                                                    <li><a href="{{ url_for('profile_settings') }}">Настройки</a></li>
+
 
                                                                 </ul>
                                                             </li>
@@ -244,17 +261,7 @@
                             </li>
                             <li>
                                 <a href="{{ url_for('dialogs', user_id = current_user.id) }}">
-{#                                    {% if g.notifications %}#}
-{#                                        {% for n in g.notifications %}#}
-{#                                        {% if n.source_model == "message"%}#}
-{#                                            {% set message = True %}#}
-{##}
-{##}
-{##}
-{#                                        {% endif %}#}
-{#                                        {% endfor %}#}
-{#
-{#                                    {% endif %}#}
+
 
                                      {% if g.have_message %}
                                             <i class="mesage-logo fa fa-envelope ct-u-size35 ct-fw-400"></i>
