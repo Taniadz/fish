@@ -6,7 +6,7 @@
     <div class="container">
         <div class="ct-u-paddingBoth40">
 <a href="{{ url_for('index') }}">
-                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo-gray.png") }}" width="49px">
+                                <img id="ct-js-logo" src="{{ url_for('static',filename="image/logo.png") }}" width="49px">
                             </a>        </div>
     </div>
 </div>
@@ -14,7 +14,7 @@
 {% endblock %}
 {% block body %}
 
-    <section class="ct-sectionMaintenance">
+    <section class="ct-sectionMaintenance ct-errorText">
         <div class="ct-sectionMaintenance-inner">
 
             <div class="container">
@@ -24,6 +24,9 @@
                 В настоящее время на сайте ведутся технические работы. Но очень скоро мы все поправим) Зайдите, пожалуйста, через несколько
                     минут.
                 </p>
+                <a href="{{ url_for('index') }}" class="btn btn-motive">
+           <span>назад на главную страницу  <i class="fa fa-location-arrow"> </i></span>
+       </a>
 
 
             </div>

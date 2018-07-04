@@ -278,6 +278,20 @@
     </div>
 
     <script>
+        {#script for activate likes and reactions in my.js #}
+    $(document).ready(function () {
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+    });
+    $(document).ready(function() {
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+        $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
+
+
+    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
+});
+
         $(document).ready(function () {
             var $bodyel = jQuery("body");
             var $navel = jQuery("nav");

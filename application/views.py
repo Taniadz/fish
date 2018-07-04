@@ -349,22 +349,63 @@ def user(username):
     form.receiver_id.data = user.id
 
     rating = count_user_rating(user)
-    POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
     side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
-    profile_settings = json.loads(str(current_user.profile_settings))
-    col_md = 0
-    for value in profile_settings.values():
-        if value:
-            col_md +=1
+    # we show users posts, comments, products and saved in user profile page.
+    # if user is a profile owner or user hasn't profile settings - show all containers with this content.
+    # When page rendering, it show only posts container, other part rendering by ajax on click.
 
-    col_md = int(12 /col_md)
-    print(col_md)
-    # show posts, written by profile owner(default), others container rendered by ajax
-    # with def user_contain_* functions. This part is showed by included user_contain_post.html
+    # if current user is not profile owner, rendered content depends on profile settings.
+    if user.profile_settings and current_user != user:
+        profile_settings = json.loads(str(user.profile_settings))
+        col_md = 0
+        for value in profile_settings.values():
+            if value:
+                col_md +=1
+        col_md = int(12 /col_md)
+
+        if profile_settings["show_posts"] or current_user == user:
+            POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
+            posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
+            posts_relationships = get_posts_relationship(posts, current_user)
+            return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(),
+                                   profile_settings=profile_settings, active_container = "post",
+                               user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form, col_md=col_md)
+
+        elif  profile_settings["show_comments"]:
+            COMMENTS_PER_PAGE = count_post_comments_by_user_id(user.id)
+            comments = get_post_comments_by_user_id(Comment.timestamp.desc(), user.id, page,
+                                                    COMMENTS_PER_PAGE)
+            comments_relationships = get_post_comment_relationships(comments, current_user)
+            return render_template('user.html', comments_relationships=comments_relationships, tags=get_last_tags(),
+                                   profile_settings=profile_settings,user=user, user_id=user.id, comments=comments,
+                                   side_posts=side_posts, rating=rating, form=form, col_md=col_md, active_container = "comment")
+
+        elif profile_settings["show_products"]:
+            PRODUCTS_PER_PAGE = count_product_by_user_id(user.id)
+            products = get_products_ordering(Product.published_at.published_at(), page, PRODUCTS_PER_PAGE, user.id)
+            products_relationships = get_products_relationship(products, current_user)
+            return render_template('user.html', products_relationships=products_relationships, tags=get_last_tags(),
+                                   profile_settings=profile_settings, user=user, user_id=user.id, products=products,
+                                   side_posts=side_posts, rating=rating, form=form, col_md=col_md, active_container = "product")
+
+        elif profile_settings["show_saved"]:
+            posts = get_favourite(id, Post, Post.published_at.desc())
+            posts_relationships=get_products_relationship(posts,current_user)
+            return render_template('user.html', posts_relationships=posts_relationships, tags=get_last_tags(),
+                                   profile_settings=profile_settings, user=user, user_id=user.id, posts=posts,
+                                   side_posts=side_posts, rating=rating, form=form, col_md=col_md, active_container = "saved")
+
+
+
+    POSTS_PER_USER_PAGE = count_post_by_user_id(user.id)
     posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_USER_PAGE, user_id=user.id)
     posts_relationships = get_posts_relationship(posts, current_user)
-    return render_template('user.html', posts_relationships =posts_relationships,tags=get_last_tags(), profile_settings=profile_settings,
-                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form, col_md=col_md)
+    return render_template('user.html', posts_relationships=posts_relationships, tags=get_last_tags(),
+                         active_container="post", profile_settings =None,
+                           user=user, user_id=user.id, posts=posts, side_posts=side_posts, rating=rating, form=form,
+                           col_md=3)
+
+
 
 
 

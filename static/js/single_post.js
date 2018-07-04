@@ -63,10 +63,10 @@ else
 }
 
 // show comment from field under the post
-$(document).ready(function() {
-    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
-
-    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
-});
+// $(document).ready(function() {
+//     $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+//
+//     $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
+// });
 
 

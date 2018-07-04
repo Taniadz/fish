@@ -335,6 +335,19 @@
         </div>
     </section>
 <script>
+$(document).ready(function() {
+        {#script for activate likes and reactions in my.js #}
+    $(document).ready(function () {
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
+    });
+});
+$(document).ready(function() {
+    $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
+
+    $('#button_comment1.post-form.comment-login').on("click", ShowCommentForm);
+});
  $('.popup-gallery').magnificPopup({
  delegate: 'a',
  type: 'image',

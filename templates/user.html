@@ -139,7 +139,7 @@
         <div class="row">
 
         <div class="user-activities panel-group">
-            {% if profile_settings["show_posts"] %}
+            {% if current_user == user or profile_settings["show_posts"] or profile_settings == None%}
             <div class="col-xs-12 col-sm-6 col-md-{{ col_md }}">
 
                     <div class="panel panel-default">
@@ -157,7 +157,7 @@
 
             </div>
         {% endif %}
-            {% if  profile_settings["show_comments"] %}
+            {% if current_user == user or profile_settings["show_comments"] or profile_settings == None %}
             <div class="col-xs-12 col-sm-6 col-md-{{ col_md }}">
                 <div class="panel panel-default">
                         <div class="panel-heading">
@@ -176,7 +176,7 @@
                 </div>
             </div>
                 {% endif %}
-                        {% if  profile_settings["show_products"] %}
+                        {% if current_user == user or profile_settings["show_products"] or profile_settings == None%}
 
             <div class="col-xs-12 col-sm-6 col-md-{{ col_md }}">
                 <div class="panel panel-default">
@@ -191,7 +191,7 @@
                 </div>
             </div>
             {% endif %}
-                        {% if  profile_settings["show_saved"] %}
+                        {% if current_user == user or profile_settings["show_saved"] or profile_settings == None%}
 
             <div class="col-xs-12 col-sm-6 col-md-{{ col_md }}">
                 <div class="panel panel-default">
@@ -219,58 +219,66 @@
             <div class="row ct-u-paddingTop10 child-active">
                 <div class="col-md-12">
                     <div id="active-container">
-{#                        {% include '/user_container/user_contain_post.html' %}#}
-                        {% if posts|length >= 1 %}
-                            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">
-                                <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">
-                                    <li id="post_block" sort="date" user ="{{ user_id }}" role="presentation" class="active">
-                                        <div class="ct-tabBorder">
-
-
-                                            <a href="#"  role="tab" data-toggle="tab">Последние</a>
-                                        </div>
-                                        <div class="mini-triangle">
-
-                                        </div>
-                                    </li>
-                                    <li role="presentation"  id="post_block" sort="vote" user ="{{ user_id }}">
-                                        <div class="ct-tabBorder">
-
-
-                                            <a href="#" role="tab" data-toggle="tab">Популярные</a>
-                                        </div>
-                                        <div class="mini-triangle">
-
-                                        </div>
-                                    </li>
-
-                                </ul>
-                            </div>
-
-
-
-
-
-
-                                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">
-                                        {% for post in posts %}
-                                             <div class="col-md-12 ct-js-blogMasonry-item" >
-
-                                            {{ posts_macro(post, posts_relationships) }}
-                                             </div>
-
-                                        {% endfor %}
-
-                                        </div>
-                                    {% else %}
-                                    {% if current_user == user %}
-
-                                        <p>Вы еще не создавали посты</p>
-                                        <p>Хотите <a href="{{ url_for('add_post') }}">написать</a>  что-нибудь?</p>
-{% else %}
-        <p>Этот форумчанин еще не публиковал посты</p>
-    {% endif %}
-                                    {% endif %}
+                        {% if active_container == "post" %}
+                            {% include '/user_container/user_contain_post.html' %}
+                        {% elif active_container == "comment" %}
+                            {% include '/user_container/user_contain_comment.html' %}
+                        {% elif active_container == "product" %}
+                            {% include '/user_container/user_contain_product.html' %}
+                        {% elif active_container == "saved" %}
+                            {% include '/user_container/user_contain_post_saved.html' %}
+                        {% endif %}
+{#                        {% if posts|length >= 1 %}#}
+{#                            <div class="ct-tabHeader ct-tabHeader--motive" role="tabpanel">#}
+{#                                <ul class="list-unstyled text-uppercase ct-fw-600 nav nav-tabs" role="tablist">#}
+{#                                    <li id="post_block" sort="date" user ="{{ user_id }}" role="presentation" class="active">#}
+{#                                        <div class="ct-tabBorder">#}
+{##}
+{##}
+{#                                            <a href="#"  role="tab" data-toggle="tab">Последние</a>#}
+{#                                        </div>#}
+{#                                        <div class="mini-triangle">#}
+{##}
+{#                                        </div>#}
+{#                                    </li>#}
+{#                                    <li role="presentation"  id="post_block" sort="vote" user ="{{ user_id }}">#}
+{#                                        <div class="ct-tabBorder">#}
+{##}
+{##}
+{#                                            <a href="#" role="tab" data-toggle="tab">Популярные</a>#}
+{#                                        </div>#}
+{#                                        <div class="mini-triangle">#}
+{##}
+{#                                        </div>#}
+{#                                    </li>#}
+{##}
+{#                                </ul>#}
+{#                            </div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#                                    <div class="ct-blog ct-js-blogMasonry ct-u-borderBottomGrayLighter ct-u-paddingBottom20">#}
+{#                                        {% for post in posts %}#}
+{#                                             <div class="col-md-12 ct-js-blogMasonry-item" >#}
+{##}
+{#                                            {{ posts_macro(post, posts_relationships) }}#}
+{#                                             </div>#}
+{##}
+{#                                        {% endfor %}#}
+{##}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                    {% if current_user == user %}#}
+{##}
+{#                                        <p>Вы еще не создавали посты</p>#}
+{#                                        <p>Хотите <a href="{{ url_for('add_post') }}">написать</a>  что-нибудь?</p>#}
+{#{% else %}#}
+{#        <p>Этот форумчанин еще не публиковал посты</p>#}
+{#    {% endif %}#}
+{#                                    {% endif %}#}
                     </div>
                 </div>
             </div>
@@ -362,9 +370,9 @@ $(document).ready(function() {
      $(".dropdown-menu li.comment_block").on("click", UpdateCommentContainer);
      $("#product_block").on("click", UpdateProductContainer);
      $(".dropdown-menu .post, .dropdown-menu .product").on("click", UpdateFavouriteContainer);
-     $("#post_block").on("click", UpdatePostContainer);
-
-    $("li#post_block").on("click", UpdatePostContainer);
+    {# $("#post_block").on("click", UpdatePostContainer);#}
+    {##}
+    {#$("li#post_block").on("click", UpdatePostContainer);#}
 
 
  });

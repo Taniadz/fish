@@ -82,7 +82,7 @@ function ShowProdCommentForm() {
 $(document).ready(function () {
     $('.product-form#button_comment1.comment-login').on("click", ShowProdCommentForm);
 
-    $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
+    // $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
 
 
 

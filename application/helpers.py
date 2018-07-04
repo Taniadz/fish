@@ -11,7 +11,7 @@ from .models import Dialog, User, Post, Comment, CommentProduct, Product,\
     PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification, Message
 
 from social.apps.flask_app.default.models  import UserSocialAuth
-
+from smtplib import SMTPException
 from sqlalchemy import event, update
 
 def check_is_social(user):
@@ -823,21 +823,27 @@ def send_async_notification(subject, sender, recipients, text_body, html_body):
                   recipients=recipients)
     msg.body = text_body
     msg.html = html_body
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except SMTPException as e:
+        with open('/var/log/mail/mail.log', 'a') as the_file:
+            the_file.write(str(e) + "sender:" +sender + "recipientd:" +recipients + "text_body:"+text_body)
+
     return True
 
 def send_mail_notification(notification):
     receiver = get_or_abort_user(User, id = notification.user_id)
-    text_body = render_template("mails/notification_mail.txt", receiver=receiver, notification=notification,
-                                info=notification.get_data())
-    html_body = render_template("mails/notification_mail.html", receiver=receiver,
-                                notification=notification, info=notification.get_data())
+    if receiver.allow_mail_notification:
+        text_body = render_template("mails/notification_mail.txt", receiver=receiver, notification=notification,
+                                    info=notification.get_data())
+        html_body = render_template("mails/notification_mail.html", receiver=receiver,
+                                    notification=notification, info=notification.get_data())
 
-    send_async_notification.delay("Уведомление aqua.name", sender="contact.me@aqua.name",
-                                recipients=[receiver.email],
-                                text_body=text_body,
-                                html_body=html_body
-                                  )
+        send_async_notification.delay("Уведомление aqua.name", sender="contact.me@aqua.name",
+                                    recipients=[receiver.email],
+                                    text_body=text_body,
+                                    html_body=html_body
+                                      )
 
     return True
 
