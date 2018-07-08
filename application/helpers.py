@@ -6,12 +6,11 @@ from werkzeug import secure_filename
 from werkzeug.exceptions import abort
 from flask import render_template
 # from .extentions import db
-from application  import UPLOAD_FOLDER, app, db, cache, mail, celery
+from application  import UPLOAD_FOLDER, app, db, cache, mail
 from .models import Dialog, User, Post, Comment, CommentProduct, Product,\
     PostReaction, FavouritePost, FavouriteProduct, ProductImage, Tag, Notification, Message
 
 from social.apps.flask_app.default.models  import UserSocialAuth
-from smtplib import SMTPException
 from sqlalchemy import event, update
 
 def check_is_social(user):
@@ -390,7 +389,7 @@ def get_for_update(model, **kwargs):
 def update_rows(obj, **kwargs):
     obj.update(kwargs)
     db.session.commit()
-    return
+    return obj
 
 
 def update_post_rows(post, body, title, image):
@@ -430,7 +429,7 @@ def update_user_rows(user, avatar, username, social=None, avatar_min=None, about
         user.social = True
     db.session.add(user)
     db.session.commit()
-    return
+    return user
 
 def delete_object(instance):
     instance.deleted = True
@@ -614,7 +613,7 @@ def get_all_comments_by_product_id(id):
     return CommentProduct.query.filter_by(product_id = id).all()
 
 def delete_user_cache(username):
-
+    print("cashe was deleted1111111111111111111111111111111111111")
     cache.delete_memoized(get_or_abort_user, User, code=404, username=username)
 
 
@@ -815,35 +814,4 @@ def get_paginated_user(page):
     return User.query.order_by(User.registered_on.desc()).paginate(page, 10, False)
 
 
-@celery.task
-def send_async_notification(subject, sender, recipients, text_body, html_body):
-    """Background task to send an email with Flask-Mail."""
-    msg = FlaskMessage(subject,
-                  sender=sender,
-                  recipients=recipients)
-    msg.body = text_body
-    msg.html = html_body
-    try:
-        mail.send(msg)
-    except SMTPException as e:
-        with open('/var/log/mail/mail.log', 'a') as the_file:
-            the_file.write(str(e) + "sender:" +sender + "recipientd:" +recipients + "text_body:"+text_body)
-
-    return True
-
-def send_mail_notification(notification):
-    receiver = get_or_abort_user(User, id = notification.user_id)
-    if receiver.allow_mail_notification:
-        text_body = render_template("mails/notification_mail.txt", receiver=receiver, notification=notification,
-                                    info=notification.get_data())
-        html_body = render_template("mails/notification_mail.html", receiver=receiver,
-                                    notification=notification, info=notification.get_data())
-
-        send_async_notification.delay("Уведомление aqua.name", sender="contact.me@aqua.name",
-                                    recipients=[receiver.email],
-                                    text_body=text_body,
-                                    html_body=html_body
-                                      )
-
-    return True
 

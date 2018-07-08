@@ -13,12 +13,45 @@ import facebook
 POSTS_PER_PAGE = 6
 import flask
 import sys
+from smtplib import SMTPException
 
 from .helpers import *
 from PIL import Image, ImageDraw
 
 
 sys.path.append(flask)
+@celery.task
+def send_async_notification(subject, sender, recipients, text_body, html_body):
+    """Background task to send an email with Flask-Mail."""
+    msg = FlaskMessage(subject,
+                  sender=sender,
+                  recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    try:
+        mail.send(msg)
+    except SMTPException as e:
+        with open('/var/log/mail/mail.log', 'a') as the_file:
+            the_file.write(str(e) + "sender:" +sender + "recipientd:" +recipients + "text_body:"+text_body)
+
+    return True
+
+def send_mail_notification(notification):
+    receiver = get_or_abort_user(User, id = notification.user_id)
+    if receiver.allow_mail_notification:
+        text_body = render_template("mails/notification_mail.txt", receiver=receiver, notification=notification,
+                                    info=notification.get_data())
+        html_body = render_template("mails/notification_mail.html", receiver=receiver,
+                                    notification=notification, info=notification.get_data())
+
+        send_async_notification.delay("Уведомление aqua.name", sender="contact.me@aqua.name",
+                                    recipients=[receiver.email],
+                                    text_body=text_body,
+                                    html_body=html_body
+                                      )
+
+    return True
+
 
 @app.route('/dialogs/<int:user_id>', methods = ['POST', 'GET'])
 @login_required
@@ -159,11 +192,9 @@ def before_request():
                 db.session.commit()
 
         notifications = get_open_notifications(current_user.id) #cashed notification
-        print(notifications)
-
 
         for n in notifications:
-            print(n.closed)
+
             if n.name == "message":
                 g.have_message = True  #check if user has new messages
 
@@ -592,25 +623,26 @@ def crop_image():
 @login_required
 def user_edit(username):
     form = UserEditForm(CombinedMultiDict((request.files, request.form)))
-    user = get_one_obj(User, username=username)
-    if current_user == user:
+    user = get_for_update(User, username=username)
+    if current_user == user[0]:
         if request.method == 'POST' and form.validate_on_submit():
             if form.file.data:
                 filename = create_filename(form.file.data)  # create secure filename
             else:
-                filename = user.avatar
-            user = update_user_rows(user, avatar=filename,
+                filename = user[0].avatar
+
+            updated_user = update_user_rows(user[0],avatar=filename,
                                username=form.username.data,
                                about_me=form.about_me.data)
             if form.file.data is not None:
                 return redirect(url_for('crop_image'))
             else:
-                return redirect(url_for('user', username=username))
+                return redirect(url_for('user', username=updated_user.username))
         else:
-            form.username.data = user.username
-            form.about_me.data = user.about_me
+            form.username.data = user[0].username
+            form.about_me.data = user[0].about_me
             return render_template('user_edit.html',
-                                   user=user,
+                                   user=user[0],
                                    form=form)
     else:
         return render_template('home.html')

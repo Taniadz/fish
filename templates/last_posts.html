@@ -42,37 +42,6 @@
                         </ul>
 
                 </div>
-{#                <div class="sort_box">#}
-{#                    {% if sort == "rating" %}#}
-{#                        <div class="sort-left col-md-6 col-sm-6">#}
-{##}
-{#                            <a href="{{ url_for('last_posts', sort = 'rating') }}">#}
-{#                                <h4 class="ct-u-size30 active">популярные </h4>#}
-{#                            </a>#}
-{##}
-{#                        </div>#}
-{#                        <div class="sort-right col-md-6 col-sm-6">#}
-{#                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">#}
-{#                                <h4 class="ct-u-size30">последние</h4>#}
-{#                            </a>#}
-{#                        </div>#}
-{#                    {% else %}#}
-{#                        <div class="sort-left col-md-6 col-sm-6">#}
-{##}
-{#                            <a href="{{ url_for('last_posts', sort = 'rating') }}">#}
-{#                                <h4 class="ct-u-size30">популярные </h4>#}
-{#                            </a>#}
-{##}
-{#                        </div>#}
-{#                        <div class="sort-right col-md-6 col-sm-6">#}
-{##}
-{#                            <a href="{{ url_for('last_posts', sort = 'data') }}" class="ct-u-floatLeft">#}
-{#                                <h4 class="ct-u-size30 active">последние </h4>#}
-{#                            </a>#}
-{#                        </div>#}
-{#            {% endif %}#}
-{##}
-{#                </div>#}
 
 
                 <div class="ct-blog ct-u-paddingBoth20">
@@ -149,7 +118,18 @@
     </section>
 
 
+<script>
+$(document).ready(function () {
+        $("img.unliked, img.liked").on("click", ToggleLikeUnlike);
+        $('.smile').on("click", AddReaction);
+        ShowReactionDiv();
 
+    $("i.favourite.post-fav, i.not-favourite.post-fav").on('click', TogglePostfavour);
+        $("i.favourite.product-fav, i.not-favourite.product-fav").on('click', ToggleProductFavour);
+
+
+});
+</script>
 {% endblock %}
 
 

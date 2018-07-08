@@ -17,6 +17,11 @@
 
         <span class="ct-u-size14 ct-fw-300 ct-u-floatRight">{{ message.sent_at }}</span>
              <div style="clear: both;"></div>
+               <p>
+                   {% if message.file %}
+                       <img class="ct-u-width-250" src="{{ url_for('uploaded_file',filename=  message.file ) }}"/>
+                       {% endif %}
+               </p>
 
            <p>{{ message.text }}</p>
         </li>
@@ -25,7 +30,12 @@
     {% else %}
                 <li class="ct-u-marginTop5 ct-u-paddingBoth10 ct-u-floatLeft talk-bubble tri-right round left-in" >
                 <span class="ct-u-size14 ct-fw-300">{{ message.sent_at }}</span>
+<p>
+                   {% if message.file %}
+                       <img class="ct-u-width-250" src="{{ url_for('uploaded_file',filename=  message.file ) }}"/>
 
+                       {% endif %}
+               </p>
                     <p> {{ message.text }}</p>
 
                 </li>
@@ -49,7 +59,7 @@
 <div class="input-group">
     <span id="hide" class="input-group-btn">
         <label>
-                        {{form.file(id="file", class="inputfile")}}
+                        {{form.file(id="file", class="inputfile message-file")}}
                                 <span class="photo_text ct-u-size30"><i class="fa fa-camera" aria-hidden="true"></i></span>
 </label>
 
@@ -191,10 +201,16 @@ $(".message_form#1").submit(function(event) {
 
         },
         error: function (xhr, str) {
-            alert('Mistake ' + xhr.responseCode);
+            console.log('Mistake ' + xhr.responseCode);
         }
     });
     event.preventDefault();
     event.stopImmediatePropagation()
+});
+
+
+$('.message-file').change(function() {
+    $(this).next().html("<i class='fa fa-download'></i>");
+
 });
 </script>

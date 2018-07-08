@@ -4,21 +4,25 @@
 
                         {% if notification.name == "comment_on_post" %}
                         Форумчанин {{ info["sender_name"] }} ответил(а) на ваш пост
-                            {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}"{{ info["post_title"] }}
+                            {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}} {{ info["post_title"] }}
                         в {{ notification.timestamp|timezone }}
 
                         {% elif notification.name == "comment_on_post_comment"  %}
                             Форумчанин {{ info["sender_name"] }} ответил(а) на ваш комментарий к посту
-                            {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}}"{{ info["post_title"] }}
+                            {{ url_for("singlepost", postid = info["post_id"], _anchor='comment' + info["comment_id"]|string, _external = True )}} {{ info["post_title"] }}
                         в {{ notification.timestamp|timezone }}
 
                         {% elif notification.name == "message" %}
                             Форумчанин {{ info["sender_name"] }} отправил(а) вам новое сообщение
-                            {{ url_for("dialogs", user_id = receiver.id,  _external = True )}}">Посмотреть сообщение
+                            {{ url_for("dialogs", user_id = receiver.id,  _external = True )}}Посмотреть сообщение
                         в {{ notification.timestamp|timezone }}
 
 
                         {%  endif %}
+
+                        Не хотите получать уведомления с форума аквариумистики? Ну что ж, это Ваш выбор.
+    Просто поменяйте {{ url_for("profile_settings",  _external = True )}} настройки профиля
+
                       С найлучшими пожеланиеми, форум аквариумистики
 
                

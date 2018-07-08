@@ -124,6 +124,7 @@
         <li><a href="{{ url_for('index') }}"><i class="fa fa-home"></i> ГЛАВНАЯ</a></li>
         <li><a href="{{ url_for('popular_product') }}"><i class="fa fa-shopping-cart"></i> КАТАЛОГ</a></li>
         <li><a href="{{ url_for('last_posts') }}"><i class="fa fa-newspaper-o"></i> БЛОГ</a></li>
+                <li role="presentation" class="divider"></li>
 
         {% if current_user.is_authenticated %}
             {% if g.new_notification %}
@@ -147,6 +148,8 @@
 
                                 </a>
                             </li>
+            <li><a href="{{ url_for('profile_settings') }}"><i class=" fa fa-cogs ct-u-size35 ct-fw-400"></i> НАСТРОЙКИ</a></li>
+
                 <li role="presentation" class="divider"></li>
 
 

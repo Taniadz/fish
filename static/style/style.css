@@ -4438,3 +4438,11 @@ button#load_messages{
 .ct-u-overflow-auto{
     overflow: auto;
 }
+.ct-u-width-300{
+    width: 300px;
+
+}
+
+.ct-u-width-250{
+    width: 250px;
+}

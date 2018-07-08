@@ -116,11 +116,21 @@ class ContactForm(FlaskForm):
     message = StringField('Сообщение*', [validators.Length(min=1, max=3000,  message="Длина сообщения должна быть от одного до 3000 символов")], widget=TextArea())
 
 class MessageForm(FlaskForm):
-    text = StringField('Text', [validators.Length(min = 1, max=3000, message="Длина сообщения должна быть от 1 до 3000 символов")], widget=TextArea())
+    text = StringField('Text', [validators.Length(max=3000, message="Длина сообщения должна быть от 1 до 3000 символов")], widget=TextArea())
     file = FileField('image', validators=[
         FileAllowed(images, 'Только картинки!')
     ])
     receiver_id = HiddenField()
+    # required either text or file
+    def validate(self):
+        valid = True
+        if not FlaskForm.validate(self):
+            valid = False
+        if not self.file and not self.text:
+            self.text.errors.append("Введите текст сообщения")
+            valid = False
+        else:
+            return valid
 
 
 class ProfileSettingsForm(FlaskForm):
