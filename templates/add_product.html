@@ -41,6 +41,13 @@
           <button type="submit" class="btn btn-motive btn-form">добавить</button>
         </div>
     </div>
+    <label class="checkbox-container">
+                            Опубликовать этот пост анонимно на <a href="https://www.facebook.com/AquariumForum/">странице форума в facebook</a>?
+
+                                {{(form.facebook_post) }}
+                            <span class="checkmark"></span>
+
+                            </label>
   </form>
 
         </div>
@@ -68,7 +75,7 @@ Array.prototype.forEach.call( inputs, function( input )
 			fileName = e.target.value.split( '\\' ).pop();
 
 		if( fileName )
-			label.querySelector( 'span' ).innerHTML = fileName
+			label.querySelector( 'span' ).innerHTML = fileName;
 		else
 			label.innerHTML = labelVal;
 	});

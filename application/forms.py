@@ -103,6 +103,8 @@ class ProductForm(FlaskForm):
         FileAllowed(images, 'Только картинки!')
     ])
     description = StringField('Описание*', [validators.Length(min = 5, max=1500, message="Длина описания должна быть от 5 до 1500 символов")], widget=TextArea())
+    facebook_post = BooleanField("", default=True )
+
 
 
 

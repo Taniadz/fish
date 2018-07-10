@@ -128,12 +128,20 @@ def uploaded_file(filename):
                                filename)
 
 
-#
+
 @celery.task
-def publish_async_facebook(text):
-    graph = facebook.GraphAPI("")
-    graph.put_object("", "feed", message=text, link="https://aqua.name/")
+def publish_async_facebook(text, image):
+    photo = open(os.path.join(UPLOAD_FOLDER, image), "rb")
+    print(photo)
+
+    graph = facebook.GraphAPI("EAAXMF9n5ELYBADuIjELBPsQlxH6yxsA4FoQy3oGUB5QvR58seoThj5XdH1epZAb1TZBv7YRgjnrobpw6o4przWTj7OdkH1XZCSUfafVyM9cznPRZCNUCMaL9R6TOLmIcZCYsdti7IHMmuKvodwZBxunntOVhK6Un0Mi4HuS5jhsNlmM1W6SeTD")
+    if image:
+        graph.put_photo(message=text, image=photo, link="https://aqua.name/")
+
+    else:
+        graph.put_object("", "feed", message=text, link="https://aqua.name/")
     return True
+
 
 
 
@@ -360,7 +368,7 @@ def add_post():
                     post.tags.append(tag[0])
                     db.session.commit()
         if form.facebook_post.data:
-            publish_async_facebook.delay(post.body)
+            publish_async_facebook.delay(post.body, post.image)
             flash("Ваш пост был опубликован на фейбсук")
 
         return redirect(url_for('singlepost', postid=post.id))
@@ -771,11 +779,15 @@ def add_product():
         images = request.files.getlist("images")
         if images:
             for img in images:
+                print(img, "filenameeeeeee")
                 filename = create_filename(img)
-                print(filename, "filenameeeeeee")
+
                 new_image = create_obj(ProductImage, user_id=current_user.id,
                                        filename=filename,
                                        product_id=product.id)
+            if form.facebook_post.data:
+                publish_async_facebook.delay(product.description, filename)
+                flash("Ваш продукт был опубликован на фейбсук")
         return redirect(url_for('singleproduct', product_id=product.id))
     return render_template("add_product.html", form=form)
 

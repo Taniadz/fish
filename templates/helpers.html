@@ -378,7 +378,10 @@ all comment to product on page "single_product"
 
 {% macro posts_macro(post, posts_relationships) -%}
     <article class="ct-articleBox">
+    <a href="{{ url_for('singlepost', postid=post.id) }}">
+
         <a href="{{ url_for('singlepost', postid=post.id) }}"><h5 class="ct-u-size30">{{ post.title }}</h5></a>
+
         <p class="ct-u-motiveLight">
 
             <a href="{{ url_for('user', username=posts_relationships[post.id]["author"].username) }}">{{ posts_relationships[post.id]["author"].username }}</a>
@@ -386,17 +389,18 @@ all comment to product on page "single_product"
             {{ post.published_at|timezone }}
 
         </p>
-
+<a href="{{ url_for('singlepost', postid=post.id) }}">
             {% if post.image %}
 
                 <img class="post-grid-img" src="{{ url_for('uploaded_file',filename=post.image) }}"/><br>
-                <p>
+                <p class="ct-u-color-text">
                 {{ post.body|truncate(170, True) }}
                 </p>
 
             {% else %}
-               <p>{{ post.body|truncate(350, True) }}</p>
+               <p class="ct-u-color-text">{{ post.body|truncate(350, True) }}</p>
             {% endif %}
+</a>
 
         <div class="under-box">
 
@@ -477,7 +481,7 @@ all comment to product on page "single_product"
                 </ul>
             </div>
         </div>
-
+    </a>
 
     </article>
 
