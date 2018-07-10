@@ -134,7 +134,7 @@ def publish_async_facebook(text, image):
     photo = open(os.path.join(UPLOAD_FOLDER, image), "rb")
     print(photo)
 
-    graph = facebook.GraphAPI("EAAXMF9n5ELYBADuIjELBPsQlxH6yxsA4FoQy3oGUB5QvR58seoThj5XdH1epZAb1TZBv7YRgjnrobpw6o4przWTj7OdkH1XZCSUfafVyM9cznPRZCNUCMaL9R6TOLmIcZCYsdti7IHMmuKvodwZBxunntOVhK6Un0Mi4HuS5jhsNlmM1W6SeTD")
+    graph = facebook.GraphAPI("")
     if image:
         graph.put_photo(message=text, image=photo, link="https://aqua.name/")
 
