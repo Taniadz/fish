@@ -65,6 +65,7 @@ def dialogs(user_id):
 def send_message():
     form = MessageForm(CombinedMultiDict((request.files, request.form)))
     if form.validate_on_submit():
+        print("validates")
         dialog = get_or_create_dialog(form.receiver_id.data, current_user.id)
         filename = create_filename(form.file.data)
         message = create_obj(Message, sender_id = current_user.id, receiver_id = form.receiver_id.data, participants=dialog.participants, file = filename, text = form.text.data, dialog_id = dialog.id)

@@ -44,9 +44,9 @@
                             {{ post.published_at|timezone }}
 
                         </p>
-                        <p class="text-line">
-                            {{ post.body }}
-                        </p>
+                        <div class="text-line">
+                            {{ post.body|safe }}
+                        </div>
                     </div>
                     <div class="reaction-counter">
 

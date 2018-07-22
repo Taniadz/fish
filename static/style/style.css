@@ -4077,7 +4077,7 @@ label.checkbox-container{
     z-index: 10000;
 
 }
-#open_mesage{
+#open_mesage, .message-not-login{
     cursor: pointer;
 }
 .message_nav{
@@ -4448,4 +4448,8 @@ button#load_messages{
 }
 .ct-u-color-text{
     color: #4c505e;
+}
+
+.edited-textarea{
+    display: none;
 }

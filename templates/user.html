@@ -25,9 +25,16 @@
                         </i>Рейтинг  {{ rating }}<i class="fa fa-star star-rating"></i>
 
             </div>
+            {% if current_user.is_authenticated %}
             <div class="ct-u-floatRight" id ="open_mesage">
                 Сообщение <i class="fa fa-envelope"></i>
             </div>
+            {% else %}
+                <div class="ct-u-floatRight message-not-login">
+                Сообщение <i class="fa fa-envelope"></i>
+            </div>
+            {% endif %}
+
         </div>
 
     <div id="message_box">

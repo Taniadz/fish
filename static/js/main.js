@@ -147,25 +147,31 @@ $(document).ready(function () {
 
          $(".alert.alert-danger.favourite-alert").show();
 
-     })
+     });
 
     $(".comment-not-login").on("click", function () {
 
          $(".alert.alert-danger.comment-alert").show();
 
-     })
+     });
 
     $(".like-not-login").on("click", function () {
 
          $(".alert.alert-danger.like-alert").show();
 
-     })
+     });
+
+      $(".message-not-login").on("click", function () {
+
+         $(".alert.alert-danger.message-alert").show();
+
+     });
 
     autosize($('textarea'));
 
-var text = $('.text-line').text();
-text = text.replace(/\r?\n/g, '<br />');
-$('.text-line').html(text);
+// var text = $('.text-line').text();
+// text = text.replace(/\r?\n/g, '<br />');
+// $('.text-line').html(text);
 
 
 $(".ct-iconBox-flash").delay(5000).hide(1);

@@ -393,12 +393,12 @@ all comment to product on page "single_product"
             {% if post.image %}
 
                 <img class="post-grid-img" src="{{ url_for('uploaded_file',filename=post.image) }}"/><br>
-                <p class="ct-u-color-text">
-                {{ post.body|truncate(170, True) }}
-                </p>
+                <div class="ct-u-color-text">
+                {{ post.body|safe|truncate(170, True) }}
+                </div>
 
             {% else %}
-               <p class="ct-u-color-text">{{ post.body|truncate(350, True) }}</p>
+               <div class="ct-u-color-text text-line">{{ post.body|safe|truncate(350, True) }}</div>
             {% endif %}
 </a>
 

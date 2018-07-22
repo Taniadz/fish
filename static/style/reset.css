@@ -1,0 +1,15 @@
+/*.editing-container *,*/
+/*.editing-container *::before,*/
+/*.editing-container *::after {*/
+  /*margin: 0;*/
+  /*padding: 0;*/
+  /*font: inherit;*/
+  /*font-size: 100%;*/
+  /*box-sizing: border-box;*/
+  /*vertical-align: baseline;*/
+/*}*/
+
+/*.editing-container table {*/
+  /*border-collapse: collapse;*/
+  /*border-spacing: 0;*/
+/*}*/

@@ -1,0 +1,70 @@
+@import url("reset.css");
+
+.editing-container {
+  font: 200 24px 'Roboto', Helvetica, sans-serif;
+  color: #222;
+  background-color: #fafafa;
+}
+
+#page p {
+  padding-bottom: 24px;
+}
+
+b {
+  font-weight: bold;
+}
+
+i {
+  font-style: italic;
+}
+
+#page ul,
+#page ol {
+  margin-left: 40px;
+}
+
+#editor {
+  width: 100%;
+  margin: 50px auto 50px auto;
+  padding: 7px 20px 20px 20px;
+  border: 1px solid #b3b3b3;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+#toolbar {
+  margin-left: -20px;
+  margin-right: -20px;
+  border-bottom: 1px solid #464646;
+  padding: 8px 20px;
+  overflow: hidden;
+}
+
+#page {
+  padding-top: 30px;
+  min-height: 200px;
+  outline: none;
+}
+
+.editing-container .icon {
+  float: left;
+  height: 30px;
+  width: 40px;
+  margin-right: 10px;
+  background: #fafafa;
+  font-size: 20px;
+  color: #717171;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 800;
+        display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+.editing-container .icon:hover {
+  border-color: #3e7086;
+  color: #1f8bf3;
+}

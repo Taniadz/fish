@@ -3,9 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Форум аквариумистов - все для простого и удобного общения">
+    <meta name="description" content="Все для простого и удобного общения">
     <meta name="keywords" content="форум Аквариумистов, форум аквариумистики, сайт аквариумистики, аквариум форум, морские аквариумисты, аквариумистика,
 морская аквариумистика">
+
+  <meta property="og:url"           content="https://aqua.name" />
+  <meta property="og:type"          content="website" />
+  <meta property="og:title"         content="Форум аквариумистов" />
+  <meta property="og:description"   content="Узнайте больше, поделитесь большим" />
+  <meta property="og:image"         content="{{ url_for('static',filename="image/my_favicon.png") }}" />
+
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114849975-1"></script>
     <script>
@@ -30,6 +38,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font-awesome.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/font.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/magnific-popup.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style/text-editor.css') }}">
 
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/jquery-3.2.1.min.js") }}" acync></script>
 
@@ -51,7 +60,16 @@
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/file_form.js") }}" acync></script>
     <script type="text/javascript" src="{{ url_for ('static', filename= "js/autosize.min.js") }}" acync></script>
 
-
+{#<link rel="stylesheet"#}
+{##}
+{#      href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"#}
+{#      integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"#}
+{#      crossorigin="anonymous">#}
+{#<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"#}
+{#        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"#}
+{#        crossorigin="anonymous"></script>#}
+{##}
+{##}
     <script>
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         $(document).ready(function () {
@@ -69,6 +87,24 @@
 
 
 <!-- :mobile Menu: -->
+
+<div class="alert alert-danger alert-dismissable message-alert" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">×</span>
+        <span class="sr-only">Закрыть</span>
+    </button>
+    <strong>Oх нет!</strong>
+
+    <p>
+        Вы не можете оправлять личные сообщения. Сначала <a href="{{ url_for('security.login') }}">войдите</a>
+        или <a href="{{ url_for('security.register') }}">зарегистрируйтесь</a>
+        и все получится!
+    </p>
+
+
+</div>
+
+
 <div class="alert alert-danger alert-dismissable favourite-alert" role="alert">
     <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">×</span>
@@ -318,7 +354,10 @@
 
     </main>
 
-
+<div class="fb-share-button"
+    data-href="https://aqua.name"
+    data-layout="button">
+  </div>
     <footer>
         <section class="ct-footer-list ct-u-paddingBoth50">
             <div class="container">
@@ -363,7 +402,13 @@
 </div>
 </body>
 <script type="text/javascript" src="{{ url_for ('static', filename= "js/main.js") }}"></script>
-
+<script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
 <script>
     {#    script for activate likes and reactions in my.js #}
     {#$(document).ready(function () {#}
