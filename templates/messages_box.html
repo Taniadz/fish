@@ -76,7 +76,8 @@
 
 <script>
 
-
+{#for mobile devices
+load messages by ajax on click#}
 $("#load_messages").on("click", function (event) {
         var my_button = $(this);
         var dialog_id = $(".messages_box_mobile").children().first().attr("dialog_id");
@@ -108,7 +109,8 @@ $("#load_messages").on("click", function (event) {
 
 
 
-
+{#for not mobile devices
+load messages by ajax on scroll to top#}
 $('#messages_box').on('scroll', function(event) {
     event.preventDefault();
     var dialog_id = $(this).children().first().attr("dialog_id");
@@ -123,7 +125,6 @@ $('#messages_box').on('scroll', function(event) {
             else{
                 $("#messages_box_mobile").prepend(data.messages);
 
-
             }
             var dear = $("#message-container." + (data.page) + " ul").height();
             if ($(window).width() >= 768) {
@@ -132,9 +133,6 @@ $('#messages_box').on('scroll', function(event) {
             else{
                 $("#messages_box_mobile").scrollTop(dear);
             }
-
-
-
 
         });
 
@@ -145,17 +143,15 @@ $('#messages_box').on('scroll', function(event) {
     });
 
 $(document).ready(function () {
-
+{#make window height responsive to inner.height and scrol all messages to botton if it first page#}
 if ($(window).width() >= 768) {
     $("#messages_box").css('height', $(window).height() * 0.7);
 }
-        var page = $("#messages_box").children().first().attr("class");
+    var page = $("#messages_box").children().first().attr("class");
 
 if (page == "1"){
-    console.log("we will scroll");
 
     $("#messages_box").scrollTop(9999999);
-
 
 }
 
@@ -163,7 +159,6 @@ if (page == "1"){
 
 
 $(".message_form#1").submit(function(event) {
-
 
         event.preventDefault();
     var formData = new FormData($(this)[0]);
@@ -178,7 +173,6 @@ $(".message_form#1").submit(function(event) {
             if ($(window).width() >= 768) {
 
             $("#messages_box").html(data.messages);
-
             }
             else{
                  $(".messages_box_mobile").html(data.messages);
@@ -208,7 +202,7 @@ $(".message_form#1").submit(function(event) {
     event.stopImmediatePropagation()
 });
 
-
+{#change form-load button to loaded#}
 $('.message-file').change(function() {
     $(this).next().html("<i class='fa fa-download'></i>");
 

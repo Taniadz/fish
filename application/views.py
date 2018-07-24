@@ -133,12 +133,9 @@ def uploaded_file(filename):
 @celery.task
 def publish_async_facebook(text, image):
     photo = open(os.path.join(UPLOAD_FOLDER, image), "rb")
-    print(photo)
-
     graph = facebook.GraphAPI("")
     if image:
         graph.put_photo(message=text, image=photo, link="https://aqua.name/")
-
     else:
         graph.put_object("", "feed", message=text, link="https://aqua.name/")
     return True
@@ -180,40 +177,31 @@ def contact_us():
 
 
 
-
-
-
-
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
         if current_user.last_seen:
             current_time = datetime.utcnow()
-            delta = timedelta(minutes=10)
-            if current_time - current_user.last_seen > delta:
-                current_user.last_seen = datetime.utcnow()
+            if current_time - current_user.last_seen > timedelta(minutes=10):
+                current_user.last_seen = datetime.utcnow() # update user.last_seen every 10 minutes
                 db.session.add(current_user)
                 db.session.commit()
-
         else:
                 current_user.last_seen = datetime.utcnow()
                 db.session.add(current_user)
                 db.session.commit()
 
         notifications = get_open_notifications(current_user.id) #cashed notification
-
         for n in notifications:
-
             if n.name == "message":
                 g.have_message = True  #check if user has new messages
-
             else:
                 g.new_notification = True
 
 
 
 
-
+# custom pipeline  for python social auth
 def save_profile(backend, user, response, *args, **kwargs):
    if backend.name == 'facebook':
         user = get_one_obj(User, id=user.id)
@@ -225,10 +213,10 @@ def save_profile(backend, user, response, *args, **kwargs):
         fout.close()
         update_user_rows(user, username = response.get('name'), avatar = filename, social = True )
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
 
 
 @app.errorhandler(500)
@@ -267,21 +255,6 @@ def popular_product(page=1):
                             products = products, pagination=pagination,)
 
 
-@app.route('/all_users', methods=['GET', 'POST'])
-@app.route('/all_users/<int:page>', methods=['GET', 'POST'])
-def all_users(page=1):
-    form = MessageForm(CombinedMultiDict((request.files, request.form)))
-    users = get_paginated_user(page)
-    rating_dict = {}
-    for user in users.items:
-        rating_dict[user.id] = count_user_rating(user)
-
-    return render_template('all_users.html',
-                           rating_dict=rating_dict,
-                           page =page,
-                           form=form,
-
-                            users = users)
 
 
 @app.route('/last_posts', methods=['GET', 'POST'])
@@ -315,15 +288,12 @@ def topic(topic, page=1):
     if request.args.get("sort") == "rating":  # sort by datetime
         posts = get_posts_ordering(Post.like_count.desc(), page, POSTS_PER_PAGE, topic_id=topic)
 
-
     else:  # sort by rating
         posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE, topic_id=topic)
-
     topic = get_one_obj(Topic, id=topic)
     count = count_all_posts(topic_id=topic.id)
     pagination = Pagination(page, POSTS_PER_PAGE, count)
     posts_relationships=get_posts_relationship(posts, current_user)
-
 
     return render_template('topic.html',
                            posts=posts,
@@ -339,7 +309,6 @@ def topic(topic, page=1):
 @app.route('/add_post', methods = ['GET', 'POST'])
 @login_required
 def add_post():
-
     form = PostForm(CombinedMultiDict((request.files, request.form)))
     if request.is_xhr:
         tags = get_tags_all()
@@ -390,7 +359,7 @@ def user(username):
 
     rating = count_user_rating(user)
     side_posts = get_posts_ordering(Post.published_at.desc(), page, POSTS_PER_PAGE)
-    # we show users posts, comments, products and saved in user profile page.
+    # show users posts, comments, products and saved in user profile page.
     # if user is a profile owner or user hasn't profile settings - show all containers with this content.
     # When page rendering, it show only posts container, other part rendering by ajax on click.
 

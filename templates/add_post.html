@@ -12,10 +12,6 @@
             <div class="row">
                 <div class="col-xs-offset-1 col-xs-10 col-md-offset-2 col-md-8">
 
-
-
-
-
                         <form action="" method="post" class="form-horizontal form_edited" enctype=multipart/form-data>
 
                             <div class="form-group ct-u-marginBottom0">
@@ -27,11 +23,9 @@
                             </div>
 
 
-
-
                                            <div id="editor" class="editing-container" contenteditable="false">
 
-  <section id="toolbar">
+  <div id="toolbar">
 
 
     <div id="bold" class="icon fa fa-bold"></div>
@@ -55,11 +49,11 @@
 
 
 
-  </section>
+  </div>
 
 
 
-  <section id="page" contenteditable="true">
+  <div id="page" contenteditable="true">
 
 
 
@@ -67,11 +61,11 @@
 
 
 
-  </section>
+  </div>
 
                     </div>
                             <div class="edited-textarea">{{ form.body (class="edited-textarea") }}</div>
-                            <div class="ct-u-paddingTop20">
+                            <div class="ct-u-paddingTop20" contenteditable="false">
                                 <p class="ct-u-motiveLight">По желанию, Вы можете добавить ваш пост к любой из
                                     предложенных тем. </p>
                                 {{ render_field_with_errors(form.topic_id, class="form-control") }}
@@ -81,7 +75,7 @@
 
                             <div id="hide" class="form-group big-form-file">
                                 {{ form.file(id="file", class="inputfile", data_multiple_caption="{count} files selected") }}
-                                <div class="ct-u-paddingTop20">
+                                <div class="ct-u-paddingTop20" contenteditable="false">
 
                                     <p class=" ct-u-motiveLight">
                                         По желанию, выберите несколько тегов к вашему посту (напр."мой аквариум",
@@ -158,6 +152,8 @@
 
 
         });
+
+        {#put value of edited field to form.post.body (textarea not work with execCommand)#}
         $(".form_edited").submit(function () {
             $(".form_edited .edited-textarea").val($("#page").html());
 
