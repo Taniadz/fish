@@ -27,6 +27,22 @@
 
         gtag('config', 'UA-114849975-1');
     </script>
+    
+    
+
+
+<!-- Global site tag (gtag.js) - Google Ads: 813375177 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-813375177"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-813375177');
+</script>
+
+{% block adwords_script %}
+    {% endblock %}
     <title>{% block title %}{% endblock %} Форум Аквариумистов</title>
 
     <link rel="icon" type="image/png" href="{{ url_for('static',filename="image/my_favicon.png") }}"/>
