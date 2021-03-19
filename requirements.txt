@@ -22,7 +22,7 @@ Flask-Uploads==0.2.1
 Flask-WTF==0.14.2
 httplib2==0.10.3
 itsdangerous==0.24
-Jinja2==2.9.6
+Jinja2==2.11.3
 kombu==4.1.0
 Mako==1.0.7
 MarkupSafe==1.0
